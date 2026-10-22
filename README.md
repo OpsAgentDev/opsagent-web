@@ -26,7 +26,7 @@ Use `localhost` for both, not `127.0.0.1`: the local session cookie is host-only
 ## End-to-end test
 
 `scripts/e2e.sh` starts Postgres, Redis and mailpit from brain's `docker-compose.yml` (ports 55432/56379,
-override with `PG_PORT`/`REDIS_PORT`), runs brain with `OPSAGENT_CONNECTORS=fake` and
+override with `PG_PORT`/`REDIS_PORT`), recreates the `opsagent_brain_e2e` database, runs brain with `OPSAGENT_CONNECTORS=fake` and
 `MAILER_SMTP_URL=smtp://localhost:1025` (server and worker in one process), builds and starts web, then runs
 `tests/e2e/first-slice.spec.ts`. It signs in with the link read from mailpit's API, creates an organisation,
 connects the fake `noisy` account, scans, and snoozes a critical finding. Logs: `brain-e2e.log`, `web-e2e.log`.

@@ -7,7 +7,11 @@ BRAIN_DIR="${BRAIN_DIR:-../opsagent-brain}"
 PG_PORT="${PG_PORT:-55432}" REDIS_PORT="${REDIS_PORT:-56379}"
 export PG_PORT REDIS_PORT
 
-docker compose -f "$BRAIN_DIR/docker-compose.yml" up -d postgres redis mailpit
+compose() { docker compose -f "$BRAIN_DIR/docker-compose.yml" "$@"; }
+compose up -d --wait postgres redis mailpit
+# A fresh database per run: the fake account can be connected by only one live connection.
+compose exec -T postgres psql -qU loco -d postgres \
+  -c "DROP DATABASE IF EXISTS opsagent_brain_e2e WITH (FORCE)" -c "CREATE DATABASE opsagent_brain_e2e"
 
 pids=()
 cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null || true; done; }
@@ -18,12 +22,12 @@ wait_for() { # url, name
   echo "$2 did not come up at $1" >&2; return 1
 }
 
-# Brain in development mode with the worker in-process, so verify and scan jobs run.
+# Brain in development mode (migrations run on boot) with the worker in-process, so verify and scan jobs run.
 (
   cd "$BRAIN_DIR/app"
   [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
   PORT=3000 API_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
-  DATABASE_URL="postgres://loco:loco@localhost:$PG_PORT/opsagent_brain_development" \
+  DATABASE_URL="postgres://loco:loco@localhost:$PG_PORT/opsagent_brain_e2e" \
   REDIS_URL="redis://localhost:$REDIS_PORT" \
   OPSAGENT_CONNECTORS=fake MAILER_SMTP_URL=smtp://localhost:1025 \
   OPSAGENT_KEK="${OPSAGENT_KEK:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}" \
