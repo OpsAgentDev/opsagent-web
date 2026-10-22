@@ -3,19 +3,29 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 # Needs repository secret BRAIN_READ_TOKEN: a fine-grained token with read access to
 # OpsAgentDev/opsagent-brain contents (the repo is private). Create it before the first run.
+# Brain is checked out at the same branch name when it exists, else main.
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: brain
+        run: scripts/ci-brain-ref.sh
+        env:
+          BRAIN_READ_TOKEN: ${{ secrets.BRAIN_READ_TOKEN }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
       - uses: actions/checkout@v4
         with:
           repository: OpsAgentDev/opsagent-brain
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ steps.brain.outputs.ref }}
           path: brain
           token: ${{ secrets.BRAIN_READ_TOKEN }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -36,12 +46,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - id: brain
+        run: scripts/ci-brain-ref.sh
+        env:
+          BRAIN_READ_TOKEN: ${{ secrets.BRAIN_READ_TOKEN }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
       - uses: actions/checkout@v4
         with:
           repository: OpsAgentDev/opsagent-brain
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ steps.brain.outputs.ref }}
           path: brain
           token: ${{ secrets.BRAIN_READ_TOKEN }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24

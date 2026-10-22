@@ -34,7 +34,7 @@ First time: `npx playwright install chromium`.
 
 ## CI
 
-`.github/workflows/ci.yml`: `npm ci`, sync the contract from brain at the same branch name, fail if
+`.github/workflows/ci.yml`: `npm ci`, sync the contract from brain at the same branch name (else `main`), fail if
 `openapi.json` or `lib/api/schema.d.ts` changed (drift), `npm run lint` (ESLint and `tsc`), `npm run build`.
 Requires the repository secret `BRAIN_READ_TOKEN` (read access to the private brain repo). The Playwright job
 runs only when the repository variable `E2E` is `1`.
