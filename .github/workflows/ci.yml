@@ -6,36 +6,20 @@ on:
 permissions:
   contents: read
 
-# Needs repository secret BRAIN_READ_TOKEN: a fine-grained token with read access to
-# OpsAgentDev/opsagent-brain contents (the repo is private). Create it before the first run.
-# Brain is checked out at the same branch name when it exists, else main.
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: brain
-        run: scripts/ci-brain-ref.sh
-        env:
-          BRAIN_READ_TOKEN: ${{ secrets.BRAIN_READ_TOKEN }}
-          BRANCH: ${{ github.head_ref || github.ref_name }}
-      - uses: actions/checkout@v4
-        with:
-          repository: OpsAgentDev/opsagent-brain
-          ref: ${{ steps.brain.outputs.ref }}
-          path: brain
-          token: ${{ secrets.BRAIN_READ_TOKEN }}
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run sync-openapi
-        env:
-          OPENAPI_PATH: brain/openapi.json
-      - name: Generated client matches brain's contract
-        run: git diff --exit-code -- openapi.json lib/api/schema.d.ts
+      - name: Schema matches the committed openapi.json
+        run: |
+          npx openapi-typescript lib/api/openapi.json -o /tmp/schema.d.ts
+          diff /tmp/schema.d.ts lib/api/schema.d.ts
       - run: npm run lint
       - run: npm run build
 
@@ -43,24 +27,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build .
+      - run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL=https://brain.opsagent.dev .
 
-  # Opt-in: set the repository variable E2E=1.
+  # Opt-in: set the repository variable E2E=1 and the secret BRAIN_READ_TOKEN (read access to the
+  # private brain repo). Fails with a message if the secret is missing. Brain is checked out at main.
   e2e:
     if: vars.E2E == '1'
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - id: brain
-        run: scripts/ci-brain-ref.sh
+      - name: Require BRAIN_READ_TOKEN
+        run: '[ -n "$T" ] || { echo "::error::E2E=1 needs the BRAIN_READ_TOKEN secret (read access to OpsAgentDev/opsagent-brain)"; exit 1; }'
         env:
-          BRAIN_READ_TOKEN: ${{ secrets.BRAIN_READ_TOKEN }}
-          BRANCH: ${{ github.head_ref || github.ref_name }}
+          T: ${{ secrets.BRAIN_READ_TOKEN }}
       - uses: actions/checkout@v4
         with:
           repository: OpsAgentDev/opsagent-brain
-          ref: ${{ steps.brain.outputs.ref }}
           path: brain
           token: ${{ secrets.BRAIN_READ_TOKEN }}
           persist-credentials: false

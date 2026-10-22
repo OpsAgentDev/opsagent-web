@@ -29,7 +29,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Always 202, so the response never reveals whether an address is valid or known. */
+        /**
+         * Always 202, so the response never reveals whether an address is valid or known, or whether
+         *     it was rate limited (5 per address and 30 per client IP per hour).
+         */
         post: operations["auth_request_link"];
         delete?: never;
         options?: never;
@@ -469,7 +472,7 @@ export interface components {
             /** @description `HH:MM`. */
             briefing_time_local?: string | null;
             display_name?: string | null;
-            /** @description `HH:MM`. */
+            /** @description `HH:MM` in the organisation's timezone; the nightly scan moves there from the next day. */
             scan_time_local?: string | null;
         };
         CreatedConnection: {
@@ -829,7 +832,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Sent if the address is valid */
+            /** @description Sent if the address is valid and under the rate limit */
             202: {
                 headers: {
                     [name: string]: unknown;

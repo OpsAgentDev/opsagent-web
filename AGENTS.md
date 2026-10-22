@@ -7,14 +7,14 @@ No `CLAUDE.md` in this repo; this file is the only instruction file.
 ## Run
 ```
 npm ci
-npm run sync-openapi      # copies ../opsagent-brain/openapi.json and regenerates lib/api/schema.d.ts
+npm run sync-openapi      # copies ../opsagent-brain/openapi.json to lib/api/openapi.json (committed), regenerates lib/api/schema.d.ts
 npm run lint && npm test && NEXT_PUBLIC_API_BASE_URL=http://localhost:3000 npm run build
 bash scripts/e2e.sh       # boots brain (fake connector, mailpit) and web, runs Playwright
 ```
 
 ## Layout
 - `app/(marketing)` static pages; `app/(auth)` sign-in and `/auth/callback?token=`; `app/(app)` dashboard, onboarding, connections, findings (client-rendered in Plan 1).
-- `lib/api/client.ts` is the only place `fetch` is called (ESLint enforces it); types come from the generated `lib/api/schema.d.ts`, never hand-written.
+- `lib/api/client.ts` is the only place `fetch` is called (ESLint enforces it); types come from the generated `lib/api/schema.d.ts`, never hand-written. CI does not check out brain: it regenerates the schema from the committed `lib/api/openapi.json`. After brain's API changes, run `npm run sync-openapi` and commit both files.
 - Talks to brain at `NEXT_PUBLIC_API_BASE_URL` with credentials; CSRF token from `GET /v1/auth/csrf`.
 
 ## Rules (summary; binding text in ArchBoss `docs/tech-spec/engineering-principles.md`)

@@ -15,7 +15,7 @@ Next.js 15 (App Router, TypeScript strict) front end for OpsAgent. The browser c
 
 ```
 npm install
-npm run sync-openapi      # copies ../opsagent-brain/openapi.json (or $OPENAPI_PATH), regenerates lib/api/schema.d.ts
+npm run sync-openapi      # copies ../opsagent-brain/openapi.json (or $OPENAPI_PATH) to lib/api/openapi.json, regenerates lib/api/schema.d.ts
 cp .env.example .env.local
 npm run dev               # http://localhost:3001, brain expected on http://localhost:3000
 ```
@@ -34,7 +34,8 @@ First time: `npx playwright install chromium`.
 
 ## CI
 
-`.github/workflows/ci.yml`: `npm ci`, sync the contract from brain at the same branch name (else `main`), fail if
-`openapi.json` or `lib/api/schema.d.ts` changed (drift), `npm run lint` (ESLint and `tsc`), `npm run build`.
-Requires the repository secret `BRAIN_READ_TOKEN` (read access to the private brain repo). The Playwright job
-runs only when the repository variable `E2E` is `1`.
+`.github/workflows/ci.yml`: `npm ci`, regenerate the schema from the committed `lib/api/openapi.json` and fail if it
+differs from `lib/api/schema.d.ts`, `npm run lint` (ESLint and `tsc`), `npm run build`; plus a Docker build. CI never
+touches the brain repo. Cross-repo drift is caught locally: after brain's API changes, run `npm run sync-openapi` and commit
+`lib/api/openapi.json` and `lib/api/schema.d.ts`. The Playwright job runs only when the repository variable `E2E` is `1`
+and needs the optional secret `BRAIN_READ_TOKEN` (read access to the private brain repo).
