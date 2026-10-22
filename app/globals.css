@@ -1,0 +1,18 @@
+:root { color-scheme: light dark; --muted: #6b7280; --line: #d1d5db; --bad: #b91c1c; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 15px/1.5 system-ui, sans-serif; }
+main { max-width: 960px; margin: 0 auto; padding: 24px; }
+header.bar { display: flex; gap: 16px; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--line); }
+header.bar .spacer { flex: 1; }
+footer { max-width: 960px; margin: 48px auto 0; padding: 24px; color: var(--muted); }
+form.stack, .stack { display: grid; gap: 12px; max-width: 420px; }
+label { display: grid; gap: 4px; }
+input, select, button { font: inherit; padding: 6px 10px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.muted { color: var(--muted); }
+.error { color: var(--bad); }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.card { border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+dialog { border: 1px solid var(--line); border-radius: 6px; }

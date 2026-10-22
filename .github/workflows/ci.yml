@@ -1,0 +1,68 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Schema matches the committed openapi.json
+        run: |
+          npx openapi-typescript lib/api/openapi.json -o /tmp/schema.d.ts
+          diff /tmp/schema.d.ts lib/api/schema.d.ts
+      - run: npm run lint
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: https://brain.opsagent.dev
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --build-arg NEXT_PUBLIC_API_BASE_URL=https://brain.opsagent.dev .
+
+  # Opt-in: set the repository variable E2E=1 and the secret BRAIN_READ_TOKEN (read access to the
+  # private brain repo). Fails with a message if the secret is missing. Brain is checked out at main.
+  e2e:
+    if: vars.E2E == '1'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require BRAIN_READ_TOKEN
+        run: '[ -n "$T" ] || { echo "::error::E2E=1 needs the BRAIN_READ_TOKEN secret (read access to OpsAgentDev/opsagent-brain)"; exit 1; }'
+        env:
+          T: ${{ secrets.BRAIN_READ_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          repository: OpsAgentDev/opsagent-brain
+          path: brain
+          token: ${{ secrets.BRAIN_READ_TOKEN }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: scripts/e2e.sh
+        env:
+          BRAIN_DIR: brain
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            brain-e2e.log
+            web-e2e.log
+            test-results/
