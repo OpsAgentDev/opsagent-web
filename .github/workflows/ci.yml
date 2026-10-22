@@ -39,6 +39,12 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build .
+
   # Opt-in: set the repository variable E2E=1.
   e2e:
     if: vars.E2E == '1'

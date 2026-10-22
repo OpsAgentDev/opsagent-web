@@ -26,7 +26,7 @@ wait_for() { # url, name
 (
   cd "$BRAIN_DIR/app"
   [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-  PORT=3000 API_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
+  PORT=3000 APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
   DATABASE_URL="postgres://loco:loco@localhost:$PG_PORT/opsagent_brain_e2e" \
   REDIS_URL="redis://localhost:$REDIS_PORT" \
   OPSAGENT_CONNECTORS=fake MAILER_SMTP_URL=smtp://localhost:1025 \
