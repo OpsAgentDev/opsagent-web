@@ -2,16 +2,20 @@
 type Fields = Record<string, unknown>;
 type Level = "debug" | "info" | "warn" | "error";
 
-const SENSITIVE = new Set(["token", "cookie", "authorization", "apikey", "password"]);
+const SENSITIVE = /token|cookie|authorization|api[_-]?key|password|secret/i;
 
-export function redact(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(redact);
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).filter(([k]) => !SENSITIVE.has(k.toLowerCase())).map(([k, v]) => [k, redact(v)]),
-    );
-  }
-  return value;
+export function redact(value: unknown, path = new WeakSet<object>()): unknown {
+  if (value instanceof Error) return { name: value.name, message: value.message };
+  if (!value || typeof value !== "object") return value;
+  if (path.has(value)) return "[Circular]";
+  path.add(value);
+  const out = Array.isArray(value)
+    ? value.map((v) => redact(v, path))
+    : Object.fromEntries(
+        Object.entries(value).filter(([k]) => !SENSITIVE.test(k)).map(([k, v]) => [k, redact(v, path)]),
+      );
+  path.delete(value); // only ancestors count, so shared (non-cyclic) references still print
+  return out;
 }
 
 function emit(level: Level, message: string, fields?: Fields) {
