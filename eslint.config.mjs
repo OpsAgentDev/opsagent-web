@@ -10,4 +10,6 @@ export default [
     ignores: ["lib/api/client.ts"],
     rules: { "no-restricted-globals": ["error", { name: "fetch", message: "Use lib/api/client.ts." }] },
   },
+  { rules: { "no-console": "error" } },
+  { files: ["lib/log.ts"], rules: { "no-console": "off" } },
 ];

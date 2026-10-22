@@ -19,3 +19,6 @@ bash scripts/e2e.sh       # boots brain (fake connector, mailpit) and web, runs 
 
 ## Rules (summary; binding text in ArchBoss `docs/tech-spec/engineering-principles.md`)
 One API client, pages under ~200 lines, no duplicated fetch or error handling, no sensitive values in `NEXT_PUBLIC_*`, brand lines per PRD section 5. The founder's commit-msg hook strips `Co-Authored-By`; do not bypass hooks.
+
+## Logging
+Use `lib/log.ts` (`log.debug/info/warn/error(message, fields?)`), never `console.*` (ESLint `no-console` enforces it). Never pass tokens, cookies, or API keys in fields. Spec: ArchBoss `docs/tech-spec/logging.md`.
