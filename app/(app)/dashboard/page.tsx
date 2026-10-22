@@ -2,10 +2,10 @@
 import Link from "next/link";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type Connection } from "@/lib/api/client";
+import { SEVERITIES } from "@/lib/api/enums";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
-const SEVERITIES = ["critical", "high", "medium", "low", "info"] as const;
 
 /** `Run.stats` is an untyped object in the contract; for `full_scan` it carries these keys. */
 type ScanStats = { score?: number; counts_by_severity?: Partial<Record<string, number>> };

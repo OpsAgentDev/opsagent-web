@@ -2,12 +2,12 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
-import { api, unwrap } from "@/lib/api/client";
+import { api, unwrap, type CreatedConnection } from "@/lib/api/client";
 import { useOrg } from "@/lib/org";
 
 const FAKE_ENABLED = process.env.NEXT_PUBLIC_OPSAGENT_FAKE === "1";
 
-type Created = { id: string; provider: string; quickCreateUrl: string | null };
+type Created = CreatedConnection & { provider: string };
 
 export default function ConnectAws() {
   const org = useOrg();
@@ -24,7 +24,7 @@ export default function ConnectAws() {
       const c = await unwrap(
         api.POST("/orgs/{org}/connections", { params: { path: { org: org.slug } }, body: { provider, display_name } }),
       );
-      setCreated({ id: c.id, provider, quickCreateUrl: c.quick_create_url ?? null });
+      setCreated({ ...c, provider });
       setError(null);
     } catch (err) {
       setError(err as Error);
@@ -73,13 +73,13 @@ export default function ConnectAws() {
         </form>
       ) : (
         <form className="stack" onSubmit={verify}>
-          {created.quickCreateUrl && (
+          {created.quick_create_url && (
             <>
               <p>
                 1. Create the read-only role in your account (CloudFormation opens in a new tab), then copy the
                 role ARN from the stack outputs.
               </p>
-              <a className="button" href={created.quickCreateUrl} target="_blank" rel="noreferrer">
+              <a className="button" href={created.quick_create_url} target="_blank" rel="noreferrer">
                 Launch stack in AWS
               </a>
             </>

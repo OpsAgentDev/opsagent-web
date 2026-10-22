@@ -7,6 +7,7 @@ COPY . .
 # NEXT_PUBLIC_* is inlined at build time: Railway passes service variables as build args.
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+RUN test -n "$NEXT_PUBLIC_API_BASE_URL" || { echo "NEXT_PUBLIC_API_BASE_URL build arg is required" >&2; exit 1; }
 RUN npm run build
 
 FROM node:26-alpine

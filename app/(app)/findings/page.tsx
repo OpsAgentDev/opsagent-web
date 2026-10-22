@@ -3,11 +3,10 @@ import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { FindingActionDialog, type FindingAction } from "@/components/finding-action-dialog";
 import { api, unwrap, type FindingSummary } from "@/lib/api/client";
+import { SEVERITIES, STATUSES } from "@/lib/api/enums";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
-const STATUSES = ["open", "snoozed", "accepted", "flapping", "resolved"];
-const SEVERITIES = ["critical", "high", "medium", "low", "info"];
 const PAGE_SIZE = 50;
 
 export default function Findings() {
@@ -20,7 +19,7 @@ export default function Findings() {
   const [actionError, setActionError] = useState<Error | null>(null);
   const cursor = cursors[cursors.length - 1];
 
-  const { data: page, error, reload } = useApi(() => {
+  const { data: page, error, loading, reload } = useApi(() => {
     const query = { status: status || undefined, severity: severity || undefined, cursor, limit: PAGE_SIZE };
     return unwrap(api.GET("/orgs/{org}/findings", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, status, severity, cursor]);
@@ -33,6 +32,7 @@ export default function Findings() {
   async function reopen(f: FindingSummary) {
     try {
       await unwrap(api.POST("/orgs/{org}/findings/{id}/reopen", { params: { path: { org: org.slug, id: f.id } } }));
+      setActionError(null);
       reload();
     } catch (err) {
       setActionError(err as Error);
@@ -59,6 +59,7 @@ export default function Findings() {
         </label>
       </div>
       <ErrorNote error={error ?? actionError} />
+      {loading && <p className="muted" role="status">Loading…</p>}
       <table>
         <thead>
           <tr>
@@ -109,7 +110,10 @@ export default function Findings() {
           {...acting}
           onClose={(changed) => {
             setActing(null);
-            if (changed) reload();
+            if (changed) {
+              setActionError(null);
+              reload();
+            }
           }}
         />
       )}

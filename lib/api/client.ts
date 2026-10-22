@@ -7,12 +7,20 @@ type Schemas = components["schemas"];
 export type Me = Schemas["Me"];
 export type Org = Schemas["Org"];
 export type Connection = Schemas["Connection"];
+export type CreatedConnection = Schemas["CreatedConnection"];
 export type FindingSummary = Schemas["FindingSummary"];
 export type FindingPage = Schemas["Page_FindingSummary"];
 export type Run = Schemas["Run"];
 export type Problem = Schemas["Problem"];
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+/** A production build without an explicit brain URL would ship pointing at localhost. */
+export function resolveApiBaseUrl(configured: string | undefined, nodeEnv: string | undefined): string {
+  if (configured) return configured;
+  if (nodeEnv === "production") throw new Error("NEXT_PUBLIC_API_BASE_URL must be set for production builds");
+  return "http://localhost:3000";
+}
+
+export const API_BASE_URL = resolveApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL, process.env.NODE_ENV);
 
 export class ApiError extends Error {
   constructor(
@@ -61,4 +69,12 @@ const withCsrf: Middleware = {
     return request;
   },
 };
-api.use(withCsrf);
+// A stale token (e.g. the session changed) is dropped so the next call refetches; no automatic retry.
+const dropStaleCsrf: Middleware = {
+  async onResponse({ response }) {
+    if (response.status !== 403) return;
+    const problem = (await response.clone().json().catch(() => ({}))) as Partial<Problem>;
+    if (problem.code === "csrf") csrf = undefined;
+  },
+};
+api.use(withCsrf, dropStaleCsrf);
