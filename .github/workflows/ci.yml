@@ -1,0 +1,62 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+# Needs repository secret BRAIN_READ_TOKEN: a fine-grained token with read access to
+# OpsAgentDev/opsagent-brain contents (the repo is private). Create it before the first run.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: OpsAgentDev/opsagent-brain
+          ref: ${{ github.head_ref || github.ref_name }}
+          path: brain
+          token: ${{ secrets.BRAIN_READ_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run sync-openapi
+        env:
+          OPENAPI_PATH: brain/openapi.json
+      - name: Generated client matches brain's contract
+        run: git diff --exit-code -- openapi.json lib/api/schema.d.ts
+      - run: npm run lint
+      - run: npm run build
+
+  # Opt-in: set the repository variable E2E=1.
+  e2e:
+    if: vars.E2E == '1'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: OpsAgentDev/opsagent-brain
+          ref: ${{ github.head_ref || github.ref_name }}
+          path: brain
+          token: ${{ secrets.BRAIN_READ_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: scripts/e2e.sh
+        env:
+          BRAIN_DIR: brain
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            brain-e2e.log
+            web-e2e.log
+            test-results/
