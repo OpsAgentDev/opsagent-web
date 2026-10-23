@@ -8,6 +8,15 @@ export function liveRecipients<T extends { unsubscribed_at?: string | null }>(it
   return items.filter((r) => !r.unsubscribed_at);
 }
 
+/** Delivery settings are owner-managed; brain returns 403 to members, so the UI hides the controls. */
+export const isOwner = (role?: string | null) => role === "owner";
+
+/** Slack integration state for the settings line: `failing` is connected but degraded. */
+export function slackState(status?: string | null): "none" | "ok" | "failing" {
+  if (!status || status === "revoked") return "none";
+  return status === "failing" ? "failing" : "ok";
+}
+
 /** The add-recipient form as brain's body: exactly one of email or member, "" scope is org-wide. */
 export function newRecipientBody(form: {
   by: string;

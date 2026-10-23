@@ -26,10 +26,6 @@ export default function Deliveries() {
     return unwrap(api.GET("/orgs/{org}/deliveries", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, connection, kind, cursor]);
 
-  const filter = (set: (v: string) => void) => (v: string) => {
-    set(v);
-    pager.reset();
-  };
   const names = new Map(connections.data?.map((c) => [c.id, c.display_name ?? c.id]));
 
   return (
@@ -38,7 +34,7 @@ export default function Deliveries() {
       <div className="row">
         <label>
           Connection
-          <select value={connection} onChange={(e) => filter(setConnection)(e.target.value)}>
+          <select value={connection} onChange={(e) => pager.filter(setConnection)(e.target.value)}>
             <option value="">all</option>
             {connections.data?.map((c) => (
               <option key={c.id} value={c.id}>
@@ -49,7 +45,7 @@ export default function Deliveries() {
         </label>
         <label>
           Kind
-          <select value={kind} onChange={(e) => filter(setKind)(e.target.value)}>
+          <select value={kind} onChange={(e) => pager.filter(setKind)(e.target.value)}>
             <option value="">all</option>
             {DELIVERY_KINDS.map((k) => <option key={k}>{k}</option>)}
           </select>
@@ -83,7 +79,7 @@ export default function Deliveries() {
           ))}
         </tbody>
       </table>
-      {page?.items.length === 0 && <p className="muted">No deliveries yet.</p>}
+      {page?.items.length === 0 && <p className="muted">{connection || kind ? "No deliveries match these filters." : "No deliveries yet."}</p>}
       <Pager pager={pager} next={page?.next_cursor} />
     </main>
   );
