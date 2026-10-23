@@ -5,6 +5,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 BRAIN_DIR="${BRAIN_DIR:-../opsagent-brain}"
 PG_PORT="${PG_PORT:-55432}" REDIS_PORT="${REDIS_PORT:-56379}"
+# Reuse the brain checkout's running compose stack (same ports) instead of clashing with it.
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-opsagent-brain}"
 export PG_PORT REDIS_PORT
 
 compose() { docker compose -f "$BRAIN_DIR/docker-compose.yml" "$@"; }
@@ -22,16 +24,20 @@ wait_for() { # url, name
   echo "$2 did not come up at $1" >&2; return 1
 }
 
-# Brain in development mode (migrations run on boot) with the worker in-process, so verify and scan jobs run.
-(
-  cd "$BRAIN_DIR/app"
-  [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
-  PORT=3000 APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
+# Brain's env, exported so the Playwright helpers can run brain CLI tasks against the same database.
+BRAIN_DIR="$(cd "$BRAIN_DIR" && pwd)"
+export BRAIN_DIR APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
   DATABASE_URL="postgres://loco:loco@localhost:$PG_PORT/opsagent_brain_e2e" \
   REDIS_URL="redis://localhost:$REDIS_PORT" \
   OPSAGENT_CONNECTORS=fake MAILER_SMTP_URL=smtp://localhost:1025 \
   OPSAGENT_KEK="${OPSAGENT_KEK:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}" \
-  LOG_LEVEL=info exec cargo run -q -- start --server-and-worker
+  SLACK_CLIENT_ID=e2e-slack-client SLACK_CLIENT_SECRET=e2e-slack-secret LOG_LEVEL=info
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# Brain in development mode (migrations run on boot) with the worker in-process, so verify and scan jobs run.
+(
+  cd "$BRAIN_DIR/app"
+  PORT=3000 exec cargo run -q -- start --server-and-worker
 ) > brain-e2e.log 2>&1 &
 pids+=($!)
 

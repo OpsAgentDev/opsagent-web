@@ -32,6 +32,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <strong>OpsAgent</strong>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/findings">Findings</Link>
+        <Link href="/deliveries">Deliveries</Link>
+        <Link href="/settings/delivery">Delivery settings</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}

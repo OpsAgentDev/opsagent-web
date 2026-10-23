@@ -12,6 +12,9 @@ export type FindingSummary = Schemas["FindingSummary"];
 export type FindingPage = Schemas["Page_FindingSummary"];
 export type Run = Schemas["Run"];
 export type Problem = Schemas["Problem"];
+export type Recipient = Schemas["Recipient"];
+export type Member = Schemas["Member"];
+export type Channel = Schemas["Channel"];
 
 /** A production build without an explicit brain URL would ship pointing at localhost. */
 export function resolveApiBaseUrl(configured: string | undefined, nodeEnv: string | undefined): string {
@@ -46,8 +49,9 @@ export async function unwrap<R extends { data?: unknown; error?: unknown; respon
   return data as Exclude<R["data"], undefined>;
 }
 
-// Requests made before a session exists; brain checks their Origin instead of a CSRF token.
-const ANONYMOUS = new Set(["/auth/magic-link", "/auth/magic-link/redeem"]);
+// Requests made without a session: brain checks their Origin, or (confirm, unsubscribe) their
+// single-use token, instead of a CSRF token.
+const ANONYMOUS = new Set(["/auth/magic-link", "/auth/magic-link/redeem", "/recipients/confirm", "/unsubscribe/{token}"]);
 // Bound to the session id; sign-in ends in a full page load, which drops this cache.
 let csrf: Promise<string> | undefined;
 

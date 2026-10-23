@@ -120,6 +120,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/integrations/slack/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["integrations_slack_callback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/invites/{token}/accept": {
         parameters: {
             query?: never;
@@ -200,6 +216,22 @@ export interface paths {
         patch: operations["connections_update"];
         trace?: never;
     };
+    "/orgs/{org}/connections/{id}/briefing/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["deliveries_preview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/connections/{id}/scan": {
         parameters: {
             query?: never;
@@ -226,6 +258,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["connections_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/deliveries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["deliveries_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/deliveries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["deliveries_show"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -328,6 +392,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/integrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["integrations_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/integrations/slack/channels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["integrations_slack_channels"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/integrations/slack/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["integrations_slack_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/integrations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["integrations_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/invites": {
         parameters: {
             query?: never;
@@ -371,6 +499,38 @@ export interface paths {
         put?: never;
         post?: never;
         delete: operations["members_remove"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/recipients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["recipients_list"];
+        put?: never;
+        post: operations["recipients_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/recipients/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["recipients_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -424,6 +584,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/recipients/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Anonymous: the single-use token is the authorisation. */
+        post: operations["recipients_confirm"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unsubscribe/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Anonymous and idempotent; the token stays valid while the recipient exists. */
+        post: operations["recipients_unsubscribe"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -439,6 +633,20 @@ export interface components {
         };
         AuthorizeUrl: {
             url: string;
+        };
+        BriefingPreview: {
+            /** @description `first_scan`, `daily`, or `none` when there is nothing to say. */
+            kind: string;
+            /** @description Exactly what `deliver_briefing` would send now; empty for `none`. */
+            text: string;
+        };
+        Channel: {
+            id: string;
+            name: string;
+        };
+        ConfirmBody: {
+            /** @description The token from the confirm link. */
+            token: string;
         };
         Connection: {
             /** Format: int32 */
@@ -458,6 +666,8 @@ export interface components {
             provider: string;
             /** @description `HH:MM` in the organisation's timezone. */
             scan_time_local?: string | null;
+            /** @description Slack channel id for this connection's deliveries; null inherits the organisation's. */
+            slack_channel_id?: string | null;
             /** @description `pending`, `verifying`, `connected`, `degraded`, `revoked`, `blocked` or `disconnected`. */
             status: string;
             status_reason?: string | null;
@@ -474,6 +684,11 @@ export interface components {
             display_name?: string | null;
             /** @description `HH:MM` in the organisation's timezone; the nightly scan moves there from the next day. */
             scan_time_local?: string | null;
+            /**
+             * @description Slack channel id (`C…` or `G…`) for this connection's deliveries; `""` clears it.
+             *     Email recipients are managed through `/orgs/{org}/recipients` with `connection_id`.
+             */
+            slack_channel_id?: string | null;
         };
         CreatedConnection: {
             /** Format: uuid */
@@ -485,6 +700,29 @@ export interface components {
         Csrf: {
             /** @description Send as `X-CSRF-Token` on every mutating request. */
             token: string;
+        };
+        Delivery: {
+            /** Format: int32 */
+            attempts: number;
+            /** @description `slack` or `email`. */
+            channel: string;
+            /** Format: uuid */
+            connection_id?: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            id: string;
+            /** @description `briefing`, `weekly`, `alert` or `notice`. */
+            kind: string;
+            /**
+             * Format: uuid
+             * @description The email recipient (or owner) the row went to; null for Slack and unknown addresses.
+             */
+            recipient_id?: string | null;
+            /** Format: date-time */
+            sent_at?: string | null;
+            /** @description `pending`, `sent`, `failed`, `skipped`, `fallback_email` or `suppressed`. */
+            status: string;
         };
         Disconnected: {
             next_step: string;
@@ -559,6 +797,18 @@ export interface components {
             updated_at: string;
             variant: string;
         };
+        Integration: {
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            id: string;
+            /** @description `slack`, `github`, `terraform`, `prometheus` or `k8s`. */
+            kind: string;
+            /** @description `active`, `revoked` or `failing`. */
+            status: string;
+            /** @description Slack workspace name. */
+            team_name?: string | null;
+        };
         Invite: {
             email: string;
             /** Format: date-time */
@@ -610,6 +860,20 @@ export interface components {
             /** @description IANA zone; default `UTC`. */
             timezone?: string | null;
         };
+        NewRecipient: {
+            /**
+             * Format: uuid
+             * @description Route only this connection's deliveries; null for organisation-wide.
+             */
+            connection_id?: string | null;
+            /** @description An address to invite; it receives a confirm link and stays `pending` until used. */
+            email?: string | null;
+            /**
+             * Format: uuid
+             * @description A member of the organisation; active at once. Give exactly one of `email` or `member_id`.
+             */
+            member_id?: string | null;
+        };
         Org: {
             /** Format: date-time */
             created_at: string;
@@ -624,6 +888,33 @@ export interface components {
         OrgPatch: {
             name?: string | null;
             timezone?: string | null;
+        };
+        Page_Delivery: {
+            items: {
+                /** Format: int32 */
+                attempts: number;
+                /** @description `slack` or `email`. */
+                channel: string;
+                /** Format: uuid */
+                connection_id?: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: uuid */
+                id: string;
+                /** @description `briefing`, `weekly`, `alert` or `notice`. */
+                kind: string;
+                /**
+                 * Format: uuid
+                 * @description The email recipient (or owner) the row went to; null for Slack and unknown addresses.
+                 */
+                recipient_id?: string | null;
+                /** Format: date-time */
+                sent_at?: string | null;
+                /** @description `pending`, `sent`, `failed`, `skipped`, `fallback_email` or `suppressed`. */
+                status: string;
+            }[];
+            /** @description Pass as `cursor` to get the next page; null on the last page. */
+            next_cursor?: string | null;
         };
         Page_FindingSummary: {
             items: {
@@ -644,6 +935,31 @@ export interface components {
                 /** Format: date-time */
                 updated_at: string;
                 variant: string;
+            }[];
+            /** @description Pass as `cursor` to get the next page; null on the last page. */
+            next_cursor?: string | null;
+        };
+        Page_Recipient: {
+            items: {
+                /**
+                 * Format: uuid
+                 * @description Null: organisation-wide.
+                 */
+                connection_id?: string | null;
+                /** Format: date-time */
+                created_at: string;
+                email: string;
+                /** Format: uuid */
+                id: string;
+                /**
+                 * Format: uuid
+                 * @description Set when the recipient is a member (no confirmation, no unsubscribe footer).
+                 */
+                member_id?: string | null;
+                /** @description `pending` (awaiting the confirm link) or `active`. */
+                status: string;
+                /** Format: date-time */
+                unsubscribed_at?: string | null;
             }[];
             /** @description Pass as `cursor` to get the next page; null on the last page. */
             next_cursor?: string | null;
@@ -705,6 +1021,27 @@ export interface components {
             title: string;
             type: string;
         };
+        Recipient: {
+            /**
+             * Format: uuid
+             * @description Null: organisation-wide.
+             */
+            connection_id?: string | null;
+            /** Format: date-time */
+            created_at: string;
+            email: string;
+            /** Format: uuid */
+            id: string;
+            /**
+             * Format: uuid
+             * @description Set when the recipient is a member (no confirmation, no unsubscribe footer).
+             */
+            member_id?: string | null;
+            /** @description `pending` (awaiting the confirm link) or `active`. */
+            status: string;
+            /** Format: date-time */
+            unsubscribed_at?: string | null;
+        };
         RedeemRequest: {
             token: string;
         };
@@ -758,6 +1095,9 @@ export interface components {
             started_at?: string | null;
             /** @description `queued`, `running`, `done`, `partial`, `failed` or `skipped`. */
             status: string;
+        };
+        SlackStart: {
+            authorize_url: string;
         };
         SnoozeBody: {
             /**
@@ -989,6 +1329,37 @@ export interface operations {
             };
         };
     };
+    integrations_slack_callback: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+                /** @description Set by Slack when the user cancels (`access_denied`). */
+                error?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description To `WEB_BASE_URL/settings/delivery?slack=connected`, or `?slack=error&code=<code>` (`signed_out` without a session) */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     members_accept: {
         parameters: {
             query?: never;
@@ -1092,6 +1463,14 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1426,6 +1805,37 @@ export interface operations {
             };
         };
     };
+    deliveries_preview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BriefingPreview"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     runs_scan: {
         parameters: {
             query?: never;
@@ -1527,6 +1937,84 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    deliveries_list: {
+        parameters: {
+            query?: {
+                /** @description Connection id. */
+                connection?: string;
+                /** @description `briefing`, `weekly`, `alert` or `notice`. */
+                kind?: string;
+                /** @description `next_cursor` from the previous page. */
+                cursor?: string;
+                /** @description Page size, default 50; values above 200 are clamped to 200. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_Delivery"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    deliveries_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Delivery"];
+                };
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1781,6 +2269,173 @@ export interface operations {
             };
         };
     };
+    integrations_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Integration"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    integrations_slack_channels: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Channel"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    integrations_slack_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlackStart"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    integrations_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     members_invite: {
         parameters: {
             query?: never;
@@ -1906,6 +2561,144 @@ export interface operations {
             };
         };
     };
+    recipients_list: {
+        parameters: {
+            query?: {
+                /** @description `next_cursor` from the previous page. */
+                cursor?: string;
+                /** @description Page size, default 50; values above 200 are clamped to 200. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_Recipient"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    recipients_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewRecipient"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recipient"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    recipients_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     resources_list: {
         parameters: {
             query?: {
@@ -2021,6 +2814,63 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    recipients_confirm: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmBody"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    recipients_unsubscribe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The token from the mail footer. */
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            410: {
                 headers: {
                     [name: string]: unknown;
                 };
