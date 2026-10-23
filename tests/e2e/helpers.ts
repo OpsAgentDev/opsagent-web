@@ -31,7 +31,7 @@ export function sql(query: string): string {
   );
 }
 
-/** Runs a brain CLI task (`cargo loco task …`) with the env scripts/e2e.sh exported for brain. */
+/** Runs a brain CLI task (`cargo run -- task …`) with the env scripts/e2e.sh exported for brain. */
 export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }

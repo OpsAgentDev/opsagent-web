@@ -26,7 +26,7 @@ wait_for() { # url, name
 
 # Brain's env, exported so the Playwright helpers can run brain CLI tasks against the same database.
 BRAIN_DIR="$(cd "$BRAIN_DIR" && pwd)"
-export BRAIN_DIR APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
+export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhost:3001 \
   DATABASE_URL="postgres://loco:loco@localhost:$PG_PORT/opsagent_brain_e2e" \
   REDIS_URL="redis://localhost:$REDIS_PORT" \
   OPSAGENT_CONNECTORS=fake MAILER_SMTP_URL=smtp://localhost:1025 \
@@ -34,7 +34,8 @@ export BRAIN_DIR APP_BASE_URL=http://localhost:3000 WEB_BASE_URL=http://localhos
   SLACK_CLIENT_ID=e2e-slack-client SLACK_CLIENT_SECRET=e2e-slack-secret LOG_LEVEL=info
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
-# Brain in development mode (migrations run on boot) with the worker in-process, so verify and scan jobs run.
+# Brain (axum, no Loco) in development mode: APP_ENV=development above, so migrations run on boot;
+# the Postgres job worker runs in-process, so verify and scan jobs run.
 (
   cd "$BRAIN_DIR/app"
   PORT=3000 exec cargo run -q -- start --server-and-worker
