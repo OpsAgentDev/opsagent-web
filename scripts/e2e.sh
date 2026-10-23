@@ -5,6 +5,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 BRAIN_DIR="${BRAIN_DIR:-../opsagent-brain}"
 PG_PORT="${PG_PORT:-55432}" REDIS_PORT="${REDIS_PORT:-56379}"
+# Reuse the brain checkout's running compose stack (same ports) instead of clashing with it.
+export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-opsagent-brain}"
 export PG_PORT REDIS_PORT
 
 compose() { docker compose -f "$BRAIN_DIR/docker-compose.yml" "$@"; }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { liveRecipients, newRecipientBody, slackResult } from "@/lib/delivery";
+import { liveRecipients, isSlackUrl, newRecipientBody, slackResult } from "@/lib/delivery";
 
 describe("liveRecipients", () => {
   it("drops unsubscribed rows", () => {
@@ -22,5 +22,12 @@ describe("slackResult", () => {
   it("reports success", () => expect(q("slack=connected")).toEqual({ ok: true, message: "Slack connected." }));
   it("reports the error code", () =>
     expect(q("slack=error&code=slack_workspace_in_use")).toEqual({ ok: false, message: "Slack was not connected (slack_workspace_in_use)." }));
+  it("hides a crafted code", () => expect(q("slack=error&code=Visit%20evil.com%20now")?.message).toBe("Slack was not connected."));
   it("reports an error without a code", () => expect(q("slack=error")?.message).toBe("Slack was not connected."));
+});
+
+describe("isSlackUrl", () => {
+  it("accepts slack.com over https", () => expect(isSlackUrl("https://slack.com/oauth/v2/authorize?x=1")).toBe(true));
+  it.each(["javascript:alert(1)", "https://evil.com/", "http://slack.com/", "https://slack.com.evil.com/", "not a url"])("rejects %s", (u) =>
+    expect(isSlackUrl(u)).toBe(false));
 });

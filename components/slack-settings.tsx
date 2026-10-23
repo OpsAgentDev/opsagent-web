@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type Connection } from "@/lib/api/client";
-import { slackResult } from "@/lib/delivery";
+import { isSlackUrl, slackResult } from "@/lib/delivery";
 import { useApi } from "@/lib/use-api";
 
 type Props = { org: string; teamName?: string | null; active: boolean; connections: Connection[]; onChanged: () => void };
@@ -12,7 +12,17 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
   const [error, setError] = useState<Error | null>(null);
   const [result, setResult] = useState<ReturnType<typeof slackResult>>(null);
   // Brain's OAuth callback lands here with ?slack=connected or ?slack=error&code=….
-  useEffect(() => setResult(slackResult(new URLSearchParams(window.location.search))), []);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setResult(slackResult(params));
+    // Drop the callback params so a reload does not bring the banner back.
+    if (params.has("slack") || params.has("code")) {
+      params.delete("slack");
+      params.delete("code");
+      const qs = params.toString();
+      window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash);
+    }
+  }, []);
   const channels = useApi(
     () => (active ? unwrap(api.GET("/orgs/{org}/integrations/slack/channels", { params: { path: { org } } })) : Promise.resolve([])),
     [org, active],
@@ -21,6 +31,7 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
   async function connect() {
     try {
       const { authorize_url } = await unwrap(api.POST("/orgs/{org}/integrations/slack/start", { params: { path: { org } } }));
+      if (!isSlackUrl(authorize_url)) throw new Error("Unexpected Slack URL.");
       window.location.assign(authorize_url);
     } catch (err) {
       setError(err as Error);
