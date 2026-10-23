@@ -24,10 +24,6 @@ export default function Findings() {
     return unwrap(api.GET("/orgs/{org}/findings", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, status, severity, cursor]);
 
-  const filter = (set: (v: string) => void) => (v: string) => {
-    set(v);
-    pager.reset();
-  };
 
   async function reopen(f: FindingSummary) {
     try {
@@ -45,14 +41,14 @@ export default function Findings() {
       <div className="row">
         <label>
           Status
-          <select value={status} onChange={(e) => filter(setStatus)(e.target.value)}>
+          <select value={status} onChange={(e) => pager.filter(setStatus)(e.target.value)}>
             {STATUSES.map((s) => <option key={s}>{s}</option>)}
             <option value="">all</option>
           </select>
         </label>
         <label>
           Severity
-          <select value={severity} onChange={(e) => filter(setSeverity)(e.target.value)}>
+          <select value={severity} onChange={(e) => pager.filter(setSeverity)(e.target.value)}>
             <option value="">all</option>
             {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
           </select>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { liveRecipients, isSlackUrl, newRecipientBody, slackResult } from "@/lib/delivery";
+import { isOwner, liveRecipients, isSlackUrl, slackState, newRecipientBody, slackResult } from "@/lib/delivery";
 
 describe("liveRecipients", () => {
   it("drops unsubscribed rows", () => {
@@ -30,4 +30,21 @@ describe("isSlackUrl", () => {
   it("accepts slack.com over https", () => expect(isSlackUrl("https://slack.com/oauth/v2/authorize?x=1")).toBe(true));
   it.each(["javascript:alert(1)", "https://evil.com/", "http://slack.com/", "https://slack.com.evil.com/", "not a url"])("rejects %s", (u) =>
     expect(isSlackUrl(u)).toBe(false));
+});
+
+describe("isOwner", () => {
+  it("is true only for owner", () => {
+    expect(isOwner("owner")).toBe(true);
+    expect(isOwner("member")).toBe(false);
+    expect(isOwner(undefined)).toBe(false);
+  });
+});
+
+describe("slackState", () => {
+  it("maps integration status", () => {
+    expect(slackState("active")).toBe("ok");
+    expect(slackState("failing")).toBe("failing");
+    expect(slackState("revoked")).toBe("none");
+    expect(slackState(undefined)).toBe("none");
+  });
 });

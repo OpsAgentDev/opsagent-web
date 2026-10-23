@@ -5,10 +5,26 @@ import { api, unwrap, type Connection } from "@/lib/api/client";
 import { isSlackUrl, slackResult } from "@/lib/delivery";
 import { useApi } from "@/lib/use-api";
 
-type Props = { org: string; teamName?: string | null; active: boolean; connections: Connection[]; onChanged: () => void };
+type Props = {
+  owner: boolean;
+  failing: boolean;
+  org: string;
+  teamName?: string | null;
+  active: boolean;
+  connections: Connection[];
+  onChanged: () => void;
+};
 
 /** Slack connect and the per-connection channel picker. Brain holds the bot token; web never sees it. */
-export function SlackSettings({ org, teamName, active, connections, onChanged }: Props) {
+export function SlackSettings({
+  owner,
+  failing,
+  org,
+  teamName,
+  active,
+  connections,
+  onChanged,
+}: Props) {
   const [error, setError] = useState<Error | null>(null);
   const [result, setResult] = useState<ReturnType<typeof slackResult>>(null);
   // Brain's OAuth callback lands here with ?slack=connected or ?slack=error&code=….
@@ -20,17 +36,32 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
       params.delete("slack");
       params.delete("code");
       const qs = params.toString();
-      window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash);
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash,
+      );
     }
   }, []);
   const channels = useApi(
-    () => (active ? unwrap(api.GET("/orgs/{org}/integrations/slack/channels", { params: { path: { org } } })) : Promise.resolve([])),
+    () =>
+      active
+        ? unwrap(
+            api.GET("/orgs/{org}/integrations/slack/channels", {
+              params: { path: { org } },
+            }),
+          )
+        : Promise.resolve([]),
     [org, active],
   );
 
   async function connect() {
     try {
-      const { authorize_url } = await unwrap(api.POST("/orgs/{org}/integrations/slack/start", { params: { path: { org } } }));
+      const { authorize_url } = await unwrap(
+        api.POST("/orgs/{org}/integrations/slack/start", {
+          params: { path: { org } },
+        }),
+      );
       if (!isSlackUrl(authorize_url)) throw new Error("Unexpected Slack URL.");
       window.location.assign(authorize_url);
     } catch (err) {
@@ -40,7 +71,12 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
 
   async function setChannel(id: string, slack_channel_id: string) {
     try {
-      await unwrap(api.PATCH("/orgs/{org}/connections/{id}", { params: { path: { org, id } }, body: { slack_channel_id } }));
+      await unwrap(
+        api.PATCH("/orgs/{org}/connections/{id}", {
+          params: { path: { org, id } },
+          body: { slack_channel_id },
+        }),
+      );
       setError(null);
       onChanged();
     } catch (err) {
@@ -57,10 +93,18 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
         </p>
       )}
       <div className="row">
-        <span>{active ? `Connected to ${teamName ?? "Slack"}.` : "Not connected. Briefings go to owners by email."}</span>
-        <button type="button" onClick={connect}>
-          {active ? "Reconnect Slack" : "Connect Slack"}
-        </button>
+        <span>
+          {!active
+            ? "Not connected. Briefings go to owners by email."
+            : failing
+              ? `Slack connection to ${teamName ?? "Slack"} is failing. Reconnect to restore delivery.`
+              : `Connected to ${teamName ?? "Slack"}.`}
+        </span>
+        {owner && (
+          <button type="button" onClick={connect}>
+            {active ? "Reconnect Slack" : "Connect Slack"}
+          </button>
+        )}
       </div>
       <ErrorNote error={error ?? channels.error} />
       {active && (
@@ -76,18 +120,25 @@ export function SlackSettings({ org, teamName, active, connections, onChanged }:
               <tr key={c.id}>
                 <td>{c.display_name ?? c.id}</td>
                 <td>
-                  <select
-                    aria-label={`Slack channel for ${c.display_name ?? c.id}`}
-                    value={c.slack_channel_id ?? ""}
-                    onChange={(e) => setChannel(c.id, e.target.value)}
-                  >
-                    <option value="">Not set (email to owners)</option>
-                    {channels.data?.map((ch) => (
-                      <option key={ch.id} value={ch.id}>
-                        #{ch.name}
-                      </option>
-                    ))}
-                  </select>
+                  {owner ? (
+                    <select
+                      aria-label={`Slack channel for ${c.display_name ?? c.id}`}
+                      value={c.slack_channel_id ?? ""}
+                      onChange={(e) => setChannel(c.id, e.target.value)}
+                    >
+                      <option value="">Not set (email to owners)</option>
+                      {channels.data?.map((ch) => (
+                        <option key={ch.id} value={ch.id}>
+                          #{ch.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    (channels.data?.find((ch) => ch.id === c.slack_channel_id)
+                      ?.name ??
+                    c.slack_channel_id ??
+                    "Not set")
+                  )}
                 </td>
               </tr>
             ))}

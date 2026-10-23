@@ -3,6 +3,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Recipients } from "@/components/recipients";
 import { SlackSettings } from "@/components/slack-settings";
 import { api, unwrap } from "@/lib/api/client";
+import { isOwner, slackState } from "@/lib/delivery";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -19,11 +20,13 @@ async function load(org: string) {
 export default function DeliverySettings() {
   const org = useOrg();
   const { data, error, reload } = useApi(() => load(org.slug), [org.slug]);
-  const slack = data?.integrations.find((i) => i.kind === "slack" && i.status !== "revoked");
+  const slack = data?.integrations.find((i) => i.kind === "slack" && slackState(i.status) !== "none");
+  const owner = isOwner(org.role);
 
   return (
     <main>
       <h1>Delivery</h1>
+      {!owner && <p className="muted">An owner manages delivery.</p>}
       <ErrorNote error={error} />
       {!data ? (
         !error && <p className="muted" role="status">Loading…</p>
@@ -31,12 +34,14 @@ export default function DeliverySettings() {
         <>
           <SlackSettings
             org={org.slug}
+            owner={owner}
             active={!!slack}
+            failing={slackState(slack?.status) === "failing"}
             teamName={slack?.team_name}
             connections={data.connections}
             onChanged={reload}
           />
-          <Recipients org={org.slug} connections={data.connections} members={data.members} />
+          <Recipients owner={owner} org={org.slug} connections={data.connections} members={data.members} />
         </>
       )}
     </main>

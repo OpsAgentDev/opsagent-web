@@ -11,7 +11,7 @@ function Confirm() {
     window.history.replaceState(null, "", window.location.pathname);
   }, []);
 
-  if (!token) return <p className="error">This confirm link is incomplete.</p>;
+  if (!token) return <p className="error" role="alert">This confirm link is incomplete.</p>;
   return (
     <ConfirmAction
       label="Confirm"
