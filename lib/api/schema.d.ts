@@ -666,7 +666,10 @@ export interface components {
             provider: string;
             /** @description `HH:MM` in the organisation's timezone. */
             scan_time_local?: string | null;
-            /** @description Slack channel id for this connection's deliveries; null inherits the organisation's. */
+            /**
+             * @description Slack channel id for this connection's deliveries; null posts nothing to Slack (there is
+             *     no organisation channel), so briefings go to the owners by email.
+             */
             slack_channel_id?: string | null;
             /** @description `pending`, `verifying`, `connected`, `degraded`, `revoked`, `blocked` or `disconnected`. */
             status: string;
@@ -804,7 +807,7 @@ export interface components {
             id: string;
             /** @description `slack`, `github`, `terraform`, `prometheus` or `k8s`. */
             kind: string;
-            /** @description `active`, `revoked` or `failing`. */
+            /** @description `active` or `revoked`. */
             status: string;
             /** @description Slack workspace name. */
             team_name?: string | null;

@@ -7,7 +7,6 @@ import { useApi } from "@/lib/use-api";
 
 type Props = {
   owner: boolean;
-  failing: boolean;
   org: string;
   teamName?: string | null;
   active: boolean;
@@ -18,7 +17,6 @@ type Props = {
 /** Slack connect and the per-connection channel picker. Brain holds the bot token; web never sees it. */
 export function SlackSettings({
   owner,
-  failing,
   org,
   teamName,
   active,
@@ -96,9 +94,7 @@ export function SlackSettings({
         <span>
           {!active
             ? "Not connected. Briefings go to owners by email."
-            : failing
-              ? `Slack connection to ${teamName ?? "Slack"} is failing. Reconnect to restore delivery.`
-              : `Connected to ${teamName ?? "Slack"}.`}
+            : `Connected to ${teamName ?? "Slack"}.`}
         </span>
         {owner && (
           <button type="button" onClick={connect}>

@@ -4,18 +4,14 @@ import type { components } from "./api/schema";
 type Schemas = components["schemas"];
 
 /** Unsubscribed rows stay in brain for the audit trail; settings shows only live recipients. */
-export function liveRecipients<T extends { unsubscribed_at?: string | null }>(items: T[]): T[] {
+export function liveRecipients<T extends { unsubscribed_at?: string | null }>(
+  items: T[],
+): T[] {
   return items.filter((r) => !r.unsubscribed_at);
 }
 
 /** Delivery settings are owner-managed; brain returns 403 to members, so the UI hides the controls. */
 export const isOwner = (role?: string | null) => role === "owner";
-
-/** Slack integration state for the settings line: `failing` is connected but degraded. */
-export function slackState(status?: string | null): "none" | "ok" | "failing" {
-  if (!status || status === "revoked") return "none";
-  return status === "failing" ? "failing" : "ok";
-}
 
 /** The add-recipient form as brain's body: exactly one of email or member, "" scope is org-wide. */
 export function newRecipientBody(form: {
@@ -30,13 +26,18 @@ export function newRecipientBody(form: {
 }
 
 /** The banner for brain's Slack OAuth callback redirect (`?slack=connected` or `?slack=error&code=…`). */
-export function slackResult(params: URLSearchParams): { ok: boolean; message: string } | null {
+export function slackResult(
+  params: URLSearchParams,
+): { ok: boolean; message: string } | null {
   const slack = params.get("slack");
   if (slack === "connected") return { ok: true, message: "Slack connected." };
   if (slack !== "error") return null;
   const code = params.get("code");
   // The code comes from the URL, so only show well-formed ones; a crafted link must not display its own text.
-  return { ok: false, message: `Slack was not connected${code && /^[a-z0-9_]{1,40}$/.test(code) ? ` (${code})` : ""}.` };
+  return {
+    ok: false,
+    message: `Slack was not connected${code && /^[a-z0-9_]{1,40}$/.test(code) ? ` (${code})` : ""}.`,
+  };
 }
 
 /** True only for an https://slack.com URL; the OAuth redirect must not go anywhere else. */
