@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { Pager, useCursors } from "@/components/pager";
 import { FindingActionDialog, type FindingAction } from "@/components/finding-action-dialog";
 import { api, unwrap, type FindingSummary } from "@/lib/api/client";
 import { SEVERITIES, STATUSES } from "@/lib/api/enums";
@@ -13,21 +14,16 @@ export default function Findings() {
   const org = useOrg();
   const [status, setStatus] = useState("open");
   const [severity, setSeverity] = useState("");
-  // Cursors of the pages before the current one; the last entry is the current page's cursor.
-  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
+  const pager = useCursors();
   const [acting, setActing] = useState<{ finding: FindingSummary; action: FindingAction } | null>(null);
   const [actionError, setActionError] = useState<Error | null>(null);
-  const cursor = cursors[cursors.length - 1];
+  const { cursor } = pager;
 
   const { data: page, error, loading, reload } = useApi(() => {
     const query = { status: status || undefined, severity: severity || undefined, cursor, limit: PAGE_SIZE };
     return unwrap(api.GET("/orgs/{org}/findings", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, status, severity, cursor]);
 
-  const filter = (set: (v: string) => void) => (v: string) => {
-    set(v);
-    setCursors([undefined]);
-  };
 
   async function reopen(f: FindingSummary) {
     try {
@@ -45,14 +41,14 @@ export default function Findings() {
       <div className="row">
         <label>
           Status
-          <select value={status} onChange={(e) => filter(setStatus)(e.target.value)}>
+          <select value={status} onChange={(e) => pager.filter(setStatus)(e.target.value)}>
             {STATUSES.map((s) => <option key={s}>{s}</option>)}
             <option value="">all</option>
           </select>
         </label>
         <label>
           Severity
-          <select value={severity} onChange={(e) => filter(setSeverity)(e.target.value)}>
+          <select value={severity} onChange={(e) => pager.filter(setSeverity)(e.target.value)}>
             <option value="">all</option>
             {SEVERITIES.map((s) => <option key={s}>{s}</option>)}
           </select>
@@ -92,18 +88,7 @@ export default function Findings() {
         </tbody>
       </table>
       {page?.items.length === 0 && <p className="muted">Nothing here.</p>}
-      <div className="row">
-        <button type="button" disabled={cursors.length < 2} onClick={() => setCursors((c) => c.slice(0, -1))}>
-          Previous
-        </button>
-        <button
-          type="button"
-          disabled={!page?.next_cursor}
-          onClick={() => setCursors((c) => [...c, page?.next_cursor ?? undefined])}
-        >
-          Next
-        </button>
-      </div>
+      <Pager pager={pager} next={page?.next_cursor} />
       {acting && (
         <FindingActionDialog
           org={org.slug}

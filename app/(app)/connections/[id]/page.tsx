@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
@@ -73,6 +74,7 @@ export default function ConnectionPage() {
           Scan now
         </button>
         {scan.started && <span>Scan started. Findings appear as checks finish.</span>}
+        <Link href={`/connections/${c.id}/briefing`}>Preview briefing</Link>
       </div>
       <ErrorNote error={scan.error ?? error} />
     </main>
