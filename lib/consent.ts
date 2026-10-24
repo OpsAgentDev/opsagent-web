@@ -24,3 +24,14 @@ export function defaultOrg(orgs: View["organisations"]): string {
 export function signInUrl(requestId: string): string {
   return `/sign-in?return_to=${encodeURIComponent(`/oauth/consent?request_id=${requestId}`)}`;
 }
+
+const UNSAFE_SCHEMES = new Set(["javascript:", "data:", "vbscript:", "blob:", "file:"]);
+
+/** Brain validates redirect URIs at registration; this refuses script-bearing schemes anyway. */
+export function safeClientRedirect(target: string): boolean {
+  try {
+    return !UNSAFE_SCHEMES.has(new URL(target).protocol);
+  } catch {
+    return false;
+  }
+}

@@ -3,7 +3,14 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap } from "@/lib/api/client";
-import { consentWarnings, defaultOrg, EXPIRED_MESSAGE, signInUrl, WRONG_BROWSER_MESSAGE } from "@/lib/consent";
+import {
+  consentWarnings,
+  defaultOrg,
+  EXPIRED_MESSAGE,
+  safeClientRedirect,
+  signInUrl,
+  WRONG_BROWSER_MESSAGE,
+} from "@/lib/consent";
 import { log } from "@/lib/log";
 import { useApi } from "@/lib/use-api";
 
@@ -33,6 +40,7 @@ function Consent() {
       );
       log.info("consent decided", { deny });
       // Not isSameOrigin-checked: this is the client's own redirect URI by design.
+      if (!safeClientRedirect(redirect_to)) throw new Error("The agent's redirect address is not allowed.");
       window.location.assign(redirect_to);
     } catch (err) {
       setActionError(err as Error);
@@ -69,6 +77,7 @@ function Consent() {
           ))}
         </select>
       </label>
+      {view.organisations.length === 0 && <p className="muted">You have no organisation yet. Create one first.</p>}
       <div className="row">
         <button type="submit" value="approve" disabled={busy || !org}>Approve</button>
         <button type="submit" value="deny" formNoValidate disabled={busy}>Deny</button>

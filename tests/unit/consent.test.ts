@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { consentWarnings, defaultOrg, LOOPBACK_WARNING, signInUrl } from "@/lib/consent";
+import { consentWarnings, defaultOrg, LOOPBACK_WARNING, safeClientRedirect, signInUrl } from "@/lib/consent";
 
 describe("consent", () => {
   it("renders_loopback_warning", () => {
@@ -13,5 +13,12 @@ describe("consent", () => {
   });
   it("returns to the consent request after sign-in", () => {
     expect(decodeURIComponent(signInUrl("r1").split("return_to=")[1] ?? "")).toBe("/oauth/consent?request_id=r1");
+  });
+  it("refuses script-bearing redirect schemes", () => {
+    expect(safeClientRedirect("http://127.0.0.1:5000/cb?code=x")).toBe(true);
+    expect(safeClientRedirect("cursor://anysphere.cursor-retrieval/oauth/callback")).toBe(true);
+    expect(safeClientRedirect("javascript:alert(1)")).toBe(false);
+    expect(safeClientRedirect("data:text/html,x")).toBe(false);
+    expect(safeClientRedirect("not a url")).toBe(false);
   });
 });
