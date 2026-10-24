@@ -152,6 +152,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/oauth/consent/{request_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["oauth_show"];
+        put?: never;
+        post: operations["oauth_decide"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs": {
         parameters: {
             query?: never;
@@ -182,6 +198,38 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["orgs_update"];
+        trace?: never;
+    };
+    "/orgs/{org}/agents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["agents_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/agents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["agents_revoke"];
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/orgs/{org}/connections": {
@@ -631,6 +679,18 @@ export interface components {
              */
             until?: string | null;
         };
+        AgentView: {
+            /** @description `dynamic` or `metadata_document`. */
+            client_kind: string;
+            client_name: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            grant_id: string;
+            /** Format: date-time */
+            last_used_at?: string | null;
+            member_email: string;
+        };
         AuthorizeUrl: {
             url: string;
         };
@@ -692,6 +752,28 @@ export interface components {
              *     Email recipients are managed through `/orgs/{org}/recipients` with `connection_id`.
              */
             slack_channel_id?: string | null;
+        };
+        ConsentDecision: {
+            deny?: boolean | null;
+            /** @description Slug of the organisation to grant access to; required unless `deny`. */
+            organisation?: string | null;
+        };
+        ConsentOrganisation: {
+            name: string;
+            slug: string;
+        };
+        ConsentRedirect: {
+            /** @description The client's redirect URI with `code` or `error`, `state` and `iss`. */
+            redirect_to: string;
+        };
+        ConsentView: {
+            client_name: string;
+            /** @description The redirect goes to this computer: warn the member. */
+            loopback: boolean;
+            organisations: components["schemas"]["ConsentOrganisation"][];
+            redirect_uri: string;
+            /** @description Always false: dynamic and metadata-document clients are unverified. */
+            verified: boolean;
         };
         CreatedConnection: {
             /** Format: uuid */
@@ -822,6 +904,11 @@ export interface components {
         };
         MagicLinkRequest: {
             email: string;
+            /**
+             * @description Where sign-in lands afterwards: only `/oauth/consent?request_id=<uuid>` is kept, anything
+             *     else is dropped and the user lands on the dashboard.
+             */
+            return_to?: string | null;
         };
         Me: {
             email: string;
@@ -1263,7 +1350,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Session cookie set; redirects to the web dashboard */
+            /** @description Session cookie set; redirects to the validated return_to, else the web dashboard */
             302: {
                 headers: {
                     [name: string]: unknown;
@@ -1290,7 +1377,10 @@ export interface operations {
     };
     auth_github_start: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Where sign-in lands afterwards; same rule as the magic link's `return_to`. */
+                return_to?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1400,6 +1490,116 @@ export interface operations {
                 };
             };
             410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    oauth_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentView"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    oauth_decide: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                request_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentDecision"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentRedirect"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1590,6 +1790,65 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    agents_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentView"][];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    agents_revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
