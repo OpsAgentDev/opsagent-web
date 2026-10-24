@@ -34,6 +34,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/findings">Findings</Link>
         <Link href="/deliveries">Deliveries</Link>
         <Link href="/settings/delivery">Delivery settings</Link>
+        <Link href="/settings/agents">Connected agents</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}

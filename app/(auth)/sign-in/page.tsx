@@ -10,8 +10,10 @@ export default function SignIn() {
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const email = String(new FormData(e.currentTarget).get("email"));
+    // Brain keeps only /oauth/consent?request_id=<uuid>; anything else is dropped there.
+    const return_to = new URLSearchParams(window.location.search).get("return_to");
     try {
-      await unwrap(api.POST("/auth/magic-link", { body: { email } }));
+      await unwrap(api.POST("/auth/magic-link", { body: { email, return_to } }));
       setSent(true);
     } catch (err) {
       setError(err as Error);

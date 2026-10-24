@@ -50,6 +50,8 @@ export async function signUp(page: Page, request: APIRequestContext): Promise<st
 
   await page.getByLabel("Organisation name").fill(`E2E ${Date.now()}`);
   await page.getByRole("button", { name: "Create organisation" }).click();
+  // Wait for the organisation to exist before the caller navigates away.
+  await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeHidden();
   return email;
 }
 
