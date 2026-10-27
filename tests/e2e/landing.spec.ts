@@ -22,6 +22,7 @@ test("landing renders every section", async ({ page }) => {
   ]) {
     await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
   }
+  expect(await page.locator("#how-it-works .soon").count()).toBeGreaterThanOrEqual(1);
   await expect(page.locator("#what-it-checks li")).toHaveCount(10);
   await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toBeVisible();
 });

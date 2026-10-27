@@ -4,9 +4,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://opsagent.dev"),
-  title: "OpsAgent: your cloud, checked every night",
+  title: "OpsAgent: your ops teammate that never sleeps",
   description:
-    "A read-only agent for teams with no ops person. Every morning you get a short briefing of what's wrong and why. It never changes anything.",
+    "A read-only ops agent for your cloud: urgent problems reach you, everything else waits for a calm morning briefing.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -19,10 +19,12 @@ const STEPS = [
   {
     title: "Checks run",
     body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing. Every night today; around the clock is coming.",
+    soon: true,
   },
   {
     title: "Briefing, and alerts later",
     body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report. Urgent alerts are coming soon.",
+    soon: true,
   },
 ];
 
@@ -92,6 +94,7 @@ export default function Home() {
             <li key={s.title}>
               <h3>{s.title}</h3>
               <p>{s.body}</p>
+              {s.soon && <ComingSoon />}
             </li>
           ))}
         </ol>
