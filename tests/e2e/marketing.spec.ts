@@ -41,11 +41,43 @@ test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("no email address on home", async ({ page }) => {
-  await page.goto("/");
-  const html = await page.content();
-  expect(html).not.toContain("info@opsagent.dev");
-  expect(html).not.toContain("mailto:");
+test("no email address on marketing pages", async ({ page }) => {
+  for (const path of ["/", "/how-it-works", "/security", "/pricing", "/contact", "/docs/connect-your-agent"]) {
+    await page.goto(path);
+    const html = await page.content();
+    expect(html, path).not.toContain("info@opsagent.dev");
+    expect(html, path).not.toContain("mailto:");
+  }
+});
+
+async function fillContact(page: import("@playwright/test").Page) {
+  await page.getByLabel("Name").fill("Ada");
+  await page.getByLabel("Email").fill("ada@example.com");
+  await page.getByLabel("Message").fill("Hello, I have a question.");
+}
+
+test("contact form sends and shows success", async ({ page }) => {
+  let body: Record<string, string> = {};
+  await page.route("**/v1/contact", async (route) => {
+    body = route.request().postDataJSON();
+    await route.fulfill({ status: 202, contentType: "application/json", body: "{}" });
+  });
+  await page.goto("/contact?topic=security");
+  await expect(page.getByLabel("Topic")).toHaveValue("security");
+  await fillContact(page);
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByText("Thanks. We'll reply to you by email.")).toBeFocused();
+  expect(body.topic).toBe("security");
+  expect(body.message).toContain("Hello");
+});
+
+test("contact shows rate-limit message on 429", async ({ page }) => {
+  await page.route("**/v1/contact", (route) => route.fulfill({ status: 429, contentType: "application/json", body: "{}" }));
+  await page.goto("/contact?topic=bogus");
+  await expect(page.getByLabel("Topic")).toHaveValue("general");
+  await fillContact(page);
+  await page.getByRole("button", { name: "Send message" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Too many messages" })).toBeVisible();
 });
 
 test("how-it-works renders five steps", async ({ page }) => {

@@ -120,6 +120,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["contact_send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/integrations/slack/callback": {
         parameters: {
             query?: never;
@@ -792,6 +808,17 @@ export interface components {
             /** @description Always false: dynamic and metadata-document clients are unverified. */
             verified: boolean;
         };
+        ContactRequest: {
+            email: string;
+            /** @description 10 to 5000 characters. */
+            message: string;
+            /** @description 1 to 100 characters, no control characters. */
+            name: string;
+            /** @description One of `general`, `sales`, `support`, `security`, `partnership`. */
+            topic: string;
+            /** @description Honeypot: real visitors leave it empty; a filled value is answered 202 and dropped. */
+            website?: string | null;
+        };
         CreatedConnection: {
             /** Format: uuid */
             id: string;
@@ -1444,6 +1471,42 @@ export interface operations {
             };
         };
     };
+    contact_send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactRequest"];
+            };
+        };
+        responses: {
+            /** @description Received */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid name, email, topic or message */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limited (5 per client IP per hour) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     integrations_slack_callback: {
         parameters: {
             query?: {
@@ -1951,6 +2014,14 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
