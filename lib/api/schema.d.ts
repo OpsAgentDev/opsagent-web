@@ -666,6 +666,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/waitlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Always 202 for a valid address, new or already listed, so the response never reveals which. */
+        post: operations["waitlist_join"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1212,6 +1229,11 @@ export interface components {
         VerifyBody: {
             /** @description The read role's ARN from the stack outputs (required for `aws`). */
             role_arn?: string;
+        };
+        WaitlistRequest: {
+            email: string;
+            /** @description Where the form sat, at most 64 characters (`landing-hero`, `landing-footer`). */
+            source?: string | null;
         };
     };
     responses: never;
@@ -3139,6 +3161,42 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Problem"];
                 };
+            };
+        };
+    };
+    waitlist_join: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WaitlistRequest"];
+            };
+        };
+        responses: {
+            /** @description On the waitlist */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid email or source */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limited (10 per client IP per hour) */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -80,8 +80,7 @@ body:has(.mkt) { background: #f7f7f5; }
   max-width: 12ch;
 }
 .mkt .lead { margin-top: 24px; font-size: 19px; line-height: 1.55; color: var(--body); max-width: 34em; }
-.mkt .hero [data-waitlist-slot] { margin-top: 36px; }
-.mkt [data-waitlist-slot] { min-height: 84px; max-width: 460px; }
+.mkt .hero .waitlist { margin-top: 36px; }
 .mkt .hero-who {
   margin-top: 28px;
   padding-top: 20px;
@@ -196,7 +195,7 @@ body:has(.mkt) { background: #f7f7f5; }
 /* Closing call to action */
 .mkt .closing { padding-bottom: 120px; }
 .mkt .closing h2 { max-width: 18ch; }
-.mkt .closing [data-waitlist-slot] { margin-top: 32px; }
+.mkt .closing .waitlist { margin-top: 32px; }
 
 /* Footer */
 .mkt .site-footer {
@@ -225,3 +224,22 @@ body:has(.mkt) { background: #f7f7f5; }
   .mkt .section { padding: 72px 0; }
   .mkt .never { padding: 56px 24px; margin: 0 calc(var(--gutter) * -1 + 8px); }
 }
+
+.mkt .waitlist { max-width: 460px; }
+.mkt .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.mkt .waitlist-row { display: flex; gap: 10px; }
+.mkt .waitlist input {
+  flex: 1; min-width: 0; padding: 13px 14px; font: inherit; font-size: 16px; color: var(--ink);
+  background: #fff; border: 1px solid #cfcdc6; border-radius: 8px;
+}
+.mkt .waitlist input:focus-visible, .mkt .waitlist button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.mkt .waitlist button {
+  padding: 13px 20px; font: inherit; font-size: 16px; font-weight: 600; color: #fff; background: var(--navy);
+  border: 0; border-radius: 8px; cursor: pointer; white-space: nowrap;
+}
+.mkt .waitlist button:hover:not(:disabled) { background: #28497a; }
+.mkt .waitlist button:disabled { opacity: 0.6; cursor: progress; }
+.mkt .waitlist-err { min-height: 1.4em; margin-top: 10px; font-size: 14px; color: #a12a1f; }
+.mkt .waitlist-hint { margin-top: 2px; font-size: 14px; color: var(--soft); }
+.mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; color: var(--navy); background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: 8px; }
+@media (max-width: 480px) { .mkt .waitlist-row { flex-direction: column; } }

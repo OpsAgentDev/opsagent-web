@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WaitlistForm } from "@/components/marketing/WaitlistForm";
 import { BriefingCard } from "@/components/marketing/BriefingCard";
 import { MCP_URL } from "@/lib/agents";
 
@@ -47,7 +48,7 @@ export default function Home() {
             A read-only agent for teams with no ops person. Every morning you get a short briefing of what&apos;s wrong
             and why. It never changes anything.
           </p>
-          <div data-waitlist-slot />
+          <WaitlistForm source="landing-hero" />
           <p className="hero-who">
             Built for the founding engineer who owns the cloud bill, and for the developer who inherited the
             infrastructure when the contractor left.
@@ -123,7 +124,7 @@ export default function Home() {
         <p className="section-lead">
           The alpha opens to a few teams at a time, and early teams shape which checks come next.
         </p>
-        <div data-waitlist-slot />
+        <WaitlistForm source="landing-footer" />
       </section>
     </main>
   );
