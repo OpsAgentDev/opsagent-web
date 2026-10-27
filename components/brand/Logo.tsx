@@ -13,7 +13,7 @@ export function Logo({ size = 28 }: { size?: number }) {
     <span
       aria-label="OpsAgent"
       role="img"
-      style={{ display: "inline-flex", alignItems: "center", gap: size * 0.32, color: "#1f3a5f", fontSize: size * 0.8, fontWeight: 650, letterSpacing: "-0.01em", lineHeight: 1 }}
+      style={{ display: "inline-flex", alignItems: "center", gap: size * 0.32, fontSize: size * 0.8, fontWeight: 650, letterSpacing: "-0.01em", lineHeight: 1 }}
     >
       <span aria-hidden="true" style={{ display: "inline-flex" }}>
         <Mark size={size} />
