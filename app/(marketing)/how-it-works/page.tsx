@@ -17,7 +17,7 @@ export default function HowItWorks() {
           <h2>Connect read-only</h2>
           <p>
             You create one role in your cloud account in one click. It can list and describe resources and read
-            billing and security findings. It cannot read your data or change anything. AWS is the first supported
+            billing and security findings. It cannot read your stored data or change anything. AWS is the first supported
             provider.
           </p>
         </li>

@@ -20,8 +20,12 @@ export default function Security() {
       <section>
         <h2>What it can never touch</h2>
         <p>
-          Object contents, database rows and secret values. The role has no write permissions at all, so OpsAgent
-          cannot change, stop or delete anything.
+          Object contents and database rows. The role has no write permissions at all, so OpsAgent cannot change,
+          stop or delete anything.
+        </p>
+        <p>
+          One exception to know about: reading function and task-definition configuration returns their environment
+          values. OpsAgent strips those before storing, logging or checking anything.
         </p>
       </section>
       <section>
@@ -41,7 +45,7 @@ export default function Security() {
       </section>
       <section>
         <h2>You stay in control</h2>
-        <p>Delete the role at any time. Disconnecting stops all access.</p>
+        <p>Delete the role at any time. Disconnecting stops OpsAgent from using the role at once. Deleting the stack in your account removes the role entirely.</p>
       </section>
       <section>
         <h2>Reporting a security issue</h2>
