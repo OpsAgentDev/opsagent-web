@@ -5,9 +5,21 @@ const MAILPIT = process.env.MAILPIT_URL ?? "http://localhost:8025";
 
 test("landing renders every section", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your cloud, checked every night." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Your ops teammate that never sleeps." })).toBeVisible();
   await expect(page.getByText("Sample briefing")).toBeVisible();
-  for (const name of [/how it works/i, /what it checks/i, /what it will never do/i, /bring your own ai/i]) {
+  await expect(page.getByText("Sample alert")).toBeVisible();
+  await expect(page.locator("section#waitlist")).toHaveClass(/hero/);
+  expect(await page.locator(".soon").count()).toBeGreaterThanOrEqual(3);
+  await expect(page.getByText("page you at 3am", { exact: false })).toHaveCount(0);
+  for (const name of [
+    /while you sleep/i,
+    /how it works/i,
+    /what it checks/i,
+    /what it will never do/i,
+    /ios and android/i,
+    /bring your own ai/i,
+    /get your ops teammate/i,
+  ]) {
     await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
   }
   await expect(page.locator("#what-it-checks li")).toHaveCount(10);
@@ -17,7 +29,7 @@ test("landing renders every section", async ({ page }) => {
 test("landing fits a 360px phone", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your cloud, checked every night." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your ops teammate that never sleeps." })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 

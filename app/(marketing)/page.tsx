@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { WaitlistForm } from "@/components/marketing/WaitlistForm";
 import { BriefingCard } from "@/components/marketing/BriefingCard";
+import { AlertCard } from "@/components/marketing/AlertCard";
+import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { MCP_URL } from "@/lib/agents";
+
+const DAY_NIGHT = [
+  { title: "While you sleep", body: "Checks keep running.", soon: true },
+  { title: "When it's urgent", body: "An alert in Slack or the app.", soon: true },
+  { title: "Every morning", body: "One short briefing, skipped when nothing changed.", soon: false },
+];
 
 const STEPS = [
   {
@@ -9,12 +17,12 @@ const STEPS = [
     body: "Create a role in one click. It can read how your cloud is set up and what it costs, and it physically cannot read your data.",
   },
   {
-    title: "Nightly checks",
-    body: "Every night, deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing.",
+    title: "Checks run",
+    body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing. Every night today; around the clock is coming.",
   },
   {
-    title: "Morning briefing",
-    body: "In Slack, exceptions only, and skipped when nothing changed, plus a weekly report. Every finding cites its evidence.",
+    title: "Briefing, and alerts later",
+    body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report. Urgent alerts are coming soon.",
   },
 ];
 
@@ -34,19 +42,23 @@ const CHECKS = [
 const NEVER = [
   ["Write to your infrastructure", "Its role has no write permissions, so it cannot change, stop or delete anything."],
   ["Read your data", "It never reads objects, rows or secrets; only configuration, metadata and billing."],
-  ["Page you at 3am", "There is no on-call and no night alert. Findings wait for your morning briefing."],
+  ["Spam you with noise", "Only urgent findings will ever interrupt you, and only on the channels you choose. Everything else waits for your morning briefing."],
   ["Resell AI", "You bring your own agent or model key, and pay your AI provider directly."],
 ];
 
 export default function Home() {
   return (
     <main>
-      <section className="hero">
+      <section className="hero" id="waitlist">
         <div className="hero-text">
-          <h1>Your cloud, checked every night.</h1>
+          <h1>Your ops teammate that never sleeps.</h1>
           <p className="lead">
-            A read-only agent for teams with no ops person. Every morning you get a short briefing of what&apos;s wrong
-            and why. It never changes anything.
+            OpsAgent watches your cloud day and night, read-only. Urgent problems reach you the moment they matter.
+            Everything else waits for a calm morning briefing. It never changes anything.
+          </p>
+          <p className="hero-note">
+            Around-the-clock checks and instant alerts are coming soon; nightly checks and the morning briefing are what
+            alpha users get today.
           </p>
           <WaitlistForm source="landing-hero" />
           <p className="hero-who">
@@ -54,7 +66,23 @@ export default function Home() {
             infrastructure when the contractor left.
           </p>
         </div>
-        <BriefingCard />
+        <div className="hero-cards">
+          <AlertCard />
+          <BriefingCard />
+        </div>
+      </section>
+
+      <section className="section" aria-labelledby="day-night-h">
+        <h2 id="day-night-h">While you sleep, and when you wake</h2>
+        <ul className="daynight">
+          {DAY_NIGHT.map((d) => (
+            <li key={d.title}>
+              <h3>{d.title}</h3>
+              <p>{d.body}</p>
+              {d.soon && <ComingSoon />}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="section" id="how-it-works" aria-labelledby="how-it-works-h">
@@ -67,6 +95,9 @@ export default function Home() {
             </li>
           ))}
         </ol>
+        <p className="section-more">
+          <Link href="/how-it-works">See how it works</Link>
+        </p>
       </section>
 
       <section className="section split" id="what-it-checks" aria-labelledby="what-it-checks-h">
@@ -99,6 +130,11 @@ export default function Home() {
         </ul>
       </section>
 
+      <section className="section mobile-strip" aria-labelledby="mobile-h">
+        <h2 id="mobile-h">OpsAgent for iOS and Android: alerts and briefings in your pocket.</h2>
+        <ComingSoon />
+      </section>
+
       <section className="section split" id="bring-your-own-ai" aria-labelledby="byo-h">
         <div>
           <h2 id="byo-h">Bring your own AI</h2>
@@ -120,7 +156,7 @@ export default function Home() {
       </section>
 
       <section className="section closing" aria-labelledby="closing-h">
-        <h2 id="closing-h">Start your mornings knowing what changed.</h2>
+        <h2 id="closing-h">Get your ops teammate.</h2>
         <p className="section-lead">
           The alpha opens to a few teams at a time. Join the waitlist and we will email you when your spot is ready.
         </p>

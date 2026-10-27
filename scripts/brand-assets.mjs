@@ -9,7 +9,7 @@ const font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, 
 const apple = `<body style="margin:0;background:#1f3a5f">${mark(180)}</body>`;
 const og = `<body style="margin:0;width:1200px;height:630px;background:#f7f7f5;font-family:${font};box-sizing:border-box;padding:80px;display:flex;flex-direction:column;justify-content:space-between">
 <div style="display:flex;align-items:center;gap:20px;color:#1f3a5f;font-size:48px;font-weight:650;letter-spacing:-0.01em">${mark(64)}OpsAgent</div>
-<div style="color:#111;font-size:84px;font-weight:650;letter-spacing:-0.02em;line-height:1.05;max-width:900px">Your cloud, checked every night.</div></body>`;
+<div style="color:#111;font-size:84px;font-weight:650;letter-spacing:-0.02em;line-height:1.05;max-width:900px">Your ops teammate that never sleeps.</div></body>`;
 
 const browser = await chromium.launch();
 for (const [html, w, h, out] of [

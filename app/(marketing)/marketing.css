@@ -142,6 +142,11 @@ body:has(.mkt) { background: #f7f7f5; }
 .mkt .cites { margin-top: 4px; font-size: 13.5px; line-height: 1.45; color: var(--soft); }
 .mkt .briefing-foot { padding: 14px 22px; background: #fafaf8; border-top: 1px solid var(--line); font-size: 13px; color: var(--soft); }
 
+.mkt .hero-note { margin-top: 14px; font-size: 14px; color: var(--soft); max-width: 34em; }
+.mkt .hero-cards { display: grid; gap: 20px; }
+.mkt .alert-body { display: flex; gap: 14px; padding: 18px 22px; }
+.mkt .alert .briefing-foot { margin: 0; }
+
 /* Sections */
 .mkt .section { padding: 96px 0; border-top: 1px solid var(--line); scroll-margin-top: 24px; }
 .mkt .section h2 { font-size: clamp(28px, 1.6vw + 18px, 36px); line-height: 1.15; letter-spacing: -0.025em; }
@@ -150,6 +155,10 @@ body:has(.mkt) { background: #f7f7f5; }
 .mkt .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; align-items: start; }
 
 /* How it works: a real sequence, so the steps are numbered */
+.mkt .daynight { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; margin-top: 40px; }
+.mkt .daynight p { margin: 8px 0 12px; color: var(--body); }
+.mkt .section-more { margin-top: 32px; }
+.mkt .mobile-strip h2 { max-width: 24ch; margin-bottom: 16px; }
 .mkt .steps { counter-reset: step; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; margin-top: 48px; }
 .mkt .steps li { counter-increment: step; }
 .mkt .steps li::before {
@@ -230,7 +239,7 @@ body:has(.mkt) { background: #f7f7f5; }
 
 @media (max-width: 800px) {
   .mkt .hero { grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 40px 0 72px; }
-  .mkt .split, .mkt .steps, .mkt .checks, .mkt .never ul { grid-template-columns: minmax(0, 1fr); }
+  .mkt .split, .mkt .steps, .mkt .daynight, .mkt .checks, .mkt .never ul { grid-template-columns: minmax(0, 1fr); }
   .mkt .split { gap: 32px; }
   .mkt .steps { gap: 36px; margin-top: 36px; }
   .mkt .checks li:nth-child(2) { border-top: 1px solid var(--line); padding-top: 22px; }
