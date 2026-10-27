@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <header className="bar">
-        <Link href="/dashboard"><Logo size={22} /></Link>
+        <Link href="/dashboard" className="brand"><Logo size={22} /></Link>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/findings">Findings</Link>
         <Link href="/deliveries">Deliveries</Link>
