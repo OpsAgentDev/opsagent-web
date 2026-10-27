@@ -36,23 +36,36 @@ body:has(.mkt) { background: #f7f7f5; }
 }
 
 /* Header */
-.mkt .site-header {
+.mkt .site-header { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
+.mkt .site-header-bar {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 22px var(--gutter);
+  padding: 16px var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
-.mkt .site-header nav { display: flex; align-items: center; gap: 28px; font-size: 15px; }
+.mkt .menu-button { display: none; font: inherit; font-size: 15px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.mkt .menu-button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.mkt .site-header nav { display: flex; align-items: center; gap: 24px; font-size: 15px; }
 .mkt .site-header nav a { color: var(--body); text-decoration: none; }
-.mkt .site-header nav a:hover { color: var(--ink); }
-.mkt .site-header .sign-in { padding-left: 28px; border-left: 1px solid var(--line); }
-@media (max-width: 640px) {
-  .mkt .site-header nav a:not(.sign-in) { display: none; }
+.mkt .site-header nav a:hover, .mkt .site-header nav a[aria-current="page"] { color: var(--ink); }
+.mkt .site-header nav a[aria-current="page"] { text-decoration: underline; }
+.mkt .site-header .sign-in { padding-left: 24px; border-left: 1px solid var(--line); }
+.mkt .site-header nav a.join { padding: 9px 16px; color: #fff; background: var(--navy); border-radius: 8px; font-weight: 600; }
+.mkt .site-header nav a.join:hover { color: #fff; }
+@media (max-width: 800px) {
+  .mkt .menu-button { display: block; }
+  .mkt .site-header nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .mkt .site-header nav.open { display: flex; }
+  .mkt .site-header nav a { padding: 12px 0; }
   .mkt .site-header .sign-in { padding-left: 0; border-left: 0; }
+  .mkt .site-header nav a.join { margin-top: 8px; text-align: center; }
 }
+
+/* Coming soon tag */
+.mkt .soon { display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 600; color: var(--soft); background: #fff; border: 1px solid var(--line); border-radius: 999px; vertical-align: middle; }
 
 /* Page frame (also frames the docs pages that share this layout) */
 .mkt main { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
@@ -212,7 +225,7 @@ body:has(.mkt) { background: #f7f7f5; }
   font-size: 14px;
   color: var(--soft);
 }
-.mkt .site-footer-links { display: flex; gap: 24px; }
+.mkt .site-footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .mkt .site-footer a { color: var(--body); }
 
 @media (max-width: 800px) {

@@ -1,19 +1,24 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { MenuToggle } from "@/components/marketing/MenuToggle";
+
+export const NAV: { href: string; label: string }[] = [
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/security", label: "Security" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/docs/connect-your-agent", label: "Docs" },
+  { href: "/contact", label: "Contact" },
+];
 
 export function SiteHeader() {
   return (
     <header className="site-header">
-      <Link href="/" className="brand">
-        <Logo size={26} />
-      </Link>
-      <nav aria-label="Main">
-        <Link href="/#how-it-works">How it works</Link>
-        <Link href="/#what-it-checks">What it checks</Link>
-        <Link href="/sign-in" className="sign-in">
-          Sign in
+      <div className="site-header-bar">
+        <Link href="/" className="brand" aria-label="OpsAgent">
+          <Logo size={26} />
         </Link>
-      </nav>
+        <MenuToggle links={NAV} />
+      </div>
     </header>
   );
 }

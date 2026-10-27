@@ -86,5 +86,5 @@ test("server error shows the fallback", async ({ page }) => {
   await page.goto("/");
   await hero(page).getByLabel("Email address").fill("a@example.com");
   await hero(page).getByRole("button", { name: "Join the waitlist" }).click();
-  await expect(page.getByText("Something went wrong. Email info@opsagent.dev and we'll add you.")).toBeVisible();
+  await expect(page.getByText("Something went wrong. Please try again later.")).toBeVisible();
 });
