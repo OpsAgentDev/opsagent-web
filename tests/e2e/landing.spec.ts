@@ -23,6 +23,11 @@ test("landing renders every section", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
   }
   expect(await page.locator("#how-it-works .soon").count()).toBeGreaterThanOrEqual(1);
+  const steps = page.locator("#how-it-works .steps li");
+  await expect(steps.locator("p", { hasText: "Every night today" }).locator(".soon")).toHaveCount(0);
+  await expect(steps.locator("p", { hasText: "morning briefing in Slack" }).locator(".soon")).toHaveCount(0);
+  await expect(steps.locator("p", { hasText: "Around the clock:" }).locator(".soon")).toHaveCount(1);
+  await expect(steps.locator("p", { hasText: "Urgent alerts:" }).locator(".soon")).toHaveCount(1);
   await expect(page.locator("#what-it-checks li")).toHaveCount(10);
   await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toBeVisible();
 });
