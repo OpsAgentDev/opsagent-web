@@ -18,10 +18,14 @@ export default function Security() {
         </p>
       </section>
       <section>
-        <h2>What it can never touch</h2>
+        <h2>What it cannot touch</h2>
         <p>
-          Object contents and database rows. The role has no write permissions at all, so OpsAgent cannot change,
-          stop or delete anything.
+          It cannot read object contents or database rows. The role has no write permissions at all, so OpsAgent
+          cannot change, stop or delete anything.
+        </p>
+        <p>
+          The one exception is opt-in: if you turn on drift checks and name your Terraform state bucket and prefix, it
+          reads those state files only. State files can contain secrets, so name only the prefix you want checked.
         </p>
         <p>
           One exception to know about: reading function and task-definition configuration returns their environment
