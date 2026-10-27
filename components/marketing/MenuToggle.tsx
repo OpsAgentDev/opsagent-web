@@ -38,12 +38,12 @@ export function MenuToggle({ links }: { links: { href: string; label: string }[]
       </button>
       <nav id="site-menu" aria-label="Main" className={open ? "open" : undefined}>
         {links.map((l) => (
-          <Link key={l.href} href={l.href} aria-current={pathname === l.href ? "page" : undefined}>
+          <Link key={l.href} href={l.href} onClick={() => setOpen(false)} aria-current={pathname === l.href ? "page" : undefined}>
             {l.label}
           </Link>
         ))}
-        <Link href="/sign-in" className="sign-in">Sign in</Link>
-        <Link href="/#waitlist" className="join">Join the waitlist</Link>
+        <Link href="/sign-in" className="sign-in" onClick={() => setOpen(false)}>Sign in</Link>
+        <Link href="/#waitlist" className="join" onClick={() => setOpen(false)}>Join the waitlist</Link>
       </nav>
     </div>
   );

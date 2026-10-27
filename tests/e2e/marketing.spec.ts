@@ -41,6 +41,15 @@ test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
+test("mobile menu closes after tapping a same-page anchor", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  await header.getByRole("button", { name: /menu/i }).click();
+  await header.getByRole("link", { name: "Join the waitlist" }).click();
+  await expect(header.getByRole("link", { name: "Pricing", exact: true })).toBeHidden();
+});
+
 test("no email address on marketing pages", async ({ page }) => {
   for (const path of ["/", "/how-it-works", "/security", "/pricing", "/contact", "/docs/connect-your-agent"]) {
     await page.goto(path);

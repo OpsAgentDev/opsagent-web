@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Security · OpsAgent",
-  description: "OpsAgent is read-only by design: a role you create, no write access, no reading of your data.",
+  description: "OpsAgent is read-only by design: a role you create, no write access, it cannot read your stored data or change anything, except a few scoped reads you opt into.",
 };
 
 export default function Security() {
@@ -18,19 +18,25 @@ export default function Security() {
         </p>
       </section>
       <section>
-        <h2>What it cannot touch</h2>
+        <h2>What it reads, and what it can&apos;t</h2>
         <p>
-          It cannot read object contents or database rows. The role has no write permissions at all, so OpsAgent
-          cannot change, stop or delete anything.
+          It cannot read your stored data (objects, database rows, secret values) or change anything. The role has no
+          write permissions at all, so OpsAgent cannot change, stop or delete anything. Three scoped reads are the
+          exceptions:
         </p>
-        <p>
-          The one exception is opt-in: if you turn on drift checks and name your Terraform state bucket and prefix, it
-          reads those state files only. State files can contain secrets, so name only the prefix you want checked.
-        </p>
-        <p>
-          One exception to know about: reading function and task-definition configuration returns their environment
-          values. OpsAgent strips those before storing, logging or checking anything.
-        </p>
+        <ul>
+          <li>
+            Function and task-definition configuration. It carries environment values, which OpsAgent strips before
+            storing, logging or checking anything.
+          </li>
+          <li>
+            Log events, only from log groups you tag <code>opsagent:logs=allow</code>.
+          </li>
+          <li>
+            Terraform state files, only if you turn on drift checks and name the bucket and prefix. State files can
+            contain secrets, so name only the prefix you want checked.
+          </li>
+        </ul>
       </section>
       <section>
         <h2>Your data</h2>
@@ -38,6 +44,7 @@ export default function Security() {
           OpsAgent stores inventory metadata, findings and the evidence behind them. It is stored on Railway, in the
           United States.
         </p>
+        <p>OpsAgent&apos;s outbound IP addresses are not fixed yet; we will publish them here once they are.</p>
         <p>
           Secrets such as Slack tokens are encrypted with a per-organisation key, which is itself wrapped by a master
           key.

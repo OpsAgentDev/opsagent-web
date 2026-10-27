@@ -292,7 +292,7 @@ body:has(.mkt) { background: #f7f7f5; }
 .mkt .contact { max-width: 560px; margin-top: 24px; }
 .mkt .contact label { display: block; margin: 16px 0 6px; font-weight: 600; }
 .mkt .contact input, .mkt .contact select, .mkt .contact textarea {
-  width: 100%; padding: 10px 12px; font: inherit; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+  width: 100%; padding: 10px 12px; font: inherit; border: 1px solid #8a877f; border-radius: 8px; background: #fff;
 }
 .mkt .contact input:focus-visible, .mkt .contact select:focus-visible, .mkt .contact textarea:focus-visible, .mkt .contact button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 .mkt .contact button {

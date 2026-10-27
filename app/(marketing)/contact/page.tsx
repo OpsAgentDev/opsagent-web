@@ -13,7 +13,7 @@ export default async function Contact({ searchParams }: { searchParams: Promise<
   const initial = TOPICS.find((x) => x.value === t)?.value ?? "general";
   return (
     <main className="page">
-      <h1>Contact</h1>
+      <h1>Talk to us</h1>
       <p>Questions, security reports, partnerships. We reply to you by email.</p>
       <ContactForm initialTopic={initial} />
     </main>

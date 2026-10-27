@@ -14,7 +14,7 @@ const DAY_NIGHT = [
 const STEPS = [
   {
     title: "Connect read-only",
-    body: "Create a role in one click. It can read how your cloud is set up and what it costs, and it physically cannot read your data.",
+    body: "Create a role in one click. It can read how your cloud is set up and what it costs, and it cannot read your stored data or change anything, except what you opt into (see Security).",
   },
   {
     title: "Checks run",
@@ -43,7 +43,7 @@ const CHECKS = [
 
 const NEVER = [
   ["Write to your infrastructure", "Its role has no write permissions, so it cannot change, stop or delete anything."],
-  ["Read your data", "It never reads objects, rows or secrets; only configuration, metadata and billing."],
+  ["Read your data", "It cannot read your stored data (objects, database rows, secret values); it reads configuration, metadata and billing, plus a few scoped reads you opt into, listed on the Security page."],
   ["Spam you with noise", "Only urgent findings will ever interrupt you, and only on the channels you choose. Everything else waits for your morning briefing."],
   ["Resell AI", "You bring your own agent or model key, and pay your AI provider directly."],
 ];
