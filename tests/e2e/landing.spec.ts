@@ -5,11 +5,29 @@ const MAILPIT = process.env.MAILPIT_URL ?? "http://localhost:8025";
 
 test("landing renders every section", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your cloud, checked every night." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Your ops teammate that never sleeps." })).toBeVisible();
   await expect(page.getByText("Sample briefing")).toBeVisible();
-  for (const name of [/how it works/i, /what it checks/i, /what it will never do/i, /bring your own ai/i]) {
+  await expect(page.getByText("Sample alert")).toBeVisible();
+  await expect(page.locator("section#waitlist")).toHaveClass(/hero/);
+  expect(await page.locator(".soon").count()).toBeGreaterThanOrEqual(3);
+  await expect(page.getByText("page you at 3am", { exact: false })).toHaveCount(0);
+  for (const name of [
+    /while you sleep/i,
+    /how it works/i,
+    /what it checks/i,
+    /what it will never do/i,
+    /ios and android/i,
+    /bring your own ai/i,
+    /get your ops teammate/i,
+  ]) {
     await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
   }
+  expect(await page.locator("#how-it-works .soon").count()).toBeGreaterThanOrEqual(1);
+  const steps = page.locator("#how-it-works .steps li");
+  await expect(steps.locator("p", { hasText: "Every night today" }).locator(".soon")).toHaveCount(0);
+  await expect(steps.locator("p", { hasText: "morning briefing in Slack" }).locator(".soon")).toHaveCount(0);
+  await expect(steps.locator("p", { hasText: "Around the clock:" }).locator(".soon")).toHaveCount(1);
+  await expect(steps.locator("p", { hasText: "Urgent alerts:" }).locator(".soon")).toHaveCount(1);
   await expect(page.locator("#what-it-checks li")).toHaveCount(10);
   await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toBeVisible();
 });
@@ -17,7 +35,7 @@ test("landing renders every section", async ({ page }) => {
 test("landing fits a 360px phone", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your cloud, checked every night." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your ops teammate that never sleeps." })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 
@@ -86,5 +104,5 @@ test("server error shows the fallback", async ({ page }) => {
   await page.goto("/");
   await hero(page).getByLabel("Email address").fill("a@example.com");
   await hero(page).getByRole("button", { name: "Join the waitlist" }).click();
-  await expect(page.getByText("Something went wrong. Email info@opsagent.dev and we'll add you.")).toBeVisible();
+  await expect(page.getByText("Something went wrong. Please try again later.")).toBeVisible();
 });

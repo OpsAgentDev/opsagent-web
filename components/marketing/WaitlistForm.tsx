@@ -12,7 +12,7 @@ type State = "idle" | "pending" | "done";
 const MESSAGES = {
   invalid: "Enter a valid email address.",
   limited: "Too many tries. Please wait a minute and try again.",
-  failed: "Something went wrong. Email info@opsagent.dev and we'll add you.",
+  failed: "Something went wrong. Please try again later.",
 };
 
 export function WaitlistForm({ source }: { source: "landing-hero" | "landing-footer" }) {
