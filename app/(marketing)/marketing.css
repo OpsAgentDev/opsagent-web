@@ -1,0 +1,246 @@
+/* Marketing pages only. Every rule sits under .mkt so nothing reaches the (app) dashboard. */
+.mkt {
+  --bg: #f7f7f5;
+  --ink: #111;
+  --body: #3b3f45;
+  --soft: #5b5f66;
+  --line: #e3e2dd;
+  --navy: #1f3a5f;
+  --amber: #fbbf24;
+  --max: 1080px;
+  --gutter: clamp(20px, 5vw, 40px);
+  color-scheme: light;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+/* Paint overscroll areas the same grey; matches only while a marketing page is mounted. */
+body:has(.mkt) { background: #f7f7f5; }
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.mkt) { scroll-behavior: smooth; }
+}
+
+.mkt h1, .mkt h2, .mkt h3, .mkt p, .mkt ul, .mkt ol, .mkt figure { margin: 0; }
+.mkt ul, .mkt ol { padding: 0; list-style: none; }
+.mkt h1, .mkt h2, .mkt h3 { color: var(--ink); font-weight: 650; text-wrap: balance; }
+.mkt a { color: var(--navy); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.mkt a:hover { text-decoration-thickness: 2px; }
+.mkt a:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 4px; }
+.mkt code {
+  font: 0.88em/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: #efeeea;
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+}
+
+/* Header */
+.mkt .site-header {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 22px var(--gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.mkt .site-header nav { display: flex; align-items: center; gap: 28px; font-size: 15px; }
+.mkt .site-header nav a { color: var(--body); text-decoration: none; }
+.mkt .site-header nav a:hover { color: var(--ink); }
+.mkt .site-header .sign-in { padding-left: 28px; border-left: 1px solid var(--line); }
+@media (max-width: 640px) {
+  .mkt .site-header nav a:not(.sign-in) { display: none; }
+  .mkt .site-header .sign-in { padding-left: 0; border-left: 0; }
+}
+
+/* Page frame (also frames the docs pages that share this layout) */
+.mkt main { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.mkt main > h1:first-child { margin: 56px 0 16px; font-size: 40px; line-height: 1.15; letter-spacing: -0.02em; }
+.mkt main > h2 { margin: 40px 0 12px; font-size: 22px; }
+.mkt main > p, .mkt main > ol { max-width: 68ch; margin-bottom: 16px; color: var(--body); }
+.mkt main > ol { list-style: decimal; padding-left: 1.4em; }
+.mkt main > ol li { margin-bottom: 6px; }
+.mkt main > :last-child:not(section) { margin-bottom: 96px; }
+.mkt pre { overflow-x: auto; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.mkt pre code { background: none; padding: 0; }
+
+/* Hero */
+.mkt .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 72px;
+  align-items: center;
+  padding: 72px 0 112px;
+}
+.mkt .hero h1 {
+  font-size: clamp(42px, 3.2vw + 20px, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  max-width: 12ch;
+}
+.mkt .lead { margin-top: 24px; font-size: 19px; line-height: 1.55; color: var(--body); max-width: 34em; }
+.mkt .hero .waitlist { margin-top: 36px; }
+.mkt .hero-who {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+  color: var(--soft);
+  max-width: 30em;
+}
+
+/* Sample briefing card */
+.mkt .briefing {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(17, 17, 17, 0.04), 0 24px 48px -24px rgba(31, 58, 95, 0.28);
+  overflow: hidden;
+}
+.mkt .briefing-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.mkt .briefing-head svg { flex: none; }
+.mkt .briefing-title { font-weight: 650; font-size: 15px; line-height: 1.3; }
+.mkt .briefing-meta { font-size: 13px; line-height: 1.3; color: var(--soft); }
+.mkt .briefing-sample {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  color: #78350f;
+  background: #fef3c7;
+  border-radius: 999px;
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+.mkt .briefing-list li { display: flex; gap: 14px; padding: 18px 22px; }
+.mkt .briefing-list li + li { border-top: 1px solid #efeeea; }
+.mkt .dot { flex: none; width: 10px; height: 10px; margin-top: 7px; border-radius: 50%; }
+.mkt .dot-bad { background: #c2410c; box-shadow: 0 0 0 4px #ffedd5; }
+.mkt .dot-warn { background: var(--amber); box-shadow: 0 0 0 4px #fef3c7; }
+.mkt .dot-ok { background: #15803d; box-shadow: 0 0 0 4px #dcfce7; }
+.mkt .finding { font-size: 16px; font-weight: 550; line-height: 1.4; }
+.mkt .cites { margin-top: 4px; font-size: 13.5px; line-height: 1.45; color: var(--soft); }
+.mkt .briefing-foot { padding: 14px 22px; background: #fafaf8; border-top: 1px solid var(--line); font-size: 13px; color: var(--soft); }
+
+/* Sections */
+.mkt .section { padding: 96px 0; border-top: 1px solid var(--line); scroll-margin-top: 24px; }
+.mkt .section h2 { font-size: clamp(28px, 1.6vw + 18px, 36px); line-height: 1.15; letter-spacing: -0.025em; }
+.mkt .section h3 { font-size: 17px; line-height: 1.35; }
+.mkt .section-lead { margin-top: 14px; font-size: 17px; color: var(--body); max-width: 30em; }
+.mkt .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; align-items: start; }
+
+/* How it works: a real sequence, so the steps are numbered */
+.mkt .steps { counter-reset: step; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; margin-top: 48px; }
+.mkt .steps li { counter-increment: step; }
+.mkt .steps li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 650;
+}
+.mkt .steps p, .mkt .checks p { margin-top: 8px; color: var(--body); }
+
+/* What it checks */
+.mkt .checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; }
+.mkt .checks li { padding: 22px 0; border-top: 1px solid var(--line); }
+.mkt .checks li:nth-child(-n + 2) { border-top: 0; padding-top: 0; }
+.mkt .checks p { font-size: 16px; }
+
+/* What it will never do: the trust anchor, the one dark panel on the page */
+.mkt .never {
+  border-top: 0;
+  background: var(--navy);
+  color: #fff;
+  border-radius: 20px;
+  padding: 72px clamp(24px, 6vw, 72px);
+}
+.mkt .never + .section { border-top: 0; }
+.mkt .never h2, .mkt .never h3 { color: #fff; }
+.mkt .never ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 56px; margin-top: 44px; }
+.mkt .never li { padding-left: 22px; border-left: 2px solid var(--amber); }
+.mkt .never p { margin-top: 6px; color: #d3dbe6; }
+
+/* Bring your own AI */
+.mkt .byo p { color: var(--body); max-width: 36em; }
+.mkt .byo p + p { margin-top: 20px; }
+.mkt .mcp-url {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.mkt .mcp-url span { color: var(--soft); }
+.mkt .mcp-url code { background: none; padding: 0; color: var(--ink); overflow-wrap: anywhere; }
+.mkt .byo a { font-weight: 600; }
+
+/* Closing call to action */
+.mkt .closing { padding-bottom: 120px; }
+.mkt .closing h2 { max-width: 18ch; }
+.mkt .closing .waitlist { margin-top: 32px; }
+
+/* Footer */
+.mkt .site-footer {
+  /* Same width as the content column, so the rule lines up with the section rules above. */
+  width: min(calc(var(--max) - 2 * var(--gutter)), calc(100% - 2 * var(--gutter)));
+  max-width: none;
+  margin: 0 auto;
+  padding: 32px 0 48px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 32px;
+  font-size: 14px;
+  color: var(--soft);
+}
+.mkt .site-footer-links { display: flex; gap: 24px; }
+.mkt .site-footer a { color: var(--body); }
+
+@media (max-width: 800px) {
+  .mkt .hero { grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 40px 0 72px; }
+  .mkt .split, .mkt .steps, .mkt .checks, .mkt .never ul { grid-template-columns: minmax(0, 1fr); }
+  .mkt .split { gap: 32px; }
+  .mkt .steps { gap: 36px; margin-top: 36px; }
+  .mkt .checks li:nth-child(2) { border-top: 1px solid var(--line); padding-top: 22px; }
+  .mkt .section { padding: 72px 0; }
+  .mkt .never { padding: 56px 24px; margin: 0 calc(var(--gutter) * -1 + 8px); }
+}
+
+.mkt .waitlist { max-width: 460px; }
+.mkt .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.mkt .waitlist-row { display: flex; gap: 10px; }
+.mkt .waitlist input {
+  flex: 1; min-width: 0; padding: 13px 14px; font: inherit; font-size: 16px; color: var(--ink);
+  background: #fff; border: 1px solid #8a877f; border-radius: 8px;
+}
+.mkt .waitlist input:focus-visible, .mkt .waitlist button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.mkt .waitlist button {
+  padding: 13px 20px; font: inherit; font-size: 16px; font-weight: 600; color: #fff; background: var(--navy);
+  border: 0; border-radius: 8px; cursor: pointer; white-space: nowrap;
+}
+.mkt .waitlist button:hover:not([aria-disabled="true"]) { background: #28497a; }
+.mkt .waitlist button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
+.mkt .waitlist-err:not(:empty) { margin-top: 10px; }
+.mkt .waitlist-err { font-size: 14px; color: #a12a1f; }
+.mkt .waitlist-hint { margin-top: 10px; font-size: 14px; color: var(--soft); }
+.mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; color: var(--navy); background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: 8px; }
+@media (max-width: 480px) { .mkt .waitlist-row { flex-direction: column; } }

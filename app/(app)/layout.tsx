@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
+import { Logo } from "@/components/brand/Logo";
 import { CreateOrg } from "@/components/create-org";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap } from "@/lib/api/client";
@@ -29,7 +30,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <header className="bar">
-        <strong>OpsAgent</strong>
+        <Link href="/dashboard" className="brand"><Logo size={22} /></Link>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/findings">Findings</Link>
         <Link href="/deliveries">Deliveries</Link>

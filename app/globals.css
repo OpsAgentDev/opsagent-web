@@ -16,3 +16,4 @@ th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line
 .card { border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 dialog { border: 1px solid var(--line); border-radius: 6px; }
+a.brand { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
