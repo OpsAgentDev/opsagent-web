@@ -36,13 +36,29 @@ test("joining the waitlist shows success and sends one mail", async ({ page, req
   await hero(page).getByLabel("Email address").fill(email);
   const button = hero(page).getByRole("button", { name: "Join the waitlist" });
   await button.click();
-  await expect(button).toBeDisabled();
   await expect(page.locator('[aria-live="polite"]').filter({ hasText: "You're on the list. We'll email you when your spot opens." })).toBeVisible();
   await expect(async () => {
     const res = await request.get(`${MAILPIT}/api/v1/search`, { params: { query: `to:"${email}"` } });
     const { messages } = (await res.json()) as { messages: { Subject: string }[] };
     expect(messages.map((m) => m.Subject)).toEqual(["You're on the OpsAgent waitlist"]);
   }).toPass({ timeout: 30_000 });
+});
+
+test("button stays focusable and aria-disabled while pending, success takes focus", async ({ page }) => {
+  await page.route("**/v1/waitlist", async (route) => {
+    await new Promise((r) => setTimeout(r, 800));
+    await route.fulfill({ status: 202, body: "" });
+  });
+  await page.goto("/");
+  const input = hero(page).getByLabel("Email address");
+  await input.fill("pending@example.com");
+  const button = hero(page).getByRole("button", { name: "Join the waitlist" });
+  await button.click();
+  await expect(button).toHaveAttribute("aria-disabled", "true");
+  await expect(button).not.toHaveAttribute("disabled", /.*/);
+  const ok = hero(page).getByText("You're on the list.");
+  await expect(ok).toBeVisible();
+  await expect(ok).toBeFocused();
 });
 
 test("invalid email shows a validation message", async ({ page }) => {
@@ -52,6 +68,8 @@ test("invalid email shows a validation message", async ({ page }) => {
   await hero(page).getByLabel("Email address").fill("nope");
   await hero(page).getByRole("button", { name: "Join the waitlist" }).click();
   await expect(hero(page).getByRole("alert")).toContainText("valid email");
+  await expect(hero(page).getByLabel("Email address")).toHaveAttribute("aria-invalid", "true");
+  await expect(hero(page).getByLabel("Email address")).toHaveAccessibleDescription(/valid email.*Alpha opens/);
   expect(calls).toEqual([]);
 });
 

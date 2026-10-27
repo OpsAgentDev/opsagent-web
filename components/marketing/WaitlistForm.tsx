@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import createClient from "openapi-fetch";
 import { API_BASE_URL } from "@/lib/api/client";
 import type { paths } from "@/lib/api/schema";
@@ -19,9 +19,12 @@ export function WaitlistForm({ source }: { source: "landing-hero" | "landing-foo
   const [state, setState] = useState<State>("idle");
   const [error, setError] = useState("");
   const id = `waitlist-${source}`;
+  const okRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (state === "done") okRef.current?.focus(); }, [state]);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (state === "pending") return;
     const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
     if (!email.includes("@")) return setError(MESSAGES.invalid);
     setError("");
@@ -39,17 +42,17 @@ export function WaitlistForm({ source }: { source: "landing-hero" | "landing-foo
   return (
     <div className="waitlist">
       <div aria-live="polite">
-        {state === "done" && <p className="waitlist-ok">You&apos;re on the list. We&apos;ll email you when your spot opens.</p>}
+        {state === "done" && <p className="waitlist-ok" ref={okRef} tabIndex={-1}>You&apos;re on the list. We&apos;ll email you when your spot opens.</p>}
       </div>
       {state !== "done" && (
         <form onSubmit={submit} noValidate>
           <label htmlFor={id} className="sr-only">Email address</label>
           <div className="waitlist-row">
-            <input id={id} name="email" type="email" required autoComplete="email" placeholder="you@company.com" />
-            <button type="submit" disabled={state === "pending"}>Join the waitlist</button>
+            <input id={id} name="email" type="email" required autoComplete="email" aria-invalid={error === MESSAGES.invalid} aria-describedby={error ? `${id}-err ${id}-hint` : `${id}-hint`} placeholder="you@company.com" />
+            <button type="submit" aria-disabled={state === "pending"}>Join the waitlist</button>
           </div>
-          <p role="alert" className="waitlist-err">{error}</p>
-          <p className="waitlist-hint">Alpha opens in small groups. No spam; one email when your spot is ready.</p>
+          <p role="alert" id={`${id}-err`} className="waitlist-err">{error}</p>
+          <p id={`${id}-hint`} className="waitlist-hint">Alpha opens in small groups. No spam; one email when your spot is ready.</p>
         </form>
       )}
     </div>

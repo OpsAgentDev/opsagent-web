@@ -26,7 +26,7 @@ const CHECKS = [
   ["Certificate expiry", "Certificates close to expiring, flagged before your users see the error."],
   ["Logging and detection gaps", "Audit logs and threat detection that are switched off or incomplete."],
   ["Idle GPUs and stuck training jobs", "GPU machines doing nothing, and training jobs that stopped making progress."],
-  ["Leaked secrets that still work", "Secrets flagged by GitHub secret scanning that are still valid in your cloud."],
+  ["Leaked secrets that are still active", "Secrets flagged by GitHub secret scanning whose keys are still active in your cloud."],
   ["Infrastructure-as-code drift", "Resources that no longer match the code that is supposed to define them."],
   ["Deploy and pipeline health", "Pipelines that keep failing and deploys that stalled halfway."],
 ];
@@ -73,7 +73,7 @@ export default function Home() {
         <div>
           <h2 id="what-it-checks-h">What it checks</h2>
           <p className="section-lead">
-            Ten checks, every night, on every account you connect. Each finding names the resource and shows the
+            Ten checks run every night. Each finding names the resource and shows the
             evidence, so you can confirm it yourself.
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function Home() {
       <section className="section closing" aria-labelledby="closing-h">
         <h2 id="closing-h">Start your mornings knowing what changed.</h2>
         <p className="section-lead">
-          The alpha opens to a few teams at a time, and early teams shape which checks come next.
+          The alpha opens to a few teams at a time. Join the waitlist and we will email you when your spot is ready.
         </p>
         <WaitlistForm source="landing-footer" />
       </section>

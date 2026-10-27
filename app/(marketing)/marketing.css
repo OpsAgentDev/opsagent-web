@@ -230,16 +230,17 @@ body:has(.mkt) { background: #f7f7f5; }
 .mkt .waitlist-row { display: flex; gap: 10px; }
 .mkt .waitlist input {
   flex: 1; min-width: 0; padding: 13px 14px; font: inherit; font-size: 16px; color: var(--ink);
-  background: #fff; border: 1px solid #cfcdc6; border-radius: 8px;
+  background: #fff; border: 1px solid #8a877f; border-radius: 8px;
 }
 .mkt .waitlist input:focus-visible, .mkt .waitlist button:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
 .mkt .waitlist button {
   padding: 13px 20px; font: inherit; font-size: 16px; font-weight: 600; color: #fff; background: var(--navy);
   border: 0; border-radius: 8px; cursor: pointer; white-space: nowrap;
 }
-.mkt .waitlist button:hover:not(:disabled) { background: #28497a; }
-.mkt .waitlist button:disabled { opacity: 0.6; cursor: progress; }
-.mkt .waitlist-err { min-height: 1.4em; margin-top: 10px; font-size: 14px; color: #a12a1f; }
-.mkt .waitlist-hint { margin-top: 2px; font-size: 14px; color: var(--soft); }
+.mkt .waitlist button:hover:not([aria-disabled="true"]) { background: #28497a; }
+.mkt .waitlist button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
+.mkt .waitlist-err:not(:empty) { margin-top: 10px; }
+.mkt .waitlist-err { font-size: 14px; color: #a12a1f; }
+.mkt .waitlist-hint { margin-top: 10px; font-size: 14px; color: var(--soft); }
 .mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; color: var(--navy); background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--navy); border-radius: 8px; }
 @media (max-width: 480px) { .mkt .waitlist-row { flex-direction: column; } }

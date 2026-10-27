@@ -33,7 +33,7 @@ export function BriefingCard() {
         <Mark size={28} />
         <div>
           <p className="briefing-title">Morning briefing</p>
-          <p className="briefing-meta">Tuesday, 07:00</p>
+          <p className="briefing-meta">Tuesday, 08:00</p>
         </div>
         <span className="briefing-sample">Sample briefing</span>
       </div>
