@@ -42,8 +42,8 @@ export default function Privacy() {
       <section>
         <h2>Where it lives and how long</h2>
         <p>
-          Data is stored on Railway, in the United States. Nightly database backups are kept in a storage bucket
-          Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
+          Data is stored on Railway, in the United States. Encrypted nightly database backups are kept on Amazon Web
+          Services, in a storage bucket Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
         </p>
         <p>
           Evidence excerpts are stripped of secret-shaped strings and common personal data before they are stored.
@@ -54,6 +54,8 @@ export default function Privacy() {
         <h2>Who else processes it</h2>
         <ul className="legal-list">
           <li>Railway: hosting and the database.</li>
+          <li>Cloudflare: DNS and traffic proxy for opsagent.dev.</li>
+          <li>Amazon Web Services: encrypted nightly backups, in a storage bucket Binary Labs controls.</li>
           <li>Resend: sending sign-in and briefing email.</li>
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
@@ -66,7 +68,8 @@ export default function Privacy() {
       <section>
         <h2>Cookies</h2>
         <p>
-          One first-party cookie keeps you signed in. There are no advertising or tracking cookies. Your browser also
+          OpsAgent uses only first-party cookies needed to sign you in and to approve agent connections. No advertising
+          or tracking cookies. Your browser also
           remembers, in its local storage, if you dismissed the passkey suggestion.
         </p>
       </section>
@@ -74,7 +77,8 @@ export default function Privacy() {
         <h2>Your choices</h2>
         <p>
           Ask through the <Link href="/contact">contact form</Link> and we will delete your account and your
-          organisation&apos;s data within 30 days. Disconnecting a cloud account stops OpsAgent using its role at once.
+          organisation&apos;s data within 30 days. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
+          days. Disconnecting a cloud account stops OpsAgent using its role at once.
         </p>
         <p>If an incident on our side affects your data, we tell you within 72 hours of confirming it.</p>
       </section>

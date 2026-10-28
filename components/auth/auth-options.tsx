@@ -20,6 +20,7 @@ type Props = {
 export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }: Props) {
   const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState(initialError ? messageFor(initialError) : null);
+  const [notice, setNotice] = useState<string | null>(null);
   // Disabled until hydrated: a click before then would be lost, and a native submit would put the email in the URL.
   const [busy, setBusy] = useState(true);
   useEffect(() => setBusy(false), []);
@@ -31,6 +32,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
   async function run(action: () => Promise<void>) {
     setBusy(true);
     setError(null);
+    setNotice(null);
     try {
       await action();
     } catch (err) {
@@ -52,14 +54,18 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
       window.location.assign(url);
     });
 
-  function send(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const address = String(new FormData(e.currentTarget).get("email"));
-    void run(async () => {
+  const request = (address: string, sent?: string) =>
+    run(async () => {
       await unwrap(api.POST("/auth/magic-link", { body: { email: address, return_to: returnTo } }));
       setEmail(address);
+      setNotice(sent ?? null);
+      setAttempt((n) => n + 1); // a fresh, empty code input
       setBusy(false);
     });
+
+  function send(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    void request(String(new FormData(e.currentTarget).get("email")));
   }
 
   const verify = (code: string) =>
@@ -79,8 +85,12 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
         <p>We sent a sign-in code to {email}. It works once and expires in 15 minutes.</p>
         <CodeInput key={attempt} onComplete={verify} disabled={busy} />
         {alert}
+        {notice ? <p role="status">{notice}</p> : null}
         <p className="auth-note">Or open the link in the email.</p>
-        <button type="button" className="auth-link" onClick={() => { setEmail(null); setError(null); }}>
+        <button type="button" className="auth-link" disabled={busy} onClick={() => request(email, "We sent a new link and code.")}>
+          Send a new code
+        </button>
+        <button type="button" className="auth-link" onClick={() => { setEmail(null); setError(null); setNotice(null); }}>
           Use a different email
         </button>
       </div>

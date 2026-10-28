@@ -21,14 +21,14 @@ export async function linkInMail(request: APIRequestContext, email: string, patt
   return link;
 }
 
-/** Polls mailpit for the newest sign-in code sent to `email` (subject first, then the body). */
-export async function codeInMail(request: APIRequestContext, email: string): Promise<string> {
+/** Polls mailpit until `count` mails reached `email`; returns the newest one's code (subject first, then the body). */
+export async function codeInMail(request: APIRequestContext, email: string, count = 1): Promise<string> {
   let code = "";
   await expect(async () => {
     const search = await request.get(`${MAILPIT}/api/v1/search`, { params: { query: `to:"${email}"` } });
     const { messages } = (await search.json()) as { messages: { ID: string; Subject: string }[] };
-    const m = messages[0];
-    if (!m) throw new Error(`no mail to ${email} yet`);
+    const m = messages[0]; // newest first
+    if (!m || messages.length < count) throw new Error(`fewer than ${count} mails to ${email} yet`);
     code = m.Subject.match(/code: (\d{6})/)?.[1] ?? "";
     if (!code) {
       const { Text } = (await (await request.get(`${MAILPIT}/api/v1/message/${m.ID}`)).json()) as { Text: string };

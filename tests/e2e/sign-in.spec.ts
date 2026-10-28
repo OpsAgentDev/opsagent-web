@@ -26,12 +26,26 @@ test("sign-in signs in with the emailed code", async ({ page, request }) => {
   await expect(page).toHaveURL(/\/dashboard$/);
 });
 
-test("a wrong code shows the error and the form can start over", async ({ page }) => {
+test("a wrong code shows the error, a new code signs in", async ({ page, request }) => {
+  const email = `e2e-wrong-${Date.now()}@example.com`;
   await page.goto("/sign-in");
-  await page.getByLabel("Email").fill(`e2e-wrong-${Date.now()}@example.com`);
+  await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
-  await page.getByLabel("Code").fill("000000");
+  const first = await codeInMail(request, email);
+  await page.getByLabel("Code").fill(first === "000000" ? "111111" : "000000");
   await expect(page.getByText("That code didn't work. Check the latest email or send a new one.")).toBeVisible();
+
+  await page.getByRole("button", { name: "Send a new code" }).click();
+  await expect(page.getByText("We sent a new link and code.")).toBeVisible();
+  await expect(page.getByLabel("Code")).toHaveValue("");
+  await page.getByLabel("Code").fill(await codeInMail(request, email, 2));
+  await expect(page).toHaveURL(/\/dashboard$/);
+});
+
+test("use a different email returns to the form", async ({ page }) => {
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(`e2e-other-${Date.now()}@example.com`);
+  await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByRole("button", { name: "Use a different email" }).click();
   await expect(page.getByLabel("Email")).toBeVisible();
 });
