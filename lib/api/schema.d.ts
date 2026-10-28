@@ -56,6 +56,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/magic-link/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Same session and `redirect` as redeem; 10 attempts per client IP and per address per 15
+         *     minutes, then 429.
+         */
+        post: operations["auth_verify_code"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/me": {
         parameters: {
             query?: never;
@@ -67,6 +87,116 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["auth_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys/login/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Starts the session and returns where to land: the `return_to` given at start, else the
+         *     dashboard. Without a started ceremony, or for an unknown or bad credential, 401
+         *     `passkey_invalid`.
+         */
+        post: operations["auth_login_finish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys/login/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * WebAuthn request options (`{publicKey: …}`) with an empty allow list, for
+         *     `PublicKeyCredential.parseRequestOptionsFromJSON`.
+         */
+        post: operations["auth_login_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys/register/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_register_finish"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys/register/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * WebAuthn creation options (`{publicKey: …}`) for
+         *     `PublicKeyCredential.parseCreationOptionsFromJSON`; a discoverable credential is required.
+         */
+        post: operations["auth_register_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/passkeys/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Only your own passkeys; anyone else's (or an unknown id) is 404. */
+        delete: operations["auth_remove"];
         options?: never;
         head?: never;
         patch?: never;
@@ -98,6 +228,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["auth_github_start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign-in/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["auth_google_callback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/sign-in/google/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_google_start"];
         delete?: never;
         options?: never;
         head?: never;
@@ -946,6 +1108,10 @@ export interface components {
             id: string;
             role: string;
         };
+        LoginFinish: {
+            /** @description The authenticator's assertion (`credential.toJSON()`). */
+            credential: Record<string, never>;
+        };
         MagicLinkRequest: {
             email: string;
             /**
@@ -956,6 +1122,8 @@ export interface components {
         };
         Me: {
             email: string;
+            /** @description Whether the user has registered a passkey (the web suggests one when not). */
+            has_passkey: boolean;
             /** Format: uuid */
             id: string;
             name?: string | null;
@@ -1143,6 +1311,15 @@ export interface components {
             /** @description Pass as `cursor` to get the next page; null on the last page. */
             next_cursor?: string | null;
         };
+        PasskeyView: {
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            last_used_at?: string | null;
+            name: string;
+        };
         /** @description The wire shape of every error (`application/problem+json`). */
         Problem: {
             /** @description Stable machine-readable code, e.g. `not_found`, `validation`, `rate_limited`, `csrf`. */
@@ -1181,6 +1358,12 @@ export interface components {
         };
         Redirect: {
             redirect: string;
+        };
+        RegisterFinish: {
+            /** @description The authenticator's response (`credential.toJSON()`). */
+            credential: Record<string, never>;
+            /** @description Defaults to "Passkey <date>"; at most 100 characters. */
+            name?: string | null;
         };
         ResourceSummary: {
             /** Format: uuid */
@@ -1256,6 +1439,11 @@ export interface components {
         VerifyBody: {
             /** @description The read role's ARN from the stack outputs (required for `aws`). */
             role_arn?: string;
+        };
+        VerifyRequest: {
+            /** @description The 6-digit code from the sign-in mail; spaces are ignored. */
+            code: string;
+            email: string;
         };
         WaitlistRequest: {
             email: string;
@@ -1360,6 +1548,54 @@ export interface operations {
             };
         };
     };
+    auth_verify_code: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description Session cookie set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     auth_me: {
         parameters: {
             query?: never;
@@ -1387,34 +1623,24 @@ export interface operations {
             };
         };
     };
-    auth_github_callback: {
+    auth_list: {
         parameters: {
-            query: {
-                code: string;
-                state: string;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Session cookie set; redirects to the validated return_to, else the web dashboard */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            400: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Problem"];
+                    "application/json": components["schemas"]["PasskeyView"][];
                 };
             };
-            502: {
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1424,7 +1650,281 @@ export interface operations {
             };
         };
     };
+    auth_login_finish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginFinish"];
+            };
+        };
+        responses: {
+            /** @description Session cookie set */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Redirect"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_login_start: {
+        parameters: {
+            query?: {
+                /** @description Where sign-in lands afterwards; same rule as the magic link's `return_to`. */
+                return_to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description WebAuthn request options */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_register_finish: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterFinish"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PasskeyView"];
+                };
+            };
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The credential is already registered */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_register_start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description WebAuthn creation options */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_remove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_github_callback: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+                /** @description Set by the provider when the user cancelled or denied. */
+                error?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Session cookie set; redirects to the validated return_to, else the web dashboard. A failure redirects to /sign-in?error=<code> */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     auth_github_start: {
+        parameters: {
+            query?: {
+                /** @description Where sign-in lands afterwards; same rule as the magic link's `return_to`. */
+                return_to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorizeUrl"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_google_callback: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+                /** @description Set by the provider when the user cancelled or denied. */
+                error?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Session cookie set; redirects to the validated return_to, else the web dashboard. A failure redirects to /sign-in?error=<code> */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    auth_google_start: {
         parameters: {
             query?: {
                 /** @description Where sign-in lands afterwards; same rule as the magic link's `return_to`. */
