@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "How it works · OpsAgent",
-  description: "Connect read-only, checks run, you get a morning briefing. Urgent problems alert you right away.",
+  description: "Connect read-only, checks run, you get a morning briefing. Urgent exposures alert you within minutes.",
 };
 
 export default function HowItWorks() {
@@ -31,8 +31,8 @@ export default function HowItWorks() {
         <li>
           <h2>Urgent alerts</h2>
           <p>
-            New critical findings go to Slack right away, at any hour, or by email to the owners if Slack isn&apos;t
-            connected. Owners can switch urgent alerts off per connection in settings.
+            New critical findings from the 15-minute checks go to Slack right away, at any hour. Criticals the nightly
+            scan finds alert as soon as it finishes. Without Slack, the owners get an email. Owners can switch urgent alerts off per connection in settings.
           </p>
         </li>
         <li>

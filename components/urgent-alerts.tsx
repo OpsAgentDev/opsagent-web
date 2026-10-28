@@ -8,8 +8,10 @@ type Props = { owner: boolean; org: string; connections: Connection[]; onChanged
 /** Per-connection switch for urgent alerts (on by default). Owners only; brain enforces it too. */
 export function UrgentAlerts({ owner, org, connections, onChanged }: Props) {
   const [error, setError] = useState<Error | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
 
   async function toggle(id: string, urgent_alerts: boolean) {
+    setBusy(id);
     try {
       await unwrap(
         api.PATCH("/orgs/{org}/connections/{id}", {
@@ -21,6 +23,8 @@ export function UrgentAlerts({ owner, org, connections, onChanged }: Props) {
       onChanged();
     } catch (err) {
       setError(err as Error);
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -33,7 +37,7 @@ export function UrgentAlerts({ owner, org, connections, onChanged }: Props) {
           <input
             type="checkbox"
             checked={c.urgent_alerts}
-            disabled={!owner}
+            disabled={!owner || busy === c.id}
             onChange={(e) => toggle(c.id, e.target.checked)}
           />
           <span>

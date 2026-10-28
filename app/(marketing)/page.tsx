@@ -18,11 +18,11 @@ const STEPS = [
   },
   {
     title: "Checks run",
-    body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing. Urgent exposures every 15 minutes, the rest every night.",
+    body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing.",
   },
   {
     title: "Briefing and alerts",
-    body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report. Urgent problems reach you right away.",
+    body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report. Urgent exposures reach you within minutes.",
   },
 ];
 
