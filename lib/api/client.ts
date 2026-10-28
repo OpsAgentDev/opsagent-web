@@ -54,6 +54,7 @@ export async function unwrap<R extends { data?: unknown; error?: unknown; respon
 const ANONYMOUS = new Set([
   "/auth/magic-link", "/auth/magic-link/redeem", "/auth/magic-link/verify",
   "/auth/sign-in/github/start", "/auth/sign-in/google/start",
+  "/auth/passkeys/login/start", "/auth/passkeys/login/finish",
   "/recipients/confirm", "/unsubscribe/{token}",
 ]);
 // Bound to the session id; sign-in ends in a full page load, which drops this cache.

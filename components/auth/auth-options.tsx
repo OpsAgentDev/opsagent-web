@@ -13,7 +13,7 @@ type Props = {
   returnTo?: string;
   /** A provider callback's `?error=` code. */
   error?: string;
-  /** Sign-in only: the passkey button, shown first. */
+  /** Sign-in only: the passkey button and its own "or" divider, shown first (it renders nothing without WebAuthn). */
   passkeySlot?: ReactNode;
 };
 
@@ -101,7 +101,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
     <div className="auth-options">
       <h1>{signIn ? "Sign in to OpsAgent" : "Create your OpsAgent account"}</h1>
       {alert}
-      {signIn && passkeySlot ? <>{passkeySlot}<p className="auth-or">or</p></> : null}
+      {signIn ? passkeySlot : null}
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}>Continue with Google</button>
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}>Continue with GitHub</button>
       <p className="auth-or">or</p>

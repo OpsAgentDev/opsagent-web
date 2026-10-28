@@ -10,3 +10,6 @@ export function useOrg(): Org {
   if (!org) throw new Error("useOrg outside the (app) layout");
   return org;
 }
+
+/** Reloads the (app) layout's session (`me`, orgs), e.g. after a passkey is added or removed. */
+export const SessionReloadContext = createContext<() => void>(() => {});
