@@ -92,7 +92,7 @@ test("contact shows rate-limit message on 429", async ({ page }) => {
 test("how-it-works renders five steps", async ({ page }) => {
   await page.goto("/how-it-works");
   await expect(page.locator("main h2")).toHaveCount(5);
-  expect(await page.locator("main .soon").count()).toBeGreaterThanOrEqual(2);
+  await expect(page.locator("main .soon")).toHaveCount(0);
   await expect(page.getByRole("link", { name: /connect your agent/i })).toHaveAttribute("href", "/docs/connect-your-agent");
 });
 
@@ -108,4 +108,18 @@ test("pricing shows three plans with exact prices", async ({ page }) => {
   for (const p of ["$99", "$299", "$599", "14-day free trial"]) await expect(main).toContainText(p);
   await expect(main.getByRole("link", { name: "Join the waitlist" })).toHaveCount(3);
   await expect(main.getByRole("link", { name: "Join the waitlist" }).first()).toHaveAttribute("href", "/#waitlist");
+});
+
+const URGENT = "Checks for urgent exposures every 15 minutes, day and night, and alerts you right away. Everything else waits for the morning briefing.";
+
+test("marketing pages no longer say coming soon except for the mobile app", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText(URGENT).first()).toBeVisible();
+  const soon = page.locator("main .soon");
+  await expect(soon).toHaveCount(1);
+  await expect(page.locator(".mobile-strip .soon")).toHaveCount(1);
+  await page.goto("/how-it-works");
+  await expect(page.getByText(URGENT).first()).toBeVisible();
+  await page.goto("/security");
+  await expect(page.getByText("Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.")).toBeVisible();
 });

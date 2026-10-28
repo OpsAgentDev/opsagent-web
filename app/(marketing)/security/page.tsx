@@ -19,6 +19,7 @@ export default function Security() {
       </section>
       <section>
         <h2>What it reads, and what it can&apos;t</h2>
+        <p>Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.</p>
         <p>
           It cannot read your stored data (objects, database rows, secret values) or change anything. The role has no
           write permissions at all, so OpsAgent cannot change, stop or delete anything. Three scoped reads are the

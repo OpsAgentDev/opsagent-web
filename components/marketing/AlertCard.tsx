@@ -1,7 +1,6 @@
 import { Mark } from "@/components/brand/Logo";
-import { ComingSoon } from "@/components/marketing/ComingSoon";
 
-/** Static example of an urgent alert; invented, so it is labelled as a sample and tagged Coming soon. */
+/** Static example of an urgent alert; invented, so it is labelled as a sample. */
 export function AlertCard() {
   return (
     <figure className="briefing alert" aria-label="Sample alert">
@@ -22,9 +21,6 @@ export function AlertCard() {
           <p className="cites">Sent to #ops right away</p>
         </div>
       </div>
-      <p className="briefing-foot">
-        <ComingSoon />
-      </p>
     </figure>
   );
 }

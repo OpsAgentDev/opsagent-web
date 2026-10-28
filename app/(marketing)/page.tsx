@@ -6,9 +6,9 @@ import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { MCP_URL } from "@/lib/agents";
 
 const DAY_NIGHT = [
-  { title: "While you sleep", body: "Checks keep running.", soon: true },
-  { title: "When it's urgent", body: "An alert in Slack or the app.", soon: true },
-  { title: "Every morning", body: "One short briefing, skipped when nothing changed.", soon: false },
+  { title: "While you sleep", body: "Urgent exposures are checked every 15 minutes." },
+  { title: "When it's urgent", body: "An alert in Slack, or email if Slack isn't connected." },
+  { title: "Every morning", body: "One short briefing, skipped when nothing changed." },
 ];
 
 const STEPS = [
@@ -18,13 +18,11 @@ const STEPS = [
   },
   {
     title: "Checks run",
-    body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing. Every night today.",
-    soon: "Around the clock:",
+    body: "Deterministic checks run against your account. Fixed rules decide what is wrong, with no AI guessing. Urgent exposures every 15 minutes, the rest every night.",
   },
   {
     title: "Briefing and alerts",
-    body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report.",
-    soon: "Urgent alerts:",
+    body: "A morning briefing in Slack, exceptions only and skipped when nothing changed, plus a weekly report. Urgent problems reach you right away.",
   },
 ];
 
@@ -59,8 +57,7 @@ export default function Home() {
             Everything else waits for a calm morning briefing. It never changes anything.
           </p>
           <p className="hero-note">
-            Around-the-clock checks and instant alerts are coming soon; nightly checks and the morning briefing are what
-            alpha users get today.
+            Checks for urgent exposures every 15 minutes, day and night, and alerts you right away. Everything else waits for the morning briefing.
           </p>
           <WaitlistForm source="landing-hero" />
           <p className="hero-who">
@@ -81,7 +78,6 @@ export default function Home() {
             <li key={d.title}>
               <h3>{d.title}</h3>
               <p>{d.body}</p>
-              {d.soon && <ComingSoon />}
             </li>
           ))}
         </ul>
@@ -94,11 +90,6 @@ export default function Home() {
             <li key={s.title}>
               <h3>{s.title}</h3>
               <p>{s.body}</p>
-              {s.soon && (
-                <p className="step-soon">
-                  {s.soon} <ComingSoon />
-                </p>
-              )}
             </li>
           ))}
         </ol>
