@@ -293,3 +293,7 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .contact button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
 .mkt .contact .contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
 .mkt a.brand { color: var(--ink); text-decoration: none; }
+
+/* Privacy, Terms */
+.mkt .legal-list { margin-top: 12px; padding-left: 1.3em; list-style: disc; max-width: 40em; color: var(--body); }
+.mkt .legal-list li + li { margin-top: 6px; }
