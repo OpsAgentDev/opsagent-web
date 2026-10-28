@@ -10,7 +10,7 @@ const MESSAGES = new Map<string, string>([
   ["account_exists", "An OpsAgent account already uses this email. Sign in with email instead."],
   ["google_email_unmanaged", "Google doesn't manage this email address. Use email sign-in instead."],
   ["code_invalid", "That code didn't work. Check the latest email or send a new one."],
-  ["passkey_invalid", "That passkey isn't registered with OpsAgent."],
+  ["passkey_invalid", "That passkey couldn't be verified. Try again or use another option."],
   ["passkey_no_ceremony", "Start passkey sign-in again."],
   ["google_not_configured", "Google sign-in isn't available yet."],
   ["github_not_configured", "GitHub sign-in isn't available yet."],

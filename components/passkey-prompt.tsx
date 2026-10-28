@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { log } from "@/lib/log";
-import { addPasskey, cancelled, DISMISSED_KEY, isDismissed, supported } from "@/lib/webauthn";
+import { addPasskey, cancelled, DISMISSED_KEY, isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
 
 /** The recommendation card, shown by the (app) layout while the user has no passkey. "Not now" hides it for 30 days. */
 export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
   // Client-only: the layout renders this after its client-side session load, so localStorage is there.
   const [hidden, setHidden] = useState(
-    () => !supported() || isDismissed(Number(localStorage.getItem(DISMISSED_KEY)) || null, Date.now()),
+    () => !supported() || isDismissed(readDismissedAt(localStorage), Date.now()),
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -28,7 +28,11 @@ export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
   }
 
   function notNow() {
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    try {
+      localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    } catch {
+      // Blocked storage: the card is only hidden for this page view.
+    }
     setHidden(true);
   }
 

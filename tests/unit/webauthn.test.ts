@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cancelled, fromBase64url, isDismissed, toBase64url } from "@/lib/webauthn";
+import { cancelled, fromBase64url, isDismissed, readDismissedAt, toBase64url } from "@/lib/webauthn";
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -22,5 +22,11 @@ describe("webauthn", () => {
     expect(isDismissed(now - 29 * DAY, now)).toBe(true);
     expect(isDismissed(now - 31 * DAY, now)).toBe(false);
     expect(isDismissed(null, now)).toBe(false);
+  });
+
+  it("readDismissedAt treats blocked storage as not dismissed", () => {
+    const blocked = { getItem: () => { throw new DOMException("blocked", "SecurityError"); } };
+    expect(readDismissedAt(blocked)).toBeNull();
+    expect(readDismissedAt({ getItem: () => "123" })).toBe(123);
   });
 });

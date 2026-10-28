@@ -69,3 +69,16 @@ test("privacy and terms pages render and are in the footer", async ({ page }) =>
     await expect(page.getByRole("contentinfo").getByRole("link", { name: heading.split(" ")[0] })).toHaveAttribute("href", path);
   }
 });
+
+test("a signed-in visitor on sign-in and sign-up goes to the dashboard", async ({ page, request }) => {
+  const email = `e2e-again-${Date.now()}@example.com`;
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Send link and code" }).click();
+  await page.getByLabel("Code").fill(await codeInMail(request, email));
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.goto("/sign-in");
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.goto("/sign-up");
+  await expect(page).toHaveURL(/\/dashboard$/);
+});

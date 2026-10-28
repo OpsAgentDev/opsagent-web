@@ -24,6 +24,13 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
   // Disabled until hydrated: a click before then would be lost, and a native submit would put the email in the URL.
   const [busy, setBusy] = useState(true);
   useEffect(() => setBusy(false), []);
+  // Already signed in: brain would answer the buttons below with a csrf 403, so leave instead.
+  useEffect(() => {
+    api.GET("/auth/me").then(({ response }) => {
+      if (!response.ok) return;
+      window.location.replace(returnTo && isSameOrigin(returnTo, window.location.origin) ? returnTo : "/dashboard");
+    }, () => {});
+  }, [returnTo]);
   // Remounts the code input (clearing it) after a wrong code.
   const [attempt, setAttempt] = useState(0);
   const query = { return_to: returnTo };
@@ -85,7 +92,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
         <p>We sent a sign-in code to {email}. It works once and expires in 15 minutes.</p>
         <CodeInput key={attempt} onComplete={verify} disabled={busy} />
         {alert}
-        {notice ? <p role="status">{notice}</p> : null}
+        <p role="status">{notice}</p>
         <p className="auth-note">Or open the link in the email.</p>
         <button type="button" className="auth-link" disabled={busy} onClick={() => request(email, "We sent a new link and code.")}>
           Send a new code

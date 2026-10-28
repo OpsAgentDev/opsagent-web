@@ -95,6 +95,15 @@ export async function signInWithPasskey(returnTo?: string): Promise<string> {
 export const DISMISSED_KEY = "opsagent.passkeyPromptDismissedAt";
 const DISMISS_FOR = 30 * 24 * 60 * 60 * 1000;
 
+/** The stored "Not now" time, or null when none is stored or storage is blocked. */
+export function readDismissedAt(storage: Pick<Storage, "getItem">): number | null {
+  try {
+    return Number(storage.getItem(DISMISSED_KEY)) || null;
+  } catch {
+    return null;
+  }
+}
+
 /** True while a "Not now" at `at` (epoch ms) still hides the recommendation. */
 export function isDismissed(at: number | null, now: number): boolean {
   return at !== null && now - at < DISMISS_FOR;

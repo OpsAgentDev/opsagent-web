@@ -6,6 +6,7 @@ describe("auth", () => {
   it("maps codes to sentences, unknown to the default", () => {
     expect(messageFor("oauth_state")).toBe("Sign-in took too long or was opened in another tab. Try again.");
     expect(messageFor("google_no_verified_email")).toBe("That account has no verified email address.");
+    expect(messageFor("passkey_invalid")).toBe("That passkey couldn't be verified. Try again or use another option.");
     expect(messageFor("rate_limited")).toBe("Too many attempts. Wait a few minutes and try again.");
     expect(messageFor("<script>")).toBe("Sign-in failed. Try again.");
     expect(messageFor("toString")).toBe("Sign-in failed. Try again.");
