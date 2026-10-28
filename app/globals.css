@@ -40,3 +40,6 @@ pre { background: var(--surface-2); border: 1px solid var(--line); border-radius
 dialog { color: var(--body); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
 dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
 a.brand { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
+.passkey-prompt { margin: 24px max(24px, calc((100% - 912px) / 2)) 0; } /* lines up with main */
+.passkey-prompt h2 { margin: 0 0 4px; font-size: 18px; }
+.passkey-prompt p { margin: 0 0 12px; }

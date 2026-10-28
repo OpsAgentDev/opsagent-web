@@ -27,8 +27,8 @@ function Confirm() {
 
   if (!token) return <p className="error">This sign-in link is incomplete.</p>;
   return (
-    <div className="stack">
-      <button type="button" onClick={redeem}>
+    <div className="auth-options">
+      <button type="button" className="auth-btn primary" onClick={redeem}>
         Sign in
       </button>
       <ErrorNote error={error} />
@@ -38,7 +38,7 @@ function Confirm() {
 
 export default function Callback() {
   return (
-    <main>
+    <main className="auth">
       <h1>Sign in to OpsAgent</h1>
       <Suspense>
         <Confirm />

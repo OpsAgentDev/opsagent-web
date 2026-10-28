@@ -21,6 +21,24 @@ export async function linkInMail(request: APIRequestContext, email: string, patt
   return link;
 }
 
+/** Polls mailpit until `count` mails reached `email`; returns the newest one's code (subject first, then the body). */
+export async function codeInMail(request: APIRequestContext, email: string, count = 1): Promise<string> {
+  let code = "";
+  await expect(async () => {
+    const search = await request.get(`${MAILPIT}/api/v1/search`, { params: { query: `to:"${email}"` } });
+    const { messages } = (await search.json()) as { messages: { ID: string; Subject: string }[] };
+    const m = messages[0]; // newest first
+    if (!m || messages.length < count) throw new Error(`fewer than ${count} mails to ${email} yet`);
+    code = m.Subject.match(/code: (\d{6})/)?.[1] ?? "";
+    if (!code) {
+      const { Text } = (await (await request.get(`${MAILPIT}/api/v1/message/${m.ID}`)).json()) as { Text: string };
+      code = Text.match(/enter this code: (\d{6})/)?.[1] ?? "";
+    }
+    expect(code).not.toBe("");
+  }).toPass({ timeout: 30_000 });
+  return code;
+}
+
 /** Runs SQL against the e2e database (scripts/e2e.sh creates it fresh per run). */
 export function sql(query: string): string {
   return execFileSync(
@@ -36,16 +54,13 @@ export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }
 
-/** Signs a new user in through the magic link and creates an organisation; returns the email. */
+/** Signs a new user in with the emailed code and creates an organisation; returns the email. */
 export async function signUp(page: Page, request: APIRequestContext): Promise<string> {
   const email = `e2e-${Date.now()}@example.com`;
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
-  await page.getByRole("button", { name: "Send sign-in link" }).click();
-  await expect(page.getByText("Check your email")).toBeVisible();
-
-  await page.goto(await linkInMail(request, email, /https?:\/\/\S+\/auth\/callback\?token=\S+/));
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("button", { name: "Send link and code" }).click();
+  await page.getByLabel("Code").fill(await codeInMail(request, email));
   await expect(page).toHaveURL(/\/dashboard$/);
 
   await page.getByLabel("Organisation name").fill(`E2E ${Date.now()}`);

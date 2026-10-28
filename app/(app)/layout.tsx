@@ -5,8 +5,9 @@ import { useEffect, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { CreateOrg } from "@/components/create-org";
 import { ErrorNote } from "@/components/error-note";
+import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { api, ApiError, unwrap } from "@/lib/api/client";
-import { OrgContext } from "@/lib/org";
+import { OrgContext, SessionReloadContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
 async function loadSession() {
@@ -36,18 +37,22 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/deliveries">Deliveries</Link>
         <Link href="/settings/delivery">Delivery settings</Link>
         <Link href="/settings/agents">Connected agents</Link>
+        <Link href="/settings/security">Security</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}
         </span>
       </header>
-      {org ? (
-        <OrgContext.Provider value={org}>{children}</OrgContext.Provider>
-      ) : (
-        <main>
-          <CreateOrg onCreated={reload} />
-        </main>
-      )}
+      {data.me.has_passkey ? null : <PasskeyPrompt onAdded={reload} />}
+      <SessionReloadContext.Provider value={reload}>
+        {org ? (
+          <OrgContext.Provider value={org}>{children}</OrgContext.Provider>
+        ) : (
+          <main>
+            <CreateOrg onCreated={reload} />
+          </main>
+        )}
+      </SessionReloadContext.Provider>
     </>
   );
 }

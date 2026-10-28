@@ -49,9 +49,14 @@ export async function unwrap<R extends { data?: unknown; error?: unknown; respon
   return data as Exclude<R["data"], undefined>;
 }
 
-// Requests made without a session: brain checks their Origin, or (confirm, unsubscribe) their
-// single-use token, instead of a CSRF token.
-const ANONYMOUS = new Set(["/auth/magic-link", "/auth/magic-link/redeem", "/recipients/confirm", "/unsubscribe/{token}"]);
+// Requests made without a session (brain checks CSRF only on signed-in sessions): brain checks their
+// Origin, their OAuth state, or (confirm, unsubscribe) their single-use token instead.
+const ANONYMOUS = new Set([
+  "/auth/magic-link", "/auth/magic-link/redeem", "/auth/magic-link/verify",
+  "/auth/sign-in/github/start", "/auth/sign-in/google/start",
+  "/auth/passkeys/login/start", "/auth/passkeys/login/finish",
+  "/recipients/confirm", "/unsubscribe/{token}",
+]);
 // Bound to the session id; sign-in ends in a full page load, which drops this cache.
 let csrf: Promise<string> | undefined;
 
