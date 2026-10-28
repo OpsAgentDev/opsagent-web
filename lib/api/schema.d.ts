@@ -930,6 +930,8 @@ export interface components {
             status: string;
             status_reason?: string | null;
             template_version?: string | null;
+            /** @description Whether new critical findings alert the owners right away. */
+            urgent_alerts: boolean;
         };
         ConnectionPatch: {
             /**
@@ -947,6 +949,8 @@ export interface components {
              *     Email recipients are managed through `/orgs/{org}/recipients` with `connection_id`.
              */
             slack_channel_id?: string | null;
+            /** @description Tell the owners right away about new critical findings (default on). */
+            urgent_alerts?: boolean | null;
         };
         ConsentDecision: {
             deny?: boolean | null;

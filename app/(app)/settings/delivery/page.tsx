@@ -2,6 +2,7 @@
 import { ErrorNote } from "@/components/error-note";
 import { Recipients } from "@/components/recipients";
 import { SlackSettings } from "@/components/slack-settings";
+import { UrgentAlerts } from "@/components/urgent-alerts";
 import { api, unwrap } from "@/lib/api/client";
 import { isOwner } from "@/lib/delivery";
 import { useOrg } from "@/lib/org";
@@ -43,6 +44,12 @@ export default function DeliverySettings() {
             owner={owner}
             active={!!slack}
             teamName={slack?.team_name}
+            connections={data.connections}
+            onChanged={reload}
+          />
+          <UrgentAlerts
+            owner={owner}
+            org={org.slug}
             connections={data.connections}
             onChanged={reload}
           />

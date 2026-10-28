@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ComingSoon } from "@/components/marketing/ComingSoon";
 
 export const metadata: Metadata = {
   title: "How it works · OpsAgent",
-  description: "Connect read-only, checks run, you get a morning briefing. Urgent alerts are coming soon.",
+  description: "Connect read-only, checks run, you get a morning briefing. Urgent exposures alert you within minutes.",
 };
 
 export default function HowItWorks() {
@@ -24,20 +23,16 @@ export default function HowItWorks() {
         <li>
           <h2>Checks run</h2>
           <p>
-            Today they run every night. Checks are deterministic, with no AI guessing, and every finding cites the
+            A full scan runs every night. Checks are deterministic, with no AI guessing, and every finding cites the
             resource and the evidence.
           </p>
-          <p className="step-soon">
-            Around the clock: <ComingSoon />
-          </p>
+          <p>Checks for urgent exposures every 15 minutes, day and night, and alerts you right away. Everything else waits for the morning briefing.</p>
         </li>
         <li>
-          <h2>
-            Urgent alerts <ComingSoon />
-          </h2>
+          <h2>Urgent alerts</h2>
           <p>
-            Critical findings go to Slack and the mobile app right away, at any hour. You choose what counts as urgent
-            and where it goes.
+            New critical findings from the 15-minute checks go to Slack right away, at any hour. Criticals the nightly
+            scan finds alert as soon as it finishes. Without Slack, the owners get an email. Owners can switch urgent alerts off per connection in settings.
           </p>
         </li>
         <li>
