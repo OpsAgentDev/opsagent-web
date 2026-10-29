@@ -65,7 +65,7 @@ function BillingPage() {
               {n} cloud {n === 1 ? "account" : "accounts"} billed on {tier}
             </p>
           )}
-          {data.current_period_end && subscribed && (
+          {data.current_period_end && subscribed && status !== "trialing" && (
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
           {!owner && <p className="muted">Only an owner can change the plan.</p>}

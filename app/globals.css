@@ -45,4 +45,4 @@ a.brand { display: inline-flex; align-items: center; color: inherit; text-decora
 .passkey-prompt p { margin: 0 0 12px; }
 .banner { margin: 0; padding: 10px 24px; border-bottom: 1px solid var(--line); }
 .banner.warn { background: var(--warn-bg); color: var(--ink); }
-button.fit { align-self: flex-start; }
+button.fit { justify-self: start; }

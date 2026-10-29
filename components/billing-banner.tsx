@@ -22,7 +22,7 @@ export function BillingBanner({ org }: { org: string }) {
           OpsAgent is paused. Start or renew your plan to resume checks. <Link href="/settings/billing">Billing</Link>
         </p>
       )}
-      {data.over_limit && (
+      {data.enforced && data.over_limit && (
         <p role="status" className="banner warn">
           You&apos;re over your plan&apos;s member or integration limit. Remove some or change plan.{" "}
           <Link href="/settings/billing">Billing</Link>
