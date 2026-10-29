@@ -15,6 +15,7 @@ export type Problem = Schemas["Problem"];
 export type Recipient = Schemas["Recipient"];
 export type Member = Schemas["Member"];
 export type Channel = Schemas["Channel"];
+export type Billing = Schemas["BillingOut"];
 
 /** A production build without an explicit brain URL would ship pointing at localhost. */
 export function resolveApiBaseUrl(configured: string | undefined, nodeEnv: string | undefined): string {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
+import { BillingBanner } from "@/components/billing-banner";
 import { CreateOrg } from "@/components/create-org";
 import { ErrorNote } from "@/components/error-note";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
@@ -38,11 +39,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/settings/delivery">Delivery settings</Link>
         <Link href="/settings/agents">Connected agents</Link>
         <Link href="/settings/security">Security</Link>
+        <Link href="/settings/billing">Billing</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}
         </span>
       </header>
+      {org && <BillingBanner org={org.slug} />}
       {data.me.has_passkey ? null : <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
         {org ? (

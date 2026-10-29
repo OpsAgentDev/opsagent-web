@@ -31,7 +31,8 @@ export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:3000 WEB_BASE
   REDIS_URL="redis://localhost:$REDIS_PORT" \
   OPSAGENT_CONNECTORS=fake MAILER_SMTP_URL=smtp://localhost:1025 \
   OPSAGENT_KEK="${OPSAGENT_KEK:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}" \
-  SLACK_CLIENT_ID=e2e-slack-client SLACK_CLIENT_SECRET=e2e-slack-secret LOG_LEVEL=info
+  SLACK_CLIENT_ID=e2e-slack-client SLACK_CLIENT_SECRET=e2e-slack-secret LOG_LEVEL=info \
+  STRIPE_SECRET_KEY=sk_test_e2e_unused STRIPE_API_BASE=http://127.0.0.1:9 # GET billing needs a key; nothing reaches Stripe
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
 # Brain (axum, no Loco) in development mode: APP_ENV=development above, so migrations run on boot;

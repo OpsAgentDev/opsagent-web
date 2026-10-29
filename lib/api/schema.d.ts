@@ -410,6 +410,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["billing_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/billing/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["billing_checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/billing/portal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["billing_portal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/connections": {
         parameters: {
             query?: never;
@@ -861,6 +909,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["billing_stripe_webhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -889,6 +953,26 @@ export interface components {
         AuthorizeUrl: {
             url: string;
         };
+        BillingOut: {
+            /** Format: date-time */
+            current_period_end?: string | null;
+            /** @description Billing state gates the organisation (`BILLING_ENFORCED`). */
+            enforced: boolean;
+            limits?: components["schemas"]["Limits"] | null;
+            /** @description More members or integrations than the tier allows: new ones are refused. */
+            over_limit: boolean;
+            /**
+             * Format: int32
+             * @description Connections billed: at least 1 while subscribed, 0 otherwise.
+             */
+            quantity: number;
+            /** @description `none`, `trialing`, `active`, `past_due`, `paused`, `canceled` or `trial_ended`. */
+            status: string;
+            /** @description `starter`, `team` or `scale`. */
+            tier?: string | null;
+            /** Format: date-time */
+            trial_ends_at?: string | null;
+        };
         BriefingPreview: {
             /** @description `first_scan`, `daily`, or `none` when there is nothing to say. */
             kind: string;
@@ -898,6 +982,10 @@ export interface components {
         Channel: {
             id: string;
             name: string;
+        };
+        CheckoutIn: {
+            /** @description `starter`, `team` (default) or `scale`. Only a first subscription on `team` gets the trial. */
+            tier?: string | null;
         };
         ConfirmBody: {
             /** @description The token from the confirm link. */
@@ -1111,6 +1199,15 @@ export interface components {
             /** Format: uuid */
             id: string;
             role: string;
+        };
+        /** @description `None` is unlimited. */
+        Limits: {
+            /** Format: int32 */
+            integrations?: number | null;
+            /** Format: int32 */
+            investigations: number;
+            /** Format: int32 */
+            members?: number | null;
         };
         LoginFinish: {
             /** @description The authenticator's assertion (`credential.toJSON()`). */
@@ -1416,6 +1513,10 @@ export interface components {
             started_at?: string | null;
             /** @description `queued`, `running`, `done`, `partial`, `failed` or `skipped`. */
             status: string;
+        };
+        SessionUrl: {
+            /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/billing?status=…`. */
+            url: string;
         };
         SlackStart: {
             authorize_url: string;
@@ -2070,6 +2171,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2336,6 +2445,15 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            /** @description `billing_unavailable`: Stripe could not cancel the subscription */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
         };
     };
     orgs_update: {
@@ -2360,6 +2478,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Org"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -2437,7 +2564,192 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    billing_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingOut"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    billing_checkout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutIn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUrl"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `already_subscribed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    billing_portal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUrl"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `no_customer` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2499,6 +2811,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CreatedConnection"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -2587,6 +2908,15 @@ export interface operations {
                     "application/json": components["schemas"]["Disconnected"];
                 };
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -2628,6 +2958,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Connection"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -2685,6 +3024,15 @@ export interface operations {
                     "application/json": components["schemas"]["BriefingPreview"];
                 };
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -2714,6 +3062,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RunAccepted"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             404: {
@@ -2769,6 +3126,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RunAccepted"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -2987,6 +3353,15 @@ export interface operations {
                     "application/json": components["schemas"]["Finding"];
                 };
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -3024,6 +3399,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Finding"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             404: {
@@ -3067,6 +3451,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -3108,6 +3501,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Finding"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             404: {
@@ -3232,6 +3634,15 @@ export interface operations {
                     "application/json": components["schemas"]["SlackStart"];
                 };
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3277,6 +3688,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3317,6 +3737,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Invite"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -3393,6 +3822,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
             403: {
                 headers: {
@@ -3487,6 +3925,15 @@ export interface operations {
                     "application/json": components["schemas"]["Recipient"];
                 };
             };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3539,6 +3986,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
             403: {
                 headers: {
@@ -3772,6 +4228,46 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    billing_stripe_webhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The Stripe event, verified against `Stripe-Signature` */
+        requestBody: {
+            content: {
+                "text/plain": string;
+            };
+        };
+        responses: {
+            /** @description Applied, a repeat, or ignored */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `bad_signature` or `bad_payload` */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
         };
     };

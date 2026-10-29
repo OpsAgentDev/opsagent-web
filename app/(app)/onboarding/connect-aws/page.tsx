@@ -1,9 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type CreatedConnection } from "@/lib/api/client";
+import { loadBilling } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
+import { useApi } from "@/lib/use-api";
 
 const FAKE_ENABLED = process.env.NEXT_PUBLIC_OPSAGENT_FAKE === "1";
 
@@ -14,6 +16,12 @@ export default function ConnectAws() {
   const router = useRouter();
   const [created, setCreated] = useState<Created | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  // Enforced and no plan yet: brain would refuse the connection (402), so start at Billing.
+  const { data: billing } = useApi(() => loadBilling(org.slug).catch(() => null), [org.slug]);
+  const needsPlan = billing?.enforced && billing.status === "none";
+  useEffect(() => {
+    if (needsPlan) router.replace("/settings/billing");
+  }, [needsPlan, router]);
 
   async function create(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
