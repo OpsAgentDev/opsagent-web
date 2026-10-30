@@ -19,6 +19,7 @@ export default function Pricing() {
       <p className="lead">
         14-day free trial on Team. Card required. Prices are flat per cloud account, whatever its size.
       </p>
+      <p>Trial: 1,000 AI credits.</p>
       <ul className="plans">
         {PLANS.map((p) => (
           <li key={p.name}>

@@ -17,9 +17,13 @@ export function stateNote(code: string | undefined, role: string): StateNote | n
     case "ai_unavailable":
       return { text: "Dashboard AI isn't available yet." };
     case "ai_key_failing":
-      return { text: "Your AI key isn't working. Replace or remove it in AI settings." };
+      return role === "owner"
+        ? { text: "Your AI key isn't working. Replace or remove it in AI settings." }
+        : { text: "Your organisation's AI key isn't working. Ask an owner to replace or remove it." };
     case "ai_quota_reached":
-      return { text: "This period's AI credits are used up. Buy a top-up or add your own key.", href: "/settings/ai" };
+      return role === "owner"
+        ? { text: "This period's AI credits are used up. Buy a top-up or add your own key.", href: "/settings/ai" }
+        : { text: "This period's AI credits are used up. Ask an owner to buy a top-up or add a key." };
     default:
       return null;
   }

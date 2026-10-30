@@ -70,6 +70,29 @@ test("BYOK form shows validation error", async ({ page, request }) => {
   await expect(page.locator("main").getByRole("alert")).toContainText("The provider did not accept this key.");
 });
 
+test("removing a key asks for confirmation and cancel keeps the key", async ({ page, request }) => {
+  await signUp(page, request);
+  sql(`UPDATE organisations SET ai_enabled = true WHERE id = ${NEWEST_ORG}`);
+  await page.goto("/settings/ai");
+  await page.getByLabel("Provider").selectOption("anthropic");
+  await page.getByLabel("API key").fill("sk-ant-e2e-fake-key-1234");
+  await page.getByRole("button", { name: "Save key" }).click();
+  await expect(page.getByText("Your Anthropic key ending 1234: ok")).toBeVisible();
+
+  await page.getByRole("button", { name: "Save models and ceiling" }).click();
+  await expect(page.getByText("Saved.")).toBeVisible();
+
+  await page.getByRole("button", { name: "Remove key" }).click();
+  await expect(page.getByText("Remove this key? Dashboard AI will then use Anthropic on OpsAgent's key.")).toBeVisible();
+  await page.getByRole("button", { name: "Cancel" }).click();
+  await page.reload();
+  await expect(page.getByText("Your Anthropic key ending 1234: ok")).toBeVisible();
+
+  await page.getByRole("button", { name: "Remove key" }).click();
+  await page.getByRole("button", { name: "Yes, remove key" }).click();
+  await expect(page.getByText(/key ending 1234/)).toHaveCount(0);
+});
+
 test("member sees ask-an-owner", async ({ page, request }) => {
   await signUp(page, request);
   sql(`UPDATE members SET role = 'member' WHERE organisation_id = ${NEWEST_ORG}`);

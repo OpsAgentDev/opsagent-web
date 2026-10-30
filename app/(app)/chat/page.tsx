@@ -76,7 +76,7 @@ function Chat() {
         text,
         (e) => {
           if (e.type === "done" || e.type === "error") ended = true;
-          if (e.type === "error") setError(new ApiError(200, { code: e.code, detail: `The answer stopped (${e.code}).` }));
+          if (e.type === "error") setError(new ApiError(200, { code: e.code, detail: "The answer stopped." }));
           updateLast((m) => apply(m, e));
         },
         ctl.signal,

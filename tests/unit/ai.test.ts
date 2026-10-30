@@ -6,8 +6,14 @@ describe("ai", () => {
     expect(stateNote("ai_disabled", "owner")).toEqual({ text: "Turn on Dashboard AI", href: "/settings/ai" });
     expect(stateNote("ai_disabled", "member")).toEqual({ text: "Ask an owner to turn on Dashboard AI" });
     expect(stateNote("ai_unavailable", "owner")).toEqual({ text: "Dashboard AI isn't available yet." });
-    expect(stateNote("ai_key_failing", "member")).toEqual({
+    expect(stateNote("ai_key_failing", "owner")).toEqual({
       text: "Your AI key isn't working. Replace or remove it in AI settings.",
+    });
+    expect(stateNote("ai_key_failing", "member")).toEqual({
+      text: "Your organisation's AI key isn't working. Ask an owner to replace or remove it.",
+    });
+    expect(stateNote("ai_quota_reached", "member")).toEqual({
+      text: "This period's AI credits are used up. Ask an owner to buy a top-up or add a key.",
     });
     expect(stateNote("ai_quota_reached", "owner")).toEqual({
       text: "This period's AI credits are used up. Buy a top-up or add your own key.",

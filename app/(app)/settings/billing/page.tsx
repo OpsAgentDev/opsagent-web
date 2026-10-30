@@ -66,7 +66,8 @@ function BillingPage() {
             </p>
           )}
           {data.limits && (
-            <p className="muted">{data.limits.ai_credits.toLocaleString("en-US")} AI credits per cloud account each period</p>
+            <p className="muted">{/* The trial gets 1,000 whatever the tier. */}
+              {(status === "trialing" ? 1000 : data.limits.ai_credits).toLocaleString("en-US")} AI credits per cloud account each period</p>
           )}
           {data.current_period_end && subscribed && status !== "trialing" && (
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>

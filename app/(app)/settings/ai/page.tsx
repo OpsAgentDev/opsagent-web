@@ -31,7 +31,7 @@ function Usage({ s }: { s: AiStatus }) {
           Your own key this month: {formatCredits(u.byok_used_this_month)} credits{u.estimated ? " (estimated)" : ""}
         </p>
       )}
-      <p className="muted">Resets on {new Date(u.period_end).toLocaleDateString()}</p>
+      <p className="muted">Resets on {new Date(u.period_end).toLocaleDateString(undefined, { timeZone: "UTC" })}</p>
     </section>
   );
 }
@@ -93,7 +93,7 @@ function AiSettings() {
           {owner && s.topup_available && (
             <button type="button" className="fit" disabled={busy} onClick={buy}>Buy 1,000 credits for $15</button>
           )}
-          {owner && <ByokForm org={org.slug} aiKey={s.key} onChanged={reload} />}
+          {owner && <ByokForm org={org.slug} aiKey={s.key} aiOn={s.enabled} onChanged={reload} />}
         </>
       )}
     </main>
