@@ -60,13 +60,9 @@ export default function Privacy() {
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
           <li>
-            Anthropic: Dashboard AI explanations and chat, only after an owner of your organisation turns Dashboard AI
-            on. OpsAgent sends the details of the findings and resources you ask about. Anthropic does not train on this
-            data.
-          </li>
-          <li>
-            The AI provider you choose, if you add your own OpenAI or Anthropic key: OpsAgent sends that provider the
-            context it needs to answer, under your account with them.
+            The AI provider you choose, Anthropic or OpenAI, for Dashboard AI explanations and chat, only after an owner
+            of your organisation adds your own key and turns Dashboard AI on: OpsAgent sends that provider the details
+            of the findings and resources you ask about, under your account with them.
           </li>
         </ul>
       </section>

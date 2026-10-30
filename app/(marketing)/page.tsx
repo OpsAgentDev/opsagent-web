@@ -141,7 +141,7 @@ export default function Home() {
         <div className="byo">
           <p>
             Point Claude, Cursor or any other MCP client at OpsAgent and ask about your findings in plain words. Or ask
-            Dashboard AI for explanations and chat, on OpsAgent&apos;s key or your own.
+            Dashboard AI for explanations and chat, on your own Anthropic or OpenAI key.
           </p>
           <p className="mcp-url">
             <span>MCP server</span>

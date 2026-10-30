@@ -13,19 +13,26 @@ import { useApi } from "@/lib/use-api";
 function providerLine(s: AiStatus): string {
   if (s.source === "byok" && s.key) return `Provider: ${PROVIDERS[s.key.provider] ?? s.key.provider}, on your own key`;
   if (s.source === "opsagent") return "Provider: Anthropic, on OpsAgent's key";
-  return "Provider: none yet";
+  return "Provider: none yet. Add your own key below.";
 }
 
 function Usage({ s }: { s: AiStatus }) {
   const u = s.usage;
+  // Credits and top-ups pay only for OpsAgent's key; production runs on customers' own keys.
+  const credits = s.source === "opsagent";
+  if (!credits && !s.key) return null;
   return (
     <section className="stack">
       <h2>Usage</h2>
-      <label>
-        Used {formatCredits(u.used)} of {formatCredits(u.quota)} credits
-        <meter min={0} max={Number(u.quota) || 1} value={Number(u.used)} />
-      </label>
-      <p>Top-up balance: {formatCredits(u.topup_balance)} credits</p>
+      {credits && (
+        <>
+          <label>
+            Used {formatCredits(u.used)} of {formatCredits(u.quota)} credits
+            <meter min={0} max={Number(u.quota) || 1} value={Number(u.used)} />
+          </label>
+          <p>Top-up balance: {formatCredits(u.topup_balance)} credits</p>
+        </>
+      )}
       {s.key && (
         <p>
           Your own key this month: {formatCredits(u.byok_used_this_month)} credits{u.estimated ? " (estimated)" : ""}
