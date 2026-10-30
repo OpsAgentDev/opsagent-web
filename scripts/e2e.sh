@@ -37,6 +37,8 @@ export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:$BRAIN_PORT W
 
 # Brain (axum, no Loco) in development mode: APP_ENV=development above, so migrations run on boot;
 # the Postgres job worker runs in-process, so verify and scan jobs run.
+# Compile first so a cold CI build doesn't eat the health-check wait below.
+(cd "$BRAIN_DIR/app" && cargo build -q)
 (
   cd "$BRAIN_DIR/app"
   PORT=$BRAIN_PORT exec cargo run -q -- start --server-and-worker
