@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { connectNoisy, signUp, sql } from "./helpers";
 
 const NOTICE =
-  "Dashboard AI sends the details of the findings and resources you ask about to Anthropic to generate answers. Anthropic does not train on this data. You can turn it off at any time, or use your own OpenAI or Anthropic key instead.";
+  "Dashboard AI runs on your own Anthropic or OpenAI key. It sends the details of the findings and resources you ask about to that provider to generate answers. You can turn it off at any time.";
 const NEWEST_ORG = "(SELECT id FROM organisations ORDER BY created_at DESC LIMIT 1)";
 
 test("owner turns on AI after reading the notice", async ({ page, request }) => {
@@ -83,7 +83,7 @@ test("removing a key asks for confirmation and cancel keeps the key", async ({ p
   await expect(page.getByText("Saved.")).toBeVisible();
 
   await page.getByRole("button", { name: "Remove key" }).click();
-  await expect(page.getByText("Remove this key? Dashboard AI will then use Anthropic on OpsAgent's key.")).toBeVisible();
+  await expect(page.getByText("Remove this key? Dashboard AI stops until you add another key.")).toBeVisible();
   await page.getByRole("button", { name: "Cancel" }).click();
   await page.reload();
   await expect(page.getByText("Your Anthropic key ending 1234: ok")).toBeVisible();
@@ -102,10 +102,10 @@ test("member sees ask-an-owner", async ({ page, request }) => {
   await expect(page.getByLabel("API key")).toHaveCount(0);
 });
 
-test("pricing shows AI credits", async ({ page }) => {
+test("pricing says AI runs on your own key", async ({ page }) => {
   await page.goto("/pricing");
   const main = page.locator("main");
-  await expect(main.getByText("AI credits per month")).toHaveCount(3);
-  for (const n of ["1,000", "5,000", "15,000"]) await expect(main.getByText(n, { exact: true })).toBeVisible();
+  await expect(main.getByText("How is Dashboard AI billed?")).toBeVisible();
+  await expect(main).not.toContainText("AI credits");
   await expect(main).not.toContainText("Investigations");
 });

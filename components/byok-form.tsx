@@ -68,7 +68,7 @@ function SavedKey({ org, aiKey, aiOn, onChanged }: Required<Omit<Props, "aiKey">
       {confirming ? (
         <div className="stack">
           <p>
-            Remove this key?{aiOn ? " Dashboard AI will then use Anthropic on OpsAgent's key." : ""}
+            Remove this key?{aiOn ? " Dashboard AI stops until you add another key." : ""}
           </p>
           <div className="row">
             <button type="button" disabled={busy} onClick={remove}>Yes, remove key</button>
