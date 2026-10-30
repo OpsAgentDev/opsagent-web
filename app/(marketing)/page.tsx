@@ -43,7 +43,7 @@ const NEVER = [
   ["Write to your infrastructure", "Its role has no write permissions, so it cannot change, stop or delete anything."],
   ["Read your data", "It cannot read your stored data (objects, database rows, secret values); it reads configuration, metadata and billing, plus a few scoped reads you opt into, listed on the Security page."],
   ["Spam you with noise", "Only urgent findings will ever interrupt you, and only on the channels you choose. Everything else waits for your morning briefing."],
-  ["Resell AI", "You bring your own agent or model key, and pay your AI provider directly."],
+  ["Send your data to AI without asking", "Dashboard AI stays off until an owner turns it on, and MCP traffic never touches OpsAgent's model key."],
 ];
 
 export default function Home() {
@@ -136,7 +136,7 @@ export default function Home() {
       <section className="section split" id="bring-your-own-ai" aria-labelledby="byo-h">
         <div>
           <h2 id="byo-h">Bring your own AI</h2>
-          <p className="section-lead">OpsAgent never pays for or resells inference.</p>
+          <p className="section-lead">Use Dashboard AI, or bring your own agent or model key.</p>
         </div>
         <div className="byo">
           <p>

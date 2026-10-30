@@ -52,8 +52,18 @@ export default function Security() {
         </p>
       </section>
       <section>
-        <h2>Your AI, your keys</h2>
-        <p>OpsAgent never pays for or resells inference. You bring your own agent or model key.</p>
+        <h2>AI and your data</h2>
+        <p>
+          Dashboard AI is off until an owner turns it on. Only then does OpsAgent send the details of the findings and
+          resources you ask about to Anthropic to generate answers. Anthropic does not train on this data.
+        </p>
+        <p>
+          Agents you connect over MCP use their own model. MCP traffic never touches OpsAgent&apos;s model key.
+        </p>
+        <p>
+          If you add your own OpenAI or Anthropic key, it is encrypted with your organisation&apos;s key, and only its
+          last 4 characters are ever shown again.
+        </p>
       </section>
       <section>
         <h2>You stay in control</h2>

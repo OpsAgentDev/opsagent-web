@@ -35,11 +35,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/dashboard" className="brand"><Logo size={22} /></Link>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/findings">Findings</Link>
+        <Link href="/chat">Ask OpsAgent</Link>
         <Link href="/deliveries">Deliveries</Link>
         <Link href="/settings/delivery">Delivery settings</Link>
         <Link href="/settings/agents">Connected agents</Link>
         <Link href="/settings/security">Security</Link>
         <Link href="/settings/billing">Billing</Link>
+        <Link href="/settings/ai">AI</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}

@@ -65,6 +65,9 @@ function BillingPage() {
               {n} cloud {n === 1 ? "account" : "accounts"} billed on {tier}
             </p>
           )}
+          {data.limits && (
+            <p className="muted">{data.limits.ai_credits.toLocaleString("en-US")} AI credits per cloud account each period</p>
+          )}
           {data.current_period_end && subscribed && status !== "trialing" && (
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
