@@ -410,6 +410,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ai_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["ai_set_enabled"];
+        trace?: never;
+    };
+    "/orgs/{org}/ai/key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["ai_put_key"];
+        post?: never;
+        delete: operations["ai_delete_key"];
+        options?: never;
+        head?: never;
+        patch: operations["ai_patch_key"];
+        trace?: never;
+    };
+    "/orgs/{org}/ai/key/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ai_key_models"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/ai/topup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ai_topup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/billing": {
         parameters: {
             query?: never;
@@ -452,6 +516,54 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["billing_portal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/chat/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["chat_list"];
+        put?: never;
+        post: operations["chat_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/chat/sessions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["chat_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/chat/sessions/{id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["chat_post_message"];
         delete?: never;
         options?: never;
         head?: never;
@@ -612,6 +724,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["findings_accept"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/findings/{id}/explanation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["findings_show_explanation"];
+        put?: never;
+        post: operations["findings_explain"];
         delete?: never;
         options?: never;
         head?: never;
@@ -950,6 +1078,40 @@ export interface components {
             last_used_at?: string | null;
             member_email: string;
         };
+        AiKeyOut: {
+            last4: string;
+            models: components["schemas"]["RoleModelsOut"];
+            monthly_credit_ceiling?: string | null;
+            /** @description `anthropic` or `openai`. */
+            provider: string;
+            /** @description `ok`, `failing` or `provider_outage`. */
+            status: string;
+        };
+        AiStatusOut: {
+            enabled: boolean;
+            key?: components["schemas"]["AiKeyOut"] | null;
+            /** @description `opsagent`, `byok`, or null when neither key is there. */
+            source?: string | null;
+            /** @description `ready`, `ai_disabled`, `ai_unavailable`, `ai_key_failing` or `ai_quota_reached`. */
+            state: string;
+            /** @description Stripe is configured, so top-ups can be bought. */
+            topup_available: boolean;
+            usage: components["schemas"]["AiUsageOut"];
+        };
+        AiUsageOut: {
+            /** @description Credits on the organisation's own key this calendar month (UTC). */
+            byok_used_this_month: string;
+            /** @description The own key's models have no list price: its credits are estimates. */
+            estimated: boolean;
+            /** Format: date-time */
+            period_end: string;
+            /** Format: date-time */
+            period_start: string;
+            quota: string;
+            topup_balance: string;
+            /** @description Credits used on OpsAgent's key this period. */
+            used: string;
+        };
         AuthorizeUrl: {
             url: string;
         };
@@ -982,6 +1144,31 @@ export interface components {
         Channel: {
             id: string;
             name: string;
+        };
+        ChatMessageOut: {
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            id: string;
+            /** @description The answer was cut off (time, step or token limit, or a provider failure). */
+            partial: boolean;
+            /** @description `user` or `assistant`. */
+            role: string;
+            text: string;
+        };
+        ChatSessionDetail: {
+            /** @description Oldest first. */
+            messages: components["schemas"]["ChatMessageOut"][];
+            session: components["schemas"]["ChatSessionOut"];
+        };
+        ChatSessionOut: {
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            last_message_at: string;
+            title: string;
         };
         CheckoutIn: {
             /** @description `starter`, `team` (default) or `scale`. Only a first subscription on `team` gets the trial. */
@@ -1112,6 +1299,9 @@ export interface components {
             /** @description Always `disconnected`. */
             status: string;
         };
+        EnableIn: {
+            enabled: boolean;
+        };
         EvidenceItem: {
             /** Format: date-time */
             created_at: string;
@@ -1121,6 +1311,16 @@ export interface components {
             /** Format: uuid */
             run_id: string;
             source: string;
+        };
+        ExplanationOut: {
+            /** Format: date-time */
+            created_at: string;
+            /** @description Shown beside the text; always "Generated by AI: may be wrong". */
+            label: string;
+            model: string;
+            /** @description `anthropic` or `openai`. */
+            provider: string;
+            text: string;
         };
         ExplanationReport: {
             /** @description What is wrong with the explanation; at most 2000 characters. */
@@ -1146,8 +1346,7 @@ export interface components {
             /** @description Newest first, at most 20. */
             events: components["schemas"]["FindingEvent"][];
             evidence: components["schemas"]["EvidenceItem"][];
-            /** @description Model explanation; null until explanations exist. */
-            explanation?: Record<string, never> | null;
+            explanation?: components["schemas"]["ExplanationOut"] | null;
         };
         FindingEvent: {
             /** Format: date-time */
@@ -1200,12 +1399,36 @@ export interface components {
             id: string;
             role: string;
         };
+        KeyIn: {
+            /** @description Sent once; only its last 4 characters are ever shown again. */
+            api_key: string;
+            /** @description `anthropic` or `openai`. */
+            provider: string;
+        };
+        KeyModelOut: {
+            /** @description `routine`, `chat`, or null: the role the picker preselects it for. */
+            default_for?: string | null;
+            id: string;
+            /** @description It can call tools (required for chat). */
+            tools: boolean;
+        };
+        KeyPatchIn: {
+            models?: components["schemas"]["RoleModelsOut"] | null;
+            /**
+             * Format: double
+             * @description Credits per calendar month (UTC); null removes it.
+             */
+            monthly_credit_ceiling?: number | null;
+        };
         /** @description `None` is unlimited. */
         Limits: {
+            /**
+             * Format: int32
+             * @description Dashboard AI credits per account paid for, per period.
+             */
+            ai_credits: number;
             /** Format: int32 */
             integrations?: number | null;
-            /** Format: int32 */
-            investigations: number;
             /** Format: int32 */
             members?: number | null;
         };
@@ -1248,6 +1471,10 @@ export interface components {
             role: string;
             slug: string;
         };
+        MessageIn: {
+            /** @description At most 4,000 characters. */
+            text: string;
+        };
         NewConnection: {
             display_name: string;
             /** @description `aws`. */
@@ -1277,6 +1504,10 @@ export interface components {
              */
             member_id?: string | null;
         };
+        NewSessionIn: {
+            /** @description Without one, the first message's first 60 characters. */
+            title?: string | null;
+        };
         Org: {
             /** Format: date-time */
             created_at: string;
@@ -1291,6 +1522,19 @@ export interface components {
         OrgPatch: {
             name?: string | null;
             timezone?: string | null;
+        };
+        Page_ChatSessionOut: {
+            items: {
+                /** Format: date-time */
+                created_at: string;
+                /** Format: uuid */
+                id: string;
+                /** Format: date-time */
+                last_message_at: string;
+                title: string;
+            }[];
+            /** @description Pass as `cursor` to get the next page; null on the last page. */
+            next_cursor?: string | null;
         };
         Page_Delivery: {
             items: {
@@ -1486,6 +1730,10 @@ export interface components {
             region?: string | null;
             tags: Record<string, never>;
         };
+        RoleModelsOut: {
+            chat: string;
+            routine: string;
+        };
         Run: components["schemas"]["RunSummary"] & {
             /** Format: int32 */
             attempts: number;
@@ -1527,6 +1775,10 @@ export interface components {
              * @description At most 30 days ahead.
              */
             until: string;
+        };
+        TopupUrl: {
+            /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
+            url: string;
         };
         Verification: {
             assume_with_ok?: boolean | null;
@@ -2583,6 +2835,380 @@ export interface operations {
             };
         };
     };
+    ai_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStatusOut"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_set_enabled: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnableIn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStatusOut"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_put_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KeyIn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStatusOut"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_key_invalid` or `invalid` */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_provider_outage` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_delete_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_patch_key: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["KeyPatchIn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStatusOut"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `invalid`: unknown model, a chat model without tools, or a negative ceiling */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_key_models: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KeyModelOut"][];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_key_failing` or `ai_provider_outage` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    ai_topup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopupUrl"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `billing_unavailable` */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
     billing_show: {
         parameters: {
             query?: never;
@@ -2749,6 +3375,212 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    chat_list: {
+        parameters: {
+            query?: {
+                /** @description `next_cursor` from the previous page. */
+                cursor?: string;
+                /** @description Page size, default 50; values above 200 are clamped to 200. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ChatSessionOut"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    chat_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NewSessionIn"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSessionOut"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    chat_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChatSessionDetail"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    chat_post_message: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MessageIn"];
+            };
+        };
+        responses: {
+            /** @description Events `delta` `{text}`, `tool` `{name}`, then `done` `{message_id, partial, partial_reason}` (`step_limit`, `token_limit`, `time_limit`, `rate_limited` or null) or `error` `{code}` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/event-stream": string;
+                };
+            };
+            /** @description `ai_quota_reached`. Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_disabled` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_busy`: three answers already running */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_key_failing` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_unavailable` */
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -3371,6 +4203,113 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    findings_show_explanation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplanationOut"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    findings_explain: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExplanationOut"];
+                };
+            };
+            /** @description `ai_quota_reached`. Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_disabled` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_rate_limited` */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_key_failing` or `ai_provider_outage` */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `ai_unavailable` */
+            503: {
                 headers: {
                     [name: string]: unknown;
                 };

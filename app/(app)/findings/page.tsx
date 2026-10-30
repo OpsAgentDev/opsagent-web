@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { Pager, useCursors } from "@/components/pager";
@@ -70,7 +71,7 @@ export default function Findings() {
           {page?.items.map((f) => (
             <tr key={f.id} data-id={f.id}>
               <td>{f.severity}</td>
-              <td>{f.title}</td>
+              <td><Link href={`/findings/${f.id}`}>{f.title}</Link></td>
               <td className="muted">{f.resource_identity}</td>
               <td>{f.status}</td>
               <td className="row">

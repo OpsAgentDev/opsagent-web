@@ -1,6 +1,7 @@
 // The one place web talks to brain: a typed client over the generated schema, cookies included,
 // CSRF header on every mutating request, problem details surfaced as ApiError.
 import createClient, { type Middleware } from "openapi-fetch";
+import { parseSse, type ChatEvent } from "@/lib/chat";
 import type { components, paths } from "./schema";
 
 type Schemas = components["schemas"];
@@ -16,6 +17,13 @@ export type Recipient = Schemas["Recipient"];
 export type Member = Schemas["Member"];
 export type Channel = Schemas["Channel"];
 export type Billing = Schemas["BillingOut"];
+export type FindingDetail = Schemas["FindingDetail"];
+export type Explanation = Schemas["ExplanationOut"];
+export type AiStatus = Schemas["AiStatusOut"];
+export type AiKey = Schemas["AiKeyOut"];
+export type KeyModel = Schemas["KeyModelOut"];
+export type ChatSession = Schemas["ChatSessionOut"];
+export type ChatMessage = Schemas["ChatMessageOut"];
 
 /** A production build without an explicit brain URL would ship pointing at localhost. */
 export function resolveApiBaseUrl(configured: string | undefined, nodeEnv: string | undefined): string {
@@ -88,3 +96,38 @@ const dropStaleCsrf: Middleware = {
   },
 };
 api.use(withCsrf, dropStaleCsrf);
+
+/**
+ * Posts one chat message and calls `on` for each streamed event until brain closes the stream.
+ * A refusal before streaming (problem response) throws ApiError, like `unwrap`.
+ */
+export async function streamChat(
+  org: string,
+  sessionId: string,
+  text: string,
+  on: (e: ChatEvent) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  const path = `/orgs/${encodeURIComponent(org)}/chat/sessions/${encodeURIComponent(sessionId)}/messages`;
+  const response = await fetch(`${API_BASE_URL}/v1${path}`, {
+    method: "POST",
+    credentials: "include",
+    signal,
+    headers: { "Content-Type": "application/json", Accept: "text/event-stream", "X-CSRF-Token": await csrfToken() },
+    body: JSON.stringify({ text }),
+  });
+  if (!response.ok || !response.body) {
+    const problem = (await response.json().catch(() => ({}))) as Partial<Problem>;
+    if (response.status === 403 && problem.code === "csrf") csrf = undefined;
+    throw new ApiError(response.status, problem);
+  }
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let rest = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) return;
+    const parsed = parseSse(rest + value);
+    rest = parsed.rest;
+    parsed.events.forEach(on);
+  }
+}

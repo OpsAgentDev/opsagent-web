@@ -10,7 +10,7 @@ export default function Privacy() {
   return (
     <main className="page">
       <h1>Privacy policy</h1>
-      <p className="lead">Last updated 28 October 2026</p>
+      <p className="lead">Last updated 30 October 2026</p>
       <p>
         OpsAgent is run by Binary Labs LLC. This page says what we store when you use it, why, and what you can ask
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
@@ -60,8 +60,13 @@ export default function Privacy() {
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
           <li>
-            The AI provider you choose: you bring your own key, and OpsAgent sends that provider the context it needs
-            to answer, under your account with them.
+            Anthropic: Dashboard AI explanations and chat, only after an owner of your organisation turns Dashboard AI
+            on. OpsAgent sends the details of the findings and resources you ask about. Anthropic does not train on this
+            data.
+          </li>
+          <li>
+            The AI provider you choose, if you add your own OpenAI or Anthropic key: OpsAgent sends that provider the
+            context it needs to answer, under your account with them.
           </li>
         </ul>
       </section>

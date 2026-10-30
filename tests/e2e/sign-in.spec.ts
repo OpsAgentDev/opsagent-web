@@ -65,7 +65,7 @@ test("privacy and terms pages render and are in the footer", async ({ page }) =>
   for (const [path, heading] of [["/privacy", "Privacy policy"], ["/terms", "Terms of service"]] as const) {
     await page.goto(path);
     await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
-    await expect(page.getByText("Last updated 28 October 2026")).toBeVisible();
+    await expect(page.getByText(/^Last updated \d+ \w+ 2026$/)).toBeVisible();
     await expect(page.getByRole("contentinfo").getByRole("link", { name: heading.split(" ")[0] })).toHaveAttribute("href", path);
   }
 });
