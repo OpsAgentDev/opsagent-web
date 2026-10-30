@@ -5,12 +5,10 @@ import { AiStateNote } from "@/components/ai-state-note";
 import { ByokForm } from "@/components/byok-form";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type AiStatus } from "@/lib/api/client";
-import { formatCredits, TURN_ON_NOTICE } from "@/lib/ai";
+import { formatCredits, PROVIDERS, TURN_ON_NOTICE } from "@/lib/ai";
 import { goToStripe } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
-
-const PROVIDERS: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI" };
 
 function providerLine(s: AiStatus): string {
   if (s.source === "byok" && s.key) return `Provider: ${PROVIDERS[s.key.provider] ?? s.key.provider}, on your own key`;

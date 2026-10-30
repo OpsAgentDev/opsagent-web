@@ -2,9 +2,9 @@
 import { useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type AiKey } from "@/lib/api/client";
+import { PROVIDERS } from "@/lib/ai";
 import { useApi } from "@/lib/use-api";
 
-const PROVIDERS: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI" };
 type Props = { org: string; aiKey?: AiKey | null; onChanged: () => void };
 
 /** The saved key: last 4, status, model pickers from its live list, the optional monthly ceiling. */
@@ -29,6 +29,9 @@ function SavedKey({ org, aiKey, onChanged }: { org: string; aiKey: AiKey; onChan
   const save = () => run(() => unwrap(api.PATCH("/orgs/{org}/ai/key", { ...path, body })));
   const remove = () => run(() => unwrap(api.DELETE("/orgs/{org}/ai/key", path)));
   const list = models.data ?? [];
+  const chatIds = list.filter((m) => m.tools).map((m) => m.id);
+  // The saved model stays listed even when the live list drops it, so the select matches state.
+  if (!chatIds.includes(chat)) chatIds.unshift(chat);
 
   return (
     <div className="stack">
@@ -46,8 +49,7 @@ function SavedKey({ org, aiKey, onChanged }: { org: string; aiKey: AiKey; onChan
       <label>
         Chat model
         <select value={chat} onChange={(e) => setChat(e.target.value)}>
-          {list.length === 0 && <option>{chat}</option>}
-          {list.filter((m) => m.tools).map((m) => <option key={m.id}>{m.id}</option>)}
+          {chatIds.map((id) => <option key={id}>{id}</option>)}
         </select>
       </label>
       <label>

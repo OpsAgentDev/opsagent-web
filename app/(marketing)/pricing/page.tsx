@@ -45,7 +45,7 @@ export default function Pricing() {
         <h3>What counts as a cloud account?</h3>
         <p>One connected account.</p>
         <h3>What is an AI credit?</h3>
-        <p>One US cent of model use for Dashboard AI explanations and chat. Top-ups are 1,000 credits for $15. Your own model key never uses credits.</p>
+        <p>One US cent of model use, at list price, for Dashboard AI explanations and chat. Top-ups are 1,000 credits for $15. Your own model key never uses credits.</p>
         <h3>Can I cancel?</h3>
         <p>Yes. Your history stays readable for 30 days.</p>
       </section>
