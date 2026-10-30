@@ -7,7 +7,7 @@ import { ChatThread, type ThreadMessage } from "@/components/chat-thread";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, streamChat, unwrap } from "@/lib/api/client";
 import { AI_LABEL, stateNote } from "@/lib/ai";
-import type { ChatEvent } from "@/lib/chat";
+import { isUuid, type ChatEvent } from "@/lib/chat";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -21,7 +21,7 @@ function apply(answer: ThreadMessage, e: ChatEvent): ThreadMessage {
     case "done":
       return { ...answer, partial: e.partial };
     case "error":
-      return answer;
+      return { ...answer, partial: true };
   }
 }
 
@@ -32,7 +32,8 @@ function Chat() {
   const sessions = useApi(() => unwrap(api.GET("/orgs/{org}/chat/sessions", path)), [org.slug]);
   const [active, setActive] = useState<string | null>(null);
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
-  const [draft, setDraft] = useState(finding ? `About finding:${finding}: ` : "");
+  const ai = useApi(() => unwrap(api.GET("/orgs/{org}/ai", path)), [org.slug]);
+  const [draft, setDraft] = useState(finding && isUuid(finding) ? `About finding:${finding}: ` : "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const abort = useRef<AbortController | null>(null);
@@ -63,7 +64,8 @@ function Chat() {
     const before = messages;
     setMessages([...before, { role: "user", text, partial: false }, { role: "assistant", text: "", partial: false }]);
     setDraft("");
-    abort.current = new AbortController();
+    const ctl = new AbortController();
+    abort.current = ctl;
     let ended = false;
     try {
       const id = active ?? (await unwrap(api.POST("/orgs/{org}/chat/sessions", { ...path, body: { title: text.slice(0, 60) } }))).id;
@@ -77,26 +79,33 @@ function Chat() {
           if (e.type === "error") setError(new ApiError(200, { code: e.code, detail: `The answer stopped (${e.code}).` }));
           updateLast((m) => apply(m, e));
         },
-        abort.current.signal,
+        ctl.signal,
       );
       // A stream that closes without `done` was cut off on the way.
       if (!ended) updateLast((m) => ({ ...m, partial: true }));
     } catch (e) {
-      // Refused before streaming: brain stored nothing, so the message goes back to the box.
-      setMessages(before);
-      setDraft(text);
+      if (ctl.signal.aborted) return; // unmounted: nothing to update
+      if (e instanceof ApiError) {
+        // Refused before streaming: brain stored nothing, so the message goes back to the box.
+        setMessages(before);
+        setDraft(text);
+      } else {
+        // Cut off mid-stream: brain still stores the turn, so keep what arrived.
+        updateLast((m) => ({ ...m, partial: true }));
+      }
       setError(e as Error);
-    } finally {
-      setBusy(false);
-      sessions.reload();
     }
+    setBusy(false);
+    sessions.reload();
   }
 
-  const code = error instanceof ApiError ? error.code : undefined;
+  // The org's AI state on load (e.g. ask-an-owner), else the last refusal or error event.
+  const code = error instanceof ApiError ? error.code : ai.data?.state;
+  const blocked = ai.data ? stateNote(ai.data.state, org.role) !== null : true;
   return (
     <main>
       <h1>Ask OpsAgent</h1>
-      <ErrorNote error={sessions.error} />
+      <ErrorNote error={sessions.error ?? ai.error} />
       <div className="row" style={{ alignItems: "flex-start" }}>
         <ChatSessions
           sessions={sessions.data?.items ?? []}
@@ -114,7 +123,7 @@ function Chat() {
               <textarea value={draft} maxLength={4000} onChange={(e) => setDraft(e.target.value)} />
             </label>
             <p className="muted">{AI_LABEL}</p>
-            <button type="submit" className="primary fit" disabled={busy || !draft.trim()}>
+            <button type="submit" className="primary fit" disabled={busy || blocked || !draft.trim()}>
               {busy ? "Answering…" : "Send"}
             </button>
           </form>

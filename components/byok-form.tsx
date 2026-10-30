@@ -29,9 +29,10 @@ function SavedKey({ org, aiKey, onChanged }: { org: string; aiKey: AiKey; onChan
   const save = () => run(() => unwrap(api.PATCH("/orgs/{org}/ai/key", { ...path, body })));
   const remove = () => run(() => unwrap(api.DELETE("/orgs/{org}/ai/key", path)));
   const list = models.data ?? [];
-  const chatIds = list.filter((m) => m.tools).map((m) => m.id);
-  // The saved model stays listed even when the live list drops it, so the select matches state.
-  if (!chatIds.includes(chat)) chatIds.unshift(chat);
+  // The saved model stays listed even when the live list drops it, so each select matches state.
+  const withSaved = (ids: string[], saved: string) => (ids.includes(saved) ? ids : [saved, ...ids]);
+  const routineIds = withSaved(list.map((m) => m.id), routine);
+  const chatIds = withSaved(list.filter((m) => m.tools).map((m) => m.id), chat);
 
   return (
     <div className="stack">
@@ -42,8 +43,7 @@ function SavedKey({ org, aiKey, onChanged }: { org: string; aiKey: AiKey; onChan
       <label>
         Routine model
         <select value={routine} onChange={(e) => setRoutine(e.target.value)}>
-          {list.length === 0 && <option>{routine}</option>}
-          {list.map((m) => <option key={m.id}>{m.id}</option>)}
+          {routineIds.map((id) => <option key={id}>{id}</option>)}
         </select>
       </label>
       <label>

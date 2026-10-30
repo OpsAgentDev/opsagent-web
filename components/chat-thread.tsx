@@ -23,13 +23,13 @@ function Linked({ text }: { text: string }) {
 /** The conversation: messages oldest first, a "Looking at <tool>…" line per tool call, partial tags. */
 export function ChatThread({ messages }: { messages: ThreadMessage[] }) {
   return (
-    <div className="stack" aria-live="polite">
+    <div className="stack">
       {messages.map((m, i) => (
         <article key={i} className="stack">
           <strong>{m.role === "user" ? "You" : "OpsAgent"}</strong>
-          {m.tools?.map((t, j) => <p key={j} className="muted">Looking at {t}…</p>)}
+          {m.tools?.map((t, j) => <p key={j} role="status" className="muted">Looking at {t}…</p>)}
           {m.text && <Linked text={m.text} />}
-          {m.partial && <p className="muted">Partial answer</p>}
+          {m.partial && <p role="status" className="muted">Partial answer</p>}
         </article>
       ))}
     </div>

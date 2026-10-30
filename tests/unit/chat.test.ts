@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { linkify, parseSse } from "@/lib/chat";
+import { isUuid, linkify, parseSse } from "@/lib/chat";
 
 const ID = "0b9d6f7e-3c1a-4e2b-9f00-1234567890ab";
 
@@ -16,6 +16,12 @@ describe("chat", () => {
     expect(linkify("")).toEqual([]);
   });
 
+  it("isUuid accepts only a whole uuid", () => {
+    expect(isUuid(ID)).toBe(true);
+    expect(isUuid(`${ID}x`)).toBe(false);
+    expect(isUuid("1234")).toBe(false);
+  });
+
   it("parses split SSE frames", () => {
     const first = parseSse('event: tool\ndata: {"name":"list_findings"}\n\n: keep-alive\n\nevent: delta\nda');
     expect(first.events).toEqual([{ type: "tool", name: "list_findings" }]);
@@ -27,6 +33,10 @@ describe("chat", () => {
     expect(second.rest).toBe("");
     expect(parseSse('event: error\ndata: {"code":"ai_unavailable"}\n\n').events).toEqual([
       { type: "error", code: "ai_unavailable" },
+    ]);
+    expect(parseSse('event: delta\ndata: {"text":"a"}\n\nevent: delta\ndata: {broken\n\n').events).toEqual([
+      { type: "delta", text: "a" },
+      { type: "error", code: "bad_frame" },
     ]);
   });
 });

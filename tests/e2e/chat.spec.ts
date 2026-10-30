@@ -43,7 +43,41 @@ test("chat shows ask-an-owner when AI is off", async ({ page, request }) => {
   await signUp(page, request);
   sql(`UPDATE members SET role = 'member' WHERE organisation_id = ${NEWEST_ORG}`);
   await page.goto("/chat");
-  await page.getByLabel("Message").fill("hello");
-  await page.getByRole("button", { name: "Send" }).click();
   await expect(page.getByText("Ask an owner to turn on Dashboard AI")).toBeVisible();
+  await page.getByLabel("Message").fill("hello");
+  await expect(page.getByRole("button", { name: "Send" })).toBeDisabled();
+});
+
+test("prefill ignores a finding param that is not a uuid", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/chat?finding=x%3Cb%3E");
+  await expect(page.getByLabel("Message")).toHaveValue("");
+});
+
+test("a stream that breaks after the first delta keeps the message and the partial answer", async ({ page, request }) => {
+  await signUp(page, request);
+  sql(`UPDATE organisations SET ai_enabled = true WHERE id = ${NEWEST_ORG}`);
+  // The message POST gets a body that sends one delta, then fails like a dropped connection.
+  await page.addInitScript(() => {
+    const real = window.fetch;
+    window.fetch = (input, init) => {
+      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+      if (!/\/chat\/sessions\/[^/]+\/messages$/.test(url)) return real(input, init);
+      const body = new ReadableStream<Uint8Array>({
+        start(c) {
+          c.enqueue(new TextEncoder().encode('event: delta\ndata: {"text":"Half an answer"}\n\n'));
+          setTimeout(() => c.error(new TypeError("network error")), 50);
+        },
+      });
+      return Promise.resolve(new Response(body, { headers: { "content-type": "text/event-stream" } }));
+    };
+  });
+  await page.goto("/chat");
+  await page.getByLabel("Message").fill("will this break?");
+  await page.getByRole("button", { name: "Send" }).click();
+  await expect(page.getByText("Half an answer")).toBeVisible();
+  await expect(page.locator("article").getByText("will this break?", { exact: true })).toBeVisible();
+  await expect(page.getByText("Partial answer")).toBeVisible();
+  await expect(page.locator("main").getByRole("alert")).toContainText("network error");
+  await expect(page.getByLabel("Message")).toHaveValue("");
 });

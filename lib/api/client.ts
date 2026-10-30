@@ -1,7 +1,7 @@
 // The one place web talks to brain: a typed client over the generated schema, cookies included,
 // CSRF header on every mutating request, problem details surfaced as ApiError.
 import createClient, { type Middleware } from "openapi-fetch";
-import { parseSse, type ChatEvent } from "../chat";
+import { parseSse, type ChatEvent } from "@/lib/chat";
 import type { components, paths } from "./schema";
 
 type Schemas = components["schemas"];

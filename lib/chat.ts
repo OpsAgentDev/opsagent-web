@@ -9,7 +9,10 @@ export type ChatEvent =
 
 export type TextPart = { text: string } | { finding: string };
 
-const FINDING = /finding:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi;
+const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+const FINDING = new RegExp(`finding:(${UUID})`, "gi");
+
+export const isUuid = (s: string) => new RegExp(`^${UUID}$`, "i").test(s);
 
 /** Splits untrusted model text so only `finding:<uuid>` becomes a link; everything else stays text. */
 export function linkify(text: string): TextPart[] {
@@ -39,7 +42,13 @@ export function parseSse(buffer: string): { events: ChatEvent[]; rest: string } 
       else if (line.startsWith("data:")) data.push(line.slice(5).replace(/^ /, ""));
     }
     // Keep-alive comments and unknown events carry nothing for the thread.
-    if (EVENTS.has(name) && data.length) events.push({ type: name, ...JSON.parse(data.join("\n")) } as ChatEvent);
+    if (!EVENTS.has(name) || !data.length) continue;
+    try {
+      events.push({ type: name, ...JSON.parse(data.join("\n")) } as ChatEvent);
+    } catch {
+      // A garbled frame ends the answer like a stream error; the frames before it still count.
+      events.push({ type: "error", code: "bad_frame" });
+    }
   }
   return { events, rest };
 }
