@@ -423,10 +423,10 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch: operations["ai_set_enabled"];
+        patch: operations["ai_patch_ai"];
         trace?: never;
     };
-    "/orgs/{org}/ai/key": {
+    "/orgs/{org}/ai/keys/{slot}": {
         parameters: {
             query?: never;
             header?: never;
@@ -442,7 +442,7 @@ export interface paths {
         patch: operations["ai_patch_key"];
         trace?: never;
     };
-    "/orgs/{org}/ai/key/models": {
+    "/orgs/{org}/ai/keys/{slot}/models": {
         parameters: {
             query?: never;
             header?: never;
@@ -1079,22 +1079,38 @@ export interface components {
             member_email: string;
         };
         AiKeyOut: {
+            /** @description The custom endpoint's host; null on the style's official URL. */
+            base_host?: string | null;
             last4: string;
             models: components["schemas"]["RoleModelsOut"];
-            monthly_credit_ceiling?: string | null;
-            /** @description `anthropic` or `openai`. */
-            provider: string;
             /** @description `ok`, `failing` or `provider_outage`. */
             status: string;
+            /** @description The API style: `anthropic` or `openai`. */
+            style: string;
+        };
+        AiKeysOut: {
+            backup?: components["schemas"]["AiKeyOut"] | null;
+            primary?: components["schemas"]["AiKeyOut"] | null;
+        };
+        /** @description At least one field. */
+        AiPatchIn: {
+            enabled?: boolean | null;
+            /**
+             * Format: double
+             * @description Credits per calendar month (UTC) across both own keys; null removes it.
+             */
+            monthly_credit_ceiling?: number | null;
         };
         AiStatusOut: {
             enabled: boolean;
-            key?: components["schemas"]["AiKeyOut"] | null;
+            keys: components["schemas"]["AiKeysOut"];
+            /** @description Credits per calendar month (UTC) across both own keys; null is no ceiling. */
+            monthly_credit_ceiling?: string | null;
             /** @description `opsagent`, `byok`, or null when neither key is there. */
             source?: string | null;
             /** @description `ready`, `ai_disabled`, `ai_unavailable`, `ai_key_failing` or `ai_quota_reached`. */
             state: string;
-            /** @description Stripe is configured, so top-ups can be bought. */
+            /** @description Stripe and OpsAgent's key are configured, so top-ups can be bought. */
             topup_available: boolean;
             usage: components["schemas"]["AiUsageOut"];
         };
@@ -1299,9 +1315,6 @@ export interface components {
             /** @description Always `disconnected`. */
             status: string;
         };
-        EnableIn: {
-            enabled: boolean;
-        };
         EvidenceItem: {
             /** Format: date-time */
             created_at: string;
@@ -1402,8 +1415,11 @@ export interface components {
         KeyIn: {
             /** @description Sent once; only its last 4 characters are ever shown again. */
             api_key: string;
-            /** @description `anthropic` or `openai`. */
-            provider: string;
+            /** @description A compatible endpoint's base URL; empty or absent is the style's official URL. */
+            base_url?: string | null;
+            models?: components["schemas"]["RoleModelsOut"] | null;
+            /** @description The API style: `anthropic` or `openai`. */
+            style: string;
         };
         KeyModelOut: {
             /** @description `routine`, `chat`, or null: the role the picker preselects it for. */
@@ -1413,12 +1429,12 @@ export interface components {
             tools: boolean;
         };
         KeyPatchIn: {
-            models?: components["schemas"]["RoleModelsOut"] | null;
-            /**
-             * Format: double
-             * @description Credits per calendar month (UTC); null removes it.
-             */
-            monthly_credit_ceiling?: number | null;
+            models: components["schemas"]["RoleModelsOut"];
+        };
+        KeyPutOut: {
+            /** @description The endpoint's live models list; empty when the model ids were typed. */
+            models: components["schemas"]["KeyModelOut"][];
+            status: components["schemas"]["AiStatusOut"];
         };
         /** @description `None` is unlimited. */
         Limits: {
@@ -2865,7 +2881,7 @@ export interface operations {
             };
         };
     };
-    ai_set_enabled: {
+    ai_patch_ai: {
         parameters: {
             query?: never;
             header?: never;
@@ -2877,7 +2893,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["EnableIn"];
+                "application/json": components["schemas"]["AiPatchIn"];
             };
         };
         responses: {
@@ -2907,6 +2923,15 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `invalid`: no field, or a negative ceiling */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2923,6 +2948,8 @@ export interface operations {
             path: {
                 /** @description Organisation slug. */
                 org: string;
+                /** @description `primary` or `backup`; anything else is 404. */
+                slot: string;
             };
             cookie?: never;
         };
@@ -2937,7 +2964,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AiStatusOut"];
+                    "application/json": components["schemas"]["KeyPutOut"];
                 };
             };
             /** @description Billing required, or a trial or plan limit reached */
@@ -2965,7 +2992,16 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description `ai_key_invalid` or `invalid` */
+            /** @description `ai_primary_required` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `invalid`, `ai_endpoint_invalid`, `ai_key_invalid`, `models_required` or `ai_model_invalid` */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2992,11 +3028,14 @@ export interface operations {
             path: {
                 /** @description Organisation slug. */
                 org: string;
+                /** @description `primary` or `backup`; anything else is 404. */
+                slot: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
+            /** @description Removing the primary promotes the backup */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -3037,6 +3076,8 @@ export interface operations {
             path: {
                 /** @description Organisation slug. */
                 org: string;
+                /** @description `primary` or `backup`; anything else is 404. */
+                slot: string;
             };
             cookie?: never;
         };
@@ -3079,7 +3120,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description `invalid`: unknown model, a chat model without tools, or a negative ceiling */
+            /** @description `invalid` (unknown model, a chat model without tools, a bad typed id), `ai_key_invalid` or `ai_model_invalid` */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3088,6 +3129,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            /** @description `ai_key_failing` or `ai_provider_outage` */
             502: {
                 headers: {
                     [name: string]: unknown;
@@ -3105,11 +3147,14 @@ export interface operations {
             path: {
                 /** @description Organisation slug. */
                 org: string;
+                /** @description `primary` or `backup`; anything else is 404. */
+                slot: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
+            /** @description Empty on an endpoint with no models list */
             200: {
                 headers: {
                     [name: string]: unknown;

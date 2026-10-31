@@ -5,13 +5,14 @@ import { AiStateNote } from "@/components/ai-state-note";
 import { ByokForm } from "@/components/byok-form";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type AiStatus } from "@/lib/api/client";
-import { formatCredits, PROVIDERS, TURN_ON_NOTICE } from "@/lib/ai";
+import { backupServing, formatCredits, STYLES, TURN_ON_NOTICE } from "@/lib/ai";
 import { goToStripe } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
 function providerLine(s: AiStatus): string {
-  if (s.source === "byok" && s.key) return `Provider: ${PROVIDERS[s.key.provider] ?? s.key.provider}, on your own key`;
+  const p = s.keys.primary;
+  if (s.source === "byok" && p) return `Provider: ${STYLES[p.style]}${p.base_host ? ` at ${p.base_host}` : ""}, on your own key`;
   if (s.source === "opsagent") return "Provider: Anthropic, on OpsAgent's key";
   return "Provider: none yet";
 }
@@ -26,7 +27,7 @@ function Usage({ s }: { s: AiStatus }) {
         <meter min={0} max={Number(u.quota) || 1} value={Number(u.used)} />
       </label>
       <p>Top-up balance: {formatCredits(u.topup_balance)} credits</p>
-      {s.key && (
+      {s.keys.primary && (
         <p>
           Your own key this month: {formatCredits(u.byok_used_this_month)} credits{u.estimated ? " (estimated)" : ""}
         </p>
@@ -87,13 +88,14 @@ function AiSettings() {
           {(owner || s.enabled) && (
             <>
               <p>{providerLine(s)}</p>
+              {backupServing(s) && <p role="status">Your primary key is failing; Dashboard AI is using your backup.</p>}
               <Usage s={s} />
             </>
           )}
           {owner && s.topup_available && (
             <button type="button" className="fit" disabled={busy} onClick={buy}>Buy 1,000 credits for $15</button>
           )}
-          {owner && <ByokForm org={org.slug} aiKey={s.key} aiOn={s.enabled} onChanged={reload} />}
+          {owner && <ByokForm org={org.slug} s={s} onChanged={reload} />}
         </>
       )}
     </main>

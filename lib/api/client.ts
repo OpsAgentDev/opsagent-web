@@ -22,6 +22,7 @@ export type Explanation = Schemas["ExplanationOut"];
 export type AiStatus = Schemas["AiStatusOut"];
 export type AiKey = Schemas["AiKeyOut"];
 export type KeyModel = Schemas["KeyModelOut"];
+export type KeyPut = Schemas["KeyPutOut"];
 export type ChatSession = Schemas["ChatSessionOut"];
 export type ChatMessage = Schemas["ChatMessageOut"];
 
