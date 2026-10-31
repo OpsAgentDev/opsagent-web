@@ -42,7 +42,7 @@ export default function HowItWorks() {
         <li>
           <h2>Ask it anything</h2>
           <p>
-            Point your own AI agent at OpsAgent over MCP, or ask Dashboard AI in the dashboard, on your own Anthropic or OpenAI key.{" "}
+            Point your own AI agent at OpsAgent over MCP, or ask Dashboard AI in the dashboard, on OpsAgent&apos;s key or your own.{" "}
             <Link href="/docs/connect-your-agent">Connect your agent</Link>.
           </p>
         </li>

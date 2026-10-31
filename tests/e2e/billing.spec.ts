@@ -38,7 +38,7 @@ test("trialing shows days left, connections line and Manage billing", async ({ p
   await page.goto("/settings/billing");
   await expect(page.getByText("Trial: 10 days left")).toBeVisible();
   await expect(page.getByText("3 cloud accounts billed on Team")).toBeVisible();
-  await expect(page.getByText("AI credits")).toHaveCount(0);
+  await expect(page.getByText("1,000 AI credits per cloud account each period")).toBeVisible();
   await expect(page.getByRole("button", { name: "Manage billing" })).toBeVisible();
 });
 
