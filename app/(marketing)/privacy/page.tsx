@@ -65,8 +65,8 @@ export default function Privacy() {
             data.
           </li>
           <li>
-            The AI provider you choose, if you add your own OpenAI or Anthropic key: OpsAgent sends that provider the
-            context it needs to answer, under your account with them.
+            The AI provider you choose, or the endpoint you configure, if you add your own key: OpsAgent sends that
+            provider the context it needs to answer, under your account with them.
           </li>
         </ul>
       </section>

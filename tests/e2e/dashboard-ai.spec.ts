@@ -1,9 +1,17 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { connectNoisy, signUp, sql } from "./helpers";
 
 const NOTICE =
-  "Dashboard AI sends the details of the findings and resources you ask about to Anthropic to generate answers. Anthropic does not train on this data. You can turn it off at any time, or use your own OpenAI or Anthropic key instead.";
+  "Dashboard AI sends the details of the findings and resources you ask about to Anthropic, or to the AI provider you configure, to generate answers. Anthropic does not train on this data. You can turn it off at any time, or use your own OpenAI or Anthropic key instead.";
 const NEWEST_ORG = "(SELECT id FROM organisations ORDER BY created_at DESC LIMIT 1)";
+const card = (page: Page, name: string) => page.getByRole("region", { name });
+
+async function saveKey(page: Page, name: string, apiKey: string) {
+  const c = card(page, name);
+  await c.getByLabel("API style").selectOption("anthropic");
+  await c.getByLabel("API key").fill(apiKey);
+  await c.getByRole("button", { name: "Save key" }).click();
+}
 
 test("owner turns on AI after reading the notice", async ({ page, request }) => {
   await signUp(page, request);
@@ -64,9 +72,7 @@ test("quota reached state", async ({ page, request }) => {
 test("BYOK form shows validation error", async ({ page, request }) => {
   await signUp(page, request);
   await page.goto("/settings/ai");
-  await page.getByLabel("Provider").selectOption("anthropic");
-  await page.getByLabel("API key").fill("not-a-key");
-  await page.getByRole("button", { name: "Save key" }).click();
+  await saveKey(page, "Primary key", "not-a-key");
   await expect(page.locator("main").getByRole("alert")).toContainText("The provider did not accept this key.");
 });
 
@@ -74,23 +80,65 @@ test("removing a key asks for confirmation and cancel keeps the key", async ({ p
   await signUp(page, request);
   sql(`UPDATE organisations SET ai_enabled = true WHERE id = ${NEWEST_ORG}`);
   await page.goto("/settings/ai");
-  await page.getByLabel("Provider").selectOption("anthropic");
-  await page.getByLabel("API key").fill("sk-ant-e2e-fake-key-1234");
-  await page.getByRole("button", { name: "Save key" }).click();
-  await expect(page.getByText("Your Anthropic key ending 1234: ok")).toBeVisible();
+  await saveKey(page, "Primary key", "sk-ant-e2e-fake-key-1234");
+  const primary = card(page, "Primary key");
+  await expect(primary.getByText("Your Anthropic-compatible key ending 1234: ok")).toBeVisible();
 
-  await page.getByRole("button", { name: "Save models and ceiling" }).click();
-  await expect(page.getByText("Saved.")).toBeVisible();
+  await primary.getByRole("button", { name: "Save models" }).click();
+  await expect(primary.getByText("Saved.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Remove key" }).click();
-  await expect(page.getByText("Remove this key? Dashboard AI will then use Anthropic on OpsAgent's key.")).toBeVisible();
-  await page.getByRole("button", { name: "Cancel" }).click();
+  await primary.getByRole("button", { name: "Remove key" }).click();
+  await expect(primary.getByText("Remove this key? Dashboard AI will then use Anthropic on OpsAgent's key.")).toBeVisible();
+  await primary.getByRole("button", { name: "Cancel" }).click();
   await page.reload();
-  await expect(page.getByText("Your Anthropic key ending 1234: ok")).toBeVisible();
+  await expect(primary.getByText("Your Anthropic-compatible key ending 1234: ok")).toBeVisible();
 
-  await page.getByRole("button", { name: "Remove key" }).click();
-  await page.getByRole("button", { name: "Yes, remove key" }).click();
+  await primary.getByRole("button", { name: "Remove key" }).click();
+  await primary.getByRole("button", { name: "Yes, remove key" }).click();
   await expect(page.getByText(/key ending 1234/)).toHaveCount(0);
+});
+
+test("backup card appears after primary and removal promotes it", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/settings/ai");
+  await expect(card(page, "Primary key")).toBeVisible();
+  await expect(page.getByText("Backup key (optional)")).toHaveCount(0);
+  await saveKey(page, "Primary key", "sk-ant-e2e-fake-key-1234");
+  await expect(card(page, "Primary key").getByText(/key ending 1234/)).toBeVisible();
+
+  await saveKey(page, "Backup key (optional)", "sk-ant-e2e-fake-key-5678");
+  const backup = card(page, "Backup key (optional)");
+  await expect(backup.getByText(/key ending 5678/)).toBeVisible();
+
+  const primary = card(page, "Primary key");
+  await primary.getByRole("button", { name: "Remove key" }).click();
+  await expect(primary.getByText("Remove this key? The backup becomes your primary key.")).toBeVisible();
+  await primary.getByRole("button", { name: "Yes, remove key" }).click();
+  await expect(primary.getByText("Your Anthropic-compatible key ending 5678: ok")).toBeVisible();
+  await expect(backup.getByText(/key ending/)).toHaveCount(0);
+  await expect(backup.getByLabel("API key")).toHaveValue("");
+  await expect(backup.getByRole("button", { name: "Save key" })).toBeVisible();
+});
+
+test("custom http base url is refused", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/settings/ai");
+  const primary = card(page, "Primary key");
+  await primary.getByLabel("API style").selectOption("openai");
+  await primary.getByLabel("Base URL").fill("http://gw.example/v1");
+  await primary.getByLabel("API key").fill("gw-e2e-fake-key-1234");
+  await primary.getByRole("button", { name: "Save key" }).click();
+  await expect(primary.getByRole("alert")).toContainText("Use an https URL.");
+});
+
+test("ceiling saves on the org", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/settings/ai");
+  await page.getByLabel("Monthly credit ceiling (optional)").fill("50");
+  await page.getByRole("button", { name: "Save ceiling" }).click();
+  await expect(page.getByText("Saved.")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Monthly credit ceiling (optional)")).toHaveValue("50.00");
 });
 
 test("member sees ask-an-owner", async ({ page, request }) => {
