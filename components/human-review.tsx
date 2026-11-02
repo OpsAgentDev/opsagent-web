@@ -3,8 +3,8 @@ import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap, type Connection, type HumanReviews } from "@/lib/api/client";
 
-const price = (cents: number) => `$${(cents / 100).toLocaleString("en-US")}`;
-const CONFIRM = "Harun will reply within 1 business day with a confirmation and invoice. Nothing is changed in your account.";
+export const price = (cents: number) => `$${(cents / 100).toLocaleString("en-US")}`;
+export const CONFIRM = "Harun will reply within 1 business day with a confirmation and invoice. Nothing is changed in your account.";
 
 function ReviewForm({ org, connections, onSent }: { org: string; connections: Connection[]; onSent: () => void }) {
   const [connection, setConnection] = useState("");

@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { HumanReviewView } from "@/components/human-review";
+import { FindingReviewButton } from "@/components/human-review-dialog";
 import { ReviewerProfile } from "@/components/reviewer-profile";
 import type { Connection, HumanReviews } from "@/lib/api/client";
 
@@ -35,5 +36,15 @@ describe("human review", () => {
     const member = view(false);
     expect(member).not.toContain("<textarea");
     expect(member).toContain("Only owners can request a review.");
+  });
+});
+
+describe("finding review button", () => {
+  const btn = (role: string) =>
+    renderToStaticMarkup(createElement(FindingReviewButton, { org: "o", findingId: "f1", role }));
+  it("is disabled with a hint for members", () => {
+    const html = btn("member");
+    expect(html).toMatch(/<button[^>]*disabled/);
+    expect(html).toContain("Only owners can request a review");
   });
 });
