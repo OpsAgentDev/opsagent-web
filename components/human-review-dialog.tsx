@@ -60,7 +60,7 @@ export function FindingReviewButton({ org, findingId, role }: { org: string; fin
   const owner = role === "owner";
   return (
     <div className="stack">
-      <button type="button" className="fit" disabled={!owner} onClick={() => setOpen(true)}>
+      <button type="button" className="fit" disabled={!owner || !offer} onClick={() => setOpen(true)}>
         Get a human review{offer ? ` · ${price(offer.price_cents)}` : ""}
       </button>
       {!owner && <p className="muted">Only owners can request a review</p>}
