@@ -44,7 +44,7 @@ function ReviewForm({ org, connections, onSent }: { org: string; connections: Co
           <label>
             Cloud account
             <select value={connection || connections[0]?.id} onChange={(e) => setConnection(e.target.value)}>
-              {connections.map((c) => <option key={c.id} value={c.id}>{c.display_name ?? c.id}</option>)}
+              {connections.map((c) => <option key={c.id} value={c.id}>{c.display_name ?? c.provider}</option>)}
             </select>
           </label>
           <label>

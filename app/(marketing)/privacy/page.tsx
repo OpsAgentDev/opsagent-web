@@ -26,6 +26,7 @@ export default function Privacy() {
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
           <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries, which you can view.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
+          <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>
         </ul>
         <p>
           OpsAgent connects through a read-only role you create. It cannot read your stored data (objects, database
