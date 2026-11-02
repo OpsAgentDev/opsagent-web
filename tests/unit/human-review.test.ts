@@ -28,7 +28,7 @@ describe("human review", () => {
     const html = view(true);
     expect(html).toContain("$99");
     expect(html).toContain("$499");
-    expect(html).toContain("Nothing is changed in your account.");
+    expect(html).toContain("Harun will reply within 1 business day with a confirmation and invoice. Nothing is changed in your account.");
   });
   it("owner sees the form, member does not", () => {
     expect(view(true)).toContain("Request an account review");
