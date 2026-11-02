@@ -17,6 +17,7 @@ export type Recipient = Schemas["Recipient"];
 export type Member = Schemas["Member"];
 export type Channel = Schemas["Channel"];
 export type Billing = Schemas["BillingOut"];
+export type HumanReviews = Schemas["HumanReviews"];
 export type FindingDetail = Schemas["FindingDetail"];
 export type Explanation = Schemas["ExplanationOut"];
 export type AiStatus = Schemas["AiStatusOut"];

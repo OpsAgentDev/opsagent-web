@@ -46,3 +46,17 @@ a.brand { display: inline-flex; align-items: center; color: inherit; text-decora
 .banner { margin: 0; padding: 10px 24px; border-bottom: 1px solid var(--line); }
 .banner.warn { background: var(--warn-bg); color: var(--ink); }
 button.fit { justify-self: start; }
+.wide { max-width: 960px; }
+.profile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 24px; box-shadow: var(--shadow); }
+.profile h2 { margin: 0; font-size: 24px; }
+.profile h3 { margin: 24px 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--soft); }
+.profile-head { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.profile-photo { border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); }
+.profile-headline { margin: 4px 0 12px; color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.chip { padding: 4px 12px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 13px; color: var(--ink); }
+.chip.strong { background: var(--accent-bg); border-color: var(--accent); }
+.quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.quote { margin: 0; padding: 16px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; }
+.quote blockquote { margin: 0 0 8px; color: var(--ink); }
+.price { margin: 0; font-size: 28px; font-weight: 700; color: var(--ink); }

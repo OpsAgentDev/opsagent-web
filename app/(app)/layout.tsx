@@ -42,6 +42,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <Link href="/settings/security">Security</Link>
         <Link href="/settings/billing">Billing</Link>
         <Link href="/settings/ai">AI</Link>
+        <Link href="/settings/human-review">Human review</Link>
         <span className="spacer" />
         <span className="muted">
           {org?.name} · {data.me.email}

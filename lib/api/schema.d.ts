@@ -794,6 +794,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/human-reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["human-reviews_list"];
+        put?: never;
+        /** Owner only. Allowed while the organisation is read-only: it is invoiced separately. */
+        post: operations["human-reviews_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/integrations": {
         parameters: {
             query?: never;
@@ -1391,6 +1408,53 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
             variant: string;
+        };
+        HumanReviewCreated: {
+            /** Format: uuid */
+            id: string;
+        };
+        HumanReviewIn: {
+            /** Format: uuid */
+            connection_id?: string | null;
+            /** Format: uuid */
+            finding_id?: string | null;
+            /** @description `finding` (needs `finding_id`) or `account` (needs `connection_id`). */
+            kind: string;
+            /** @description Up to 2000 characters. */
+            note?: string | null;
+        };
+        HumanReviewOffer: {
+            description: string;
+            /** @description `finding` or `account`. */
+            kind: string;
+            /** Format: int32 */
+            price_cents: number;
+            title: string;
+        };
+        HumanReviewRequestOut: {
+            /** Format: uuid */
+            connection_id?: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            finding_id?: string | null;
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            note?: string | null;
+            /**
+             * Format: int32
+             * @description The price when asked.
+             */
+            price_cents: number;
+            requester_email: string;
+            /** @description The finding title or connection name when asked. */
+            target_label: string;
+        };
+        HumanReviews: {
+            offers: components["schemas"]["HumanReviewOffer"][];
+            /** @description The latest 50, newest first. */
+            requests: components["schemas"]["HumanReviewRequestOut"][];
         };
         Integration: {
             /** Format: date-time */
@@ -4505,6 +4569,94 @@ export interface operations {
                 };
             };
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "human-reviews_list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HumanReviews"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    "human-reviews_create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HumanReviewIn"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HumanReviewCreated"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
