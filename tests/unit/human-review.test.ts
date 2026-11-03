@@ -4,8 +4,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { HumanReviewView, ReviewNotice, sendReview } from "@/components/human-review";
 import { FindingReviewButton } from "@/components/human-review-dialog";
 import { ReviewerProfile } from "@/components/reviewer-profile";
-import { api } from "@/lib/api/client";
+import { ErrorNote } from "@/components/error-note";
+import { api, ApiError } from "@/lib/api/client";
 import type { Connection, HumanReviews } from "@/lib/api/client";
+
+const offers = vi.hoisted(() => ({ error: undefined as Error | undefined }));
+vi.mock("@/lib/use-api", () => ({ useApi: () => ({ data: undefined, error: offers.error, loading: false, reload: () => {} }) }));
 
 const data: HumanReviews = {
   offers: [
@@ -48,6 +52,13 @@ describe("finding review button", () => {
     expect(html).toMatch(/<button[^>]*disabled/);
     expect(html).toContain("Only owners can request a review");
   });
+  it("shows the error when offers fail to load, button stays disabled", () => {
+    offers.error = new ApiError(500, { detail: "Offers unavailable" });
+    const html = btn("owner");
+    offers.error = undefined;
+    expect(html).toContain("Offers unavailable");
+    expect(html).toMatch(/<button[^>]*disabled/);
+  });
 });
 
 describe("checkout", () => {
@@ -70,6 +81,14 @@ describe("checkout", () => {
     post({ id: "r1", checkout_url: "https://evil.example/pay" });
     await expect(sendReview("o", body)).rejects.toThrow("Unexpected billing redirect.");
     expect(assign).not.toHaveBeenCalled();
+  });
+  it("surfaces the API message on a 429", async () => {
+    const err = new ApiError(429, { detail: "Daily limit reached" });
+    vi.spyOn(api, "POST").mockResolvedValue({ error: err.problem, response: new Response(null, { status: 429 }) } as never);
+    const caught = await sendReview("o", body).catch((e) => e);
+    expect(caught).toBeInstanceOf(ApiError);
+    expect(caught.status).toBe(429);
+    expect(renderToStaticMarkup(createElement(ErrorNote, { error: caught }))).toContain("Daily limit reached");
   });
   it("keeps the confirmation without a checkout URL", async () => {
     post({ id: "r1", checkout_url: null });
