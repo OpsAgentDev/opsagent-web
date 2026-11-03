@@ -803,7 +803,10 @@ export interface paths {
         };
         get: operations["human-reviews_list"];
         put?: never;
-        /** Owner only. Allowed while the organisation is read-only: it is invoiced separately. */
+        /**
+         * Owner only. Allowed while the organisation is read-only: it is paid separately. 502
+         *     `billing_unavailable` when Stripe fails.
+         */
         post: operations["human-reviews_create"];
         delete?: never;
         options?: never;
@@ -1410,6 +1413,8 @@ export interface components {
             variant: string;
         };
         HumanReviewCreated: {
+            /** @description The hosted Stripe Checkout page to pay on; null when Stripe is not configured (invoiced). */
+            checkout_url?: string | null;
             /** Format: uuid */
             id: string;
         };
@@ -1442,6 +1447,10 @@ export interface components {
             id: string;
             kind: string;
             note?: string | null;
+            /** Format: date-time */
+            paid_at?: string | null;
+            /** @description `invoice` (invoiced outside the product), `pending` (awaiting Stripe payment) or `paid`. */
+            payment: string;
             /**
              * Format: int32
              * @description The price when asked.
@@ -4657,6 +4666,14 @@ export interface operations {
                 };
             };
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };
