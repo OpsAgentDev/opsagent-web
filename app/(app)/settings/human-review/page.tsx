@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ErrorNote } from "@/components/error-note";
 import { HumanReviewView, ReviewNotice } from "@/components/human-review";
@@ -7,7 +8,7 @@ import { api, unwrap } from "@/lib/api/client";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
-export default function Page() {
+function HumanReviewPage() {
   const org = useOrg();
   const q = useSearchParams();
   const path = { params: { path: { org: org.slug } } };
@@ -31,5 +32,13 @@ export default function Page() {
         <HumanReviewView org={org.slug} owner={org.role === "owner"} data={data.reviews} connections={data.connections} onSent={reload} />
       )}
     </main>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <HumanReviewPage />
+    </Suspense>
   );
 }
