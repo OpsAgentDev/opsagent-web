@@ -15,6 +15,7 @@ const MESSAGES = new Map<string, string>([
   ["google_not_configured", "Google sign-in isn't available yet."],
   ["github_not_configured", "GitHub sign-in isn't available yet."],
   ["rate_limited", "Too many attempts. Wait a few minutes and try again."],
+  ["signup_closed", "OpsAgent is in private alpha and sign-ups are closed. Join the waitlist on opsagent.dev."],
 ]);
 
 export function messageFor(code: string): string {
