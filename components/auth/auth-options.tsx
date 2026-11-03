@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { CodeInput } from "@/components/auth/code-input";
+import { GitHubIcon, GoogleIcon, MailIcon } from "@/components/auth/icons";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { authMessage, isProviderUrl, messageFor } from "@/lib/auth-errors";
 import { log } from "@/lib/log";
@@ -109,15 +110,15 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
       <h1>{signIn ? "Sign in to OpsAgent" : "Create your OpsAgent account"}</h1>
       {alert}
       {signIn ? passkeySlot : null}
-      <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}>Continue with Google</button>
-      <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}>Continue with GitHub</button>
+      <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}><GoogleIcon />Continue with Google</button>
+      <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}><GitHubIcon />Continue with GitHub</button>
       <p className="auth-or">or</p>
       <form onSubmit={send}>
         <label>
           Email
-          <input name="email" type="email" required autoComplete="email" />
+          <input name="email" type="email" required autoComplete="email" placeholder="you@company.com" />
         </label>
-        <button type="submit" className={signIn ? "auth-btn" : "auth-btn primary"} disabled={busy}>Send link and code</button>
+        <button type="submit" className={signIn ? "auth-btn" : "auth-btn primary"} disabled={busy}><MailIcon />Send link and code</button>
       </form>
       {signIn ? null : <p className="auth-note">After you sign in we&apos;ll suggest adding a passkey, so next time is one tap.</p>}
       <p className="auth-foot">
