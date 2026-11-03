@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { PasskeyIcon } from "@/components/auth/icons";
 import { ApiError } from "@/lib/api/client";
 import { authMessage } from "@/lib/auth-errors";
 import { log } from "@/lib/log";
@@ -31,7 +32,7 @@ export function PasskeyButton({ returnTo }: { returnTo?: string }) {
 
   return (
     <>
-      <button type="button" className="auth-btn primary" disabled={busy} onClick={signIn}>Sign in with a passkey</button>
+      <button type="button" className="auth-btn primary" disabled={busy} onClick={signIn}><PasskeyIcon />Sign in with a passkey</button>
       {error ? <p role="alert" className="error">{error}</p> : null}
       <p className="auth-or">or</p>
     </>
