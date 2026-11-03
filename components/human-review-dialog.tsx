@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
-import { CONFIRM, price } from "@/components/human-review";
+import { CONFIRM, price, sendReview } from "@/components/human-review";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { useApi } from "@/lib/use-api";
 
@@ -21,7 +21,7 @@ function ReviewDialog({ org, findingId, description, onClose }: DialogProps) {
     setLimited(false);
     try {
       const body = { kind: "finding", finding_id: findingId, note: note || null };
-      await unwrap(api.POST("/orgs/{org}/human-reviews", { params: { path: { org } }, body }));
+      if (await sendReview(org, body)) return;
       setSent(true);
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) setLimited(true);
