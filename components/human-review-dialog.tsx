@@ -55,7 +55,7 @@ function ReviewDialog({ org, findingId, description, onClose }: DialogProps) {
 
 export function FindingReviewButton({ org, findingId, role }: { org: string; findingId: string; role: string }) {
   const [open, setOpen] = useState(false);
-  const { data } = useApi(() => unwrap(api.GET("/orgs/{org}/human-reviews", { params: { path: { org } } })), [org]);
+  const { data, error } = useApi(() => unwrap(api.GET("/orgs/{org}/human-reviews", { params: { path: { org } } })), [org]);
   const offer = data?.offers.find((o) => o.kind === "finding");
   const owner = role === "owner";
   return (
@@ -64,6 +64,7 @@ export function FindingReviewButton({ org, findingId, role }: { org: string; fin
         Get a human review{offer ? ` · ${price(offer.price_cents)}` : ""}
       </button>
       {!owner && <p className="muted">Only owners can request a review</p>}
+      <ErrorNote error={error} />
       {open && offer && (
         <ReviewDialog org={org} findingId={findingId} description={offer.description} onClose={() => setOpen(false)} />
       )}
