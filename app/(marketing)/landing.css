@@ -1,0 +1,348 @@
+/* Landing page only (imported by app/(marketing)/page.tsx). Every rule sits under .mkt. */
+
+.mkt { --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* Icon tiles shared by the sections below */
+.mkt .ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  border-radius: 10px;
+}
+.mkt .ico-bad { color: var(--bad); background: var(--bad-bg); border-color: rgba(248, 113, 113, 0.24); }
+
+/* Hero */
+.mkt .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; padding: 80px 0 96px; }
+.mkt .hero-demo { min-width: 0; }
+.mkt .trust { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; font-size: 13.5px; color: var(--body); }
+.mkt .trust li { display: inline-flex; align-items: center; gap: 8px; }
+.mkt .trust svg { color: var(--accent); }
+
+/* Alert demo */
+.mkt .demo { display: grid; gap: 14px; }
+.mkt .demo-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.mkt .demo-tabs::-webkit-scrollbar { display: none; }
+.mkt .demo-tabs [role="tab"] {
+  position: relative;
+  flex: 1 0 auto;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--soft);
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.mkt .demo-tabs [role="tab"]:hover { color: var(--ink); }
+.mkt .demo-tabs [role="tab"][aria-selected="true"] { color: var(--ink); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--line); }
+.mkt .demo-tabs [role="tab"]:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.mkt .demo-progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: demo-progress linear forwards;
+}
+@keyframes demo-progress { to { transform: scaleX(1); } }
+
+/* All panels share one grid cell, so the hero does not jump between tabs; hidden ones keep their space. */
+.mkt .demo-panels { display: grid; }
+.mkt .demo-panel { grid-area: 1 / 1; min-width: 0; }
+.mkt .demo-panel[hidden] { display: block; visibility: hidden; }
+.mkt .demo-panel:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 16px; }
+.mkt .demo-panel > .briefing { height: 100%; display: flex; flex-direction: column; }
+.mkt .demo-panel .briefing-foot { margin-top: auto; }
+.mkt .alert-evidence {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.mkt .alert-evidence dt { color: var(--soft); }
+.mkt .alert-evidence dd { margin: 0; color: var(--ink); }
+.mkt .alert-sent { margin-top: 12px; font-size: 13.5px; color: var(--body); }
+
+/* Overnight */
+.mkt .demo-body { padding: 20px 22px 22px; }
+.mkt .demo-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mkt .demo-stats li { padding: 14px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; }
+.mkt .demo-stats strong { display: block; font-size: 16px; font-weight: 650; line-height: 1.25; color: var(--ink); letter-spacing: -0.01em; }
+.mkt .demo-stats strong.is-bad { color: var(--bad); }
+.mkt .demo-stats strong.is-ok { color: var(--ok); }
+.mkt .demo-stats span { display: block; margin-top: 4px; font-size: 13px; line-height: 1.35; color: var(--soft); }
+.mkt .demo-night { margin-top: 26px; }
+.mkt .demo-events { margin-top: 22px; border-top: 1px solid var(--line); }
+.mkt .demo-events li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; padding-top: 14px; font-size: 14px; line-height: 1.45; }
+.mkt .demo-events time { font: 13px/1.45 var(--mono); color: var(--soft); }
+.mkt .demo-events strong { display: block; font-weight: 600; color: var(--ink); }
+.mkt .demo-events span { color: var(--soft); }
+.mkt .demo-ticks { position: relative; display: flex; justify-content: space-between; align-items: flex-end; height: 34px; padding-top: 14px; }
+.mkt .demo-ticks > span:not(.demo-alert-mark) { width: 2px; height: 10px; border-radius: 1px; background: var(--line-strong); opacity: 0.55; }
+.mkt .demo-ticks > span.hour { height: 16px; opacity: 1; }
+.mkt .demo-alert-mark {
+  position: absolute;
+  top: -6px;
+  transform: translateX(-50%);
+  padding: 2px 6px;
+  font: 600 11px/1.3 var(--mono);
+  color: var(--bad);
+  background: var(--bad-bg);
+  border-radius: 4px;
+}
+.mkt .demo-alert-mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 2px);
+  width: 2px;
+  height: 22px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--bad);
+}
+.mkt .demo-axis { display: flex; justify-content: space-between; margin-top: 8px; font: 12px/1 var(--mono); color: var(--soft); }
+
+/* Night watch */
+.mkt .demo-log { padding: 10px 0; font-size: 14px; }
+.mkt .demo-log li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 12px 22px; }
+.mkt .demo-log li + li { border-top: 1px dashed var(--line); }
+.mkt .demo-log time { font: 13px/1 var(--mono); color: var(--soft); }
+.mkt .demo-log-text { color: var(--body); }
+.mkt .demo-log li.is-new .demo-log-text { color: var(--ink); font-weight: 550; }
+.mkt .demo-log li.is-new time { color: var(--bad); }
+.mkt .demo-pill { padding: 3px 9px; font-size: 12px; font-weight: 600; line-height: 1.3; border-radius: 999px; white-space: nowrap; }
+.mkt .pill-ok { color: var(--ok); background: var(--ok-bg); }
+.mkt .pill-bad { color: var(--bad); background: var(--bad-bg); }
+.mkt .pill-next { color: var(--soft); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+.mkt .demo-log li.is-next { opacity: 0.6; }
+
+/* Everything */
+.mkt .demo-findings li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 14px; padding: 13px 22px; }
+.mkt .demo-findings li + li { border-top: 1px solid var(--line); }
+.mkt .demo-findings .dot { margin-top: 6px; width: 8px; height: 8px; }
+.mkt .demo-finding { display: grid; gap: 2px; }
+.mkt .demo-check { font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--soft); }
+.mkt .demo-finding-title { font-size: 14.5px; line-height: 1.4; color: var(--ink); }
+.mkt .demo-evidence { margin-top: 1px; font-size: 13px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.mkt .demo-evidence::after { content: " \2192"; }
+
+/* Motion: a soft fade and rise when a panel opens; the newest log line repeats its fade-in. */
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .demo-panel:not([hidden]) > .briefing { animation: demo-in 320ms ease-out both; }
+  .mkt .demo-panel:not([hidden]) li { animation: demo-in 360ms ease-out both; }
+  .mkt .demo-panel:not([hidden]) li:nth-child(2) { animation-delay: 60ms; }
+  .mkt .demo-panel:not([hidden]) li:nth-child(3) { animation-delay: 120ms; }
+  .mkt .demo-panel:not([hidden]) li:nth-child(4) { animation-delay: 180ms; }
+  .mkt .demo-panel:not([hidden]) li:nth-child(5) { animation-delay: 240ms; }
+  .mkt .demo-panel:not([hidden]) .demo-log li.is-new { animation: demo-log-new 4s ease-out 300ms infinite both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mkt .demo-progress { display: none; }
+}
+@keyframes demo-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes demo-log-new {
+  0% { opacity: 0; transform: translateY(6px); }
+  12%, 100% { opacity: 1; transform: none; }
+}
+
+/* While you sleep, and when you wake: a compact caption row under the hero */
+.mkt .daynight-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 48px; align-items: start; padding: 56px 0; }
+.mkt .daynight-row h2 { font-size: 20px; line-height: 1.3; letter-spacing: -0.015em; max-width: 12ch; }
+.mkt .daynight-row .daynight { margin-top: 0; gap: 32px; }
+.mkt .daynight-row .ico { margin-bottom: 14px; }
+.mkt .daynight-row .daynight p { margin: 6px 0 0; font-size: 15px; }
+
+/* How it works: numbered steps joined by a line */
+.mkt .steps { position: relative; }
+.mkt .steps::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  z-index: 0;
+  left: 48px;
+  right: calc((100% - 96px) / 3 + 48px);
+  height: 1px;
+  background: var(--line-strong);
+  opacity: 0.6;
+}
+.mkt .steps li { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
+.mkt .steps .step-badge { order: -1; }
+.mkt .steps li::before {
+  content: counter(step, decimal-leading-zero);
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0 0 6px;
+  background: none;
+  border-radius: 0;
+  font: 600 12px/1 var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+.mkt .step-badge {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 22px;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 8px var(--bg);
+}
+
+/* What it checks: a card grid; the heading stays in view beside it */
+.mkt #what-it-checks > div:first-child { position: sticky; top: 96px; }
+.mkt .checks { gap: 14px; }
+.mkt .checks li, .mkt .checks li:nth-child(-n + 2) {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 16px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  align-content: start;
+}
+.mkt .checks .ico { grid-row: span 2; width: 36px; height: 36px; }
+.mkt .checks li:hover { border-color: var(--line-strong); }
+.mkt .checks p { margin-top: 6px; font-size: 15px; line-height: 1.55; }
+
+/* What it will never do */
+.mkt .never li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 18px; align-content: start; padding-left: 0; border-left: 0; }
+.mkt .never .ico { grid-row: span 2; }
+
+/* iOS and Android: the heading beside a CSS-drawn phone */
+.mkt .mobile-strip { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 56px; align-items: center; padding-bottom: 0; overflow: hidden; }
+.mkt .mobile-strip > div { padding-bottom: 96px; }
+.mkt .phone {
+  width: 280px;
+  margin-right: 48px;
+  padding: 10px 10px 0;
+  background: #070b16;
+  border: 1px solid var(--line-strong);
+  border-bottom: 0;
+  border-radius: 44px 44px 0 0;
+  box-shadow: var(--shadow);
+}
+.mkt .phone-screen {
+  position: relative;
+  height: 360px;
+  padding: 52px 14px 0;
+  background: var(--brand);
+  border-radius: 34px 34px 0 0;
+  text-align: center;
+}
+.mkt .phone-notch { position: absolute; top: 12px; left: 50%; width: 84px; height: 24px; margin-left: -42px; background: #070b16; border-radius: 999px; }
+.mkt .phone-date { font-size: 14px; font-weight: 550; color: var(--body); }
+.mkt .phone-time { font-size: 64px; font-weight: 600; line-height: 1.05; letter-spacing: -0.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.mkt .phone-note {
+  margin-top: 30px;
+  padding: 12px 14px 14px;
+  text-align: left;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.mkt .phone-note-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; color: var(--soft); }
+.mkt .phone-note-head svg { border-radius: 5px; }
+.mkt .phone-note-when { margin-left: auto; font-weight: 500; }
+.mkt .phone-note-title { margin-top: 8px; font-size: 14px; font-weight: 650; color: var(--ink); }
+.mkt .phone-note-body { margin-top: 2px; font-size: 14px; line-height: 1.4; color: var(--body); }
+.mkt .phone-sample {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--warn);
+  background: var(--warn-bg);
+  border-radius: 999px;
+}
+
+/* Bring your own AI: the MCP endpoint as a code panel */
+.mkt .byo .mcp-url {
+  display: block;
+  margin-top: 24px;
+  padding: 0;
+  overflow: hidden;
+  background: #070b16;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.mkt .byo .mcp-url span {
+  display: block;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.mkt .byo .mcp-url code { display: block; padding: 16px; font-size: 15px; line-height: 1.5; color: var(--accent); }
+.mkt .byo .mcp-url + p { margin-top: 20px; }
+
+@media (max-width: 900px) {
+  .mkt .hero { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .mkt .daynight-row { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .mkt .daynight-row h2 { max-width: none; }
+  .mkt #what-it-checks > div:first-child { position: static; }
+}
+@media (max-width: 800px) {
+  .mkt .hero { padding: 40px 0 64px; }
+  .mkt .daynight-row { padding: 48px 0; }
+  .mkt .steps::before { display: none; }
+  .mkt .steps li:not(:last-child)::after { content: ""; position: absolute; left: 24px; top: 56px; bottom: -28px; width: 1px; background: var(--line-strong); opacity: 0.6; }
+  .mkt .steps li { padding-left: 72px; }
+  .mkt .steps .step-badge { position: absolute; left: 0; top: 0; margin: 0; }
+  .mkt .steps li::before { padding-top: 4px; }
+  .mkt .checks li:nth-child(2) { padding-top: 20px; }
+  .mkt .mobile-strip { grid-template-columns: minmax(0, 1fr); gap: 40px; justify-items: center; }
+  .mkt .mobile-strip > div { padding-bottom: 0; justify-self: stretch; }
+  .mkt .phone { margin-right: 0; }
+}
+@media (max-width: 480px) {
+  .mkt .demo-stats { grid-template-columns: minmax(0, 1fr); }
+  .mkt .demo-stats li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 14px; }
+  .mkt .demo-stats span { margin-top: 0; text-align: right; }
+  .mkt .demo-log li { gap: 10px; padding: 12px 16px; }
+  .mkt .demo-findings li { grid-template-columns: auto minmax(0, 1fr); padding: 13px 18px; }
+  .mkt .demo-evidence { grid-column: 2; }
+  .mkt .demo-body { padding: 18px; }
+  .mkt .phone { width: 260px; }
+}
