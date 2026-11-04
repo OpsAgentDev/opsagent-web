@@ -1,11 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-const NAV: [string, string][] = [
+const FEATURES: [string, string][] = [
   ["How it works", "/how-it-works"],
+  ["Alerts and briefings", "/features/alerts"],
+  ["What it checks", "/features/checks"],
+  ["Connect your agent", "/features/agents"],
+  ["Dashboard AI and human review", "/features/ai-and-review"],
+];
+const LINKS: [string, string][] = [
   ["Security", "/security"],
   ["Pricing", "/pricing"],
   ["Docs", "/docs/connect-your-agent"],
   ["Contact", "/contact"],
+];
+const NAV = [...FEATURES, ...LINKS];
+const FEATURE_PAGES = [
+  { path: "/features/alerts", h1: "Alerts and briefings", section: "Urgent alerts" },
+  { path: "/features/checks", h1: "What it checks", section: "The ten checks" },
+  { path: "/features/agents", h1: "Connect your agent", section: "What your agent can read" },
+  { path: "/features/ai-and-review", h1: "Dashboard AI and human review", section: "Human review" },
 ];
 
 test("header has every nav link and Join", async ({ page }) => {
@@ -18,8 +31,15 @@ test("header has every nav link and Join", async ({ page }) => {
 });
 
 test("current page is marked in the nav", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/docs/connect-your-agent");
-  await expect(page.getByRole("banner").getByRole("link", { name: "Docs", exact: true, includeHidden: true })).toHaveAttribute("aria-current", "page");
+  const header = page.getByRole("banner");
+  await expect(header.getByRole("link", { name: "Docs", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(header.getByRole("button", { name: /Features/ })).not.toHaveAttribute("aria-current");
+  await page.goto("/features/checks");
+  await expect(header.getByRole("link", { name: "What it checks", exact: true, includeHidden: true })).toHaveAttribute("aria-current", "page");
+  await expect(header.getByRole("button", { name: /Features/ })).toHaveAttribute("aria-current", "true");
+  await expect(header.getByRole("link", { name: "Docs", exact: true })).not.toHaveAttribute("aria-current");
 });
 
 test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
@@ -41,6 +61,19 @@ test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
+test("phone menu lists the five feature pages under a Features label", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  await header.getByRole("button", { name: /menu/i }).click();
+  await expect(header.getByText("Features", { exact: true })).toBeVisible();
+  for (const [name, href] of NAV) {
+    const link = header.getByRole("link", { name, exact: true });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", href);
+  }
+});
+
 test("mobile menu closes after tapping a same-page anchor", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -51,7 +84,7 @@ test("mobile menu closes after tapping a same-page anchor", async ({ page }) => 
 });
 
 test("no email address on marketing pages", async ({ page }) => {
-  for (const path of ["/", "/how-it-works", "/security", "/pricing", "/contact", "/docs/connect-your-agent", "/privacy", "/terms", "/sign-in", "/sign-up"]) {
+  for (const path of ["/", "/how-it-works", ...FEATURE_PAGES.map((p) => p.path), "/security", "/pricing", "/contact", "/docs/connect-your-agent", "/privacy", "/terms", "/sign-in", "/sign-up"]) {
     await page.goto(path);
     const html = await page.content();
     expect(html, path).not.toContain("info@opsagent.dev");
@@ -93,7 +126,7 @@ test("how-it-works renders five steps", async ({ page }) => {
   await page.goto("/how-it-works");
   await expect(page.locator("main h2")).toHaveCount(5);
   await expect(page.locator("main .soon")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /connect your agent/i })).toHaveAttribute("href", "/docs/connect-your-agent");
+  await expect(page.locator("main").getByRole("link", { name: /connect your agent/i })).toHaveAttribute("href", "/docs/connect-your-agent");
 });
 
 test("security renders and links contact for reports", async ({ page }) => {
@@ -124,20 +157,22 @@ test("marketing pages no longer say coming soon except for the mobile app", asyn
   await expect(page.getByText("Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.")).toBeVisible();
 });
 
-test("Resources dropdown holds Docs and Contact; Escape closes it", async ({ page }) => {
+test("Features dropdown holds the five pages; Docs and Contact are plain links; Escape closes it", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
   const header = page.getByRole("banner");
-  const more = header.getByRole("button", { name: /Resources/ });
-  const docs = header.getByRole("link", { name: "Docs", exact: true });
-  await expect(header.getByRole("link", { name: "Pricing", exact: true })).toBeVisible();
-  await expect(docs).toBeHidden();
+  const more = header.getByRole("button", { name: /Features/ });
+  for (const [name] of LINKS) await expect(header.getByRole("link", { name, exact: true })).toBeVisible();
+  await expect(header.getByRole("button", { name: /Resources/ })).toHaveCount(0);
+  for (const [name] of FEATURES) await expect(header.getByRole("link", { name, exact: true })).toBeHidden();
   await more.click();
   await expect(more).toHaveAttribute("aria-expanded", "true");
-  await expect(docs).toBeVisible();
-  await expect(header.getByRole("link", { name: "Contact", exact: true })).toBeVisible();
+  const panel = header.locator("#site-more");
+  for (const [name, href] of FEATURES) await expect(panel.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  for (const [name] of FEATURES) await expect(panel.getByRole("link", { name, exact: true })).toBeVisible();
+  await expect(panel.getByRole("link")).toHaveCount(5);
   await page.keyboard.press("Escape");
-  await expect(docs).toBeHidden();
+  await expect(panel.getByRole("link", { name: "What it checks" })).toBeHidden();
   await expect(more).toBeFocused();
 });
 
@@ -165,15 +200,66 @@ test("docs Copy writes the MCP URL to the clipboard and says Copied", async ({ p
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("https://brain.opsagent.dev/mcp");
 });
 
-test("Resources dropdown opens on hover and closes when the pointer leaves", async ({ page }) => {
+test("Features dropdown opens on hover and closes when the pointer leaves", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
   const header = page.getByRole("banner");
-  const docs = header.getByRole("link", { name: "Docs", exact: true });
-  await header.getByRole("button", { name: /Resources/ }).hover();
-  await expect(docs).toBeVisible();
-  await docs.hover(); // crossing into the panel keeps it open
-  await expect(docs).toBeVisible();
+  const alerts = header.getByRole("link", { name: "Alerts and briefings", exact: true });
+  await header.getByRole("button", { name: /Features/ }).hover();
+  await expect(alerts).toBeVisible();
+  await alerts.hover(); // crossing into the panel keeps it open
+  await expect(alerts).toBeVisible();
   await page.mouse.move(600, 500);
-  await expect(docs).toBeHidden();
+  await expect(alerts).toBeHidden();
+});
+
+test("footer links to every public page", async ({ page }) => {
+  await page.goto("/");
+  const footer = page.getByRole("contentinfo");
+  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"]] as [string, string][]) {
+    await expect(footer.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  }
+});
+
+for (const p of FEATURE_PAGES) {
+  test(`feature page ${p.path} renders its title, a key section and the call to action`, async ({ page }) => {
+    await page.goto(p.path);
+    const main = page.locator("main");
+    await expect(page.getByRole("heading", { level: 1, name: p.h1 })).toBeVisible();
+    await expect(main.getByRole("heading", { name: p.section, exact: true })).toBeVisible();
+    await expect(main.getByRole("heading", { level: 2, name: "Get your ops teammate." })).toBeVisible();
+    await expect(main.getByRole("button", { name: "Join the waitlist" })).toBeVisible();
+    await expect(page).toHaveTitle(`${p.h1} · OpsAgent`);
+  });
+}
+
+test("feature pages make no forbidden claims and use no gradients or outbound reviewer links", async ({ page }) => {
+  for (const p of FEATURE_PAGES) {
+    await page.goto(p.path);
+    const html = (await page.locator("main").innerHTML()).toLowerCase();
+    for (const bad of ["harun.dev", "gradient", "auto-fix", "paging"]) expect(html, `${p.path}: ${bad}`).not.toContain(bad);
+    const gradients = await page.evaluate(() =>
+      [...document.querySelectorAll("main *")].filter((el) => getComputedStyle(el).backgroundImage.includes("gradient")).length,
+    );
+    expect(gradients, p.path).toBe(0);
+  }
+});
+
+test("checks page lists all ten checks with evidence and when they run", async ({ page }) => {
+  await page.goto("/features/checks");
+  const cards = page.locator("main .check-cards > li");
+  await expect(cards).toHaveCount(10);
+  for (const i of [0, 9]) {
+    await expect(cards.nth(i).getByText("Evidence", { exact: true })).toBeVisible();
+    await expect(cards.nth(i).getByText("Runs", { exact: true })).toBeVisible();
+  }
+});
+
+test("agents feature page copies the MCP URL and links the setup docs", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/features/agents");
+  await page.getByRole("button", { name: "Copy MCP URL" }).click();
+  await expect(page.getByText("Copied", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("https://brain.opsagent.dev/mcp");
+  await expect(page.locator("main").getByRole("link", { name: /Set it up/ })).toHaveAttribute("href", "/docs/connect-your-agent");
 });

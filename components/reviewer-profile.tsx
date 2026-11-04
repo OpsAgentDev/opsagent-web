@@ -1,7 +1,8 @@
 import Image from "next/image";
 
-const FACTS = ["15+ years", "160+ clients", "All 12 AWS certifications"];
-const SPECIALISMS = ["AWS (network, compute, cost)", "Terraform and CI/CD", "Docker and Kubernetes", "Production monitoring"];
+export const HEADLINE = "DevOps and AWS consultant. I design, ship and run AWS infrastructure.";
+export const FACTS = ["15+ years", "160+ clients", "All 12 AWS certifications"];
+export const SPECIALISMS = ["AWS (network, compute, cost)", "Terraform and CI/CD", "Docker and Kubernetes", "Production monitoring"];
 const CLIENTS = ["L'Oréal", "Kiehl's", "Samsung", "Prudential", "Lonza", "Fleetcor", "NCR"];
 const QUOTES = [
   { text: "Harun is an amazing developer. He takes instruction well, takes pride in his work, and is easy to work with. I would recommend Harun without hesitation.", who: "Alen B.", role: "CEO & Co-Founder, Social HP" },
@@ -18,7 +19,7 @@ export function ReviewerProfile() {
         <Image src="/reviewer/harun.jpg" alt="Harun R. Rayhan" width={112} height={112} className="profile-photo" priority />
         <div>
           <h2>Harun R. Rayhan</h2>
-          <p className="profile-headline">DevOps and AWS consultant. I design, ship and run AWS infrastructure.</p>
+          <p className="profile-headline">{HEADLINE}</p>
           <ul className="chips" aria-label="Facts">
             {FACTS.map((f) => <li key={f} className="chip strong">{f}</li>)}
           </ul>
