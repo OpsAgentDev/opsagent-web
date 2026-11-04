@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { ExplainPanel } from "@/components/explain-panel";
 import { FindingReviewButton } from "@/components/human-review-dialog";
@@ -20,14 +21,14 @@ export default function FindingPage() {
 
   return (
     <main>
-      <p><Link href="/findings">Findings</Link></p>
+      <p className="back"><Link href="/findings">Findings</Link></p>
       <ErrorNote error={error} />
       {!f && !error && <p className="muted" role="status">Loading…</p>}
       {f && (
         <>
           <h1>{f.title}</h1>
-          <p>
-            {f.severity} · {f.status} · <code>{f.resource_identity}</code>
+          <p className="meta">
+            <Severity value={f.severity} /> <Status value={f.status} /> <code>{f.resource_identity}</code>
           </p>
           {f.summary && <p>{f.summary}</p>}
           {f.next_step && <p><strong>Next step:</strong> {f.next_step}</p>}

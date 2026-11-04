@@ -1,8 +1,7 @@
 "use client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { Logo } from "@/components/brand/Logo";
+import { AppNav } from "@/components/app-nav";
 import { BillingBanner } from "@/components/billing-banner";
 import { CreateOrg } from "@/components/create-org";
 import { ErrorNote } from "@/components/error-note";
@@ -10,6 +9,7 @@ import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { OrgContext, SessionReloadContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
+import "./app.css";
 
 async function loadSession() {
   const [me, orgs] = await Promise.all([unwrap(api.GET("/auth/me")), unwrap(api.GET("/orgs"))]);
@@ -24,30 +24,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     if (signedOut) router.replace("/sign-in");
   }, [signedOut, router]);
 
-  if (signedOut || (!data && !error)) return <main className="muted">Loading…</main>;
-  if (!data) return <main><ErrorNote error={error} /></main>;
+  if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
+  if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
   // shortcut: first organisation only; add a switcher when a user belongs to several.
   const org = data.orgs[0];
 
   return (
-    <>
-      <header className="bar">
-        <Link href="/dashboard" className="brand"><Logo size={22} /></Link>
-        <Link href="/dashboard">Dashboard</Link>
-        <Link href="/findings">Findings</Link>
-        <Link href="/chat">Ask OpsAgent</Link>
-        <Link href="/deliveries">Deliveries</Link>
-        <Link href="/settings/delivery">Delivery settings</Link>
-        <Link href="/settings/agents">Connected agents</Link>
-        <Link href="/settings/security">Security</Link>
-        <Link href="/settings/billing">Billing</Link>
-        <Link href="/settings/ai">AI</Link>
-        <Link href="/settings/human-review">Human review</Link>
-        <span className="spacer" />
-        <span className="muted">
-          {org?.name} · {data.me.email}
-        </span>
-      </header>
+    <div className="app">
+      <AppNav org={org?.name} email={data.me.email} />
       {org && <BillingBanner org={org.slug} />}
       {data.me.has_passkey ? null : <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
@@ -59,6 +43,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </main>
         )}
       </SessionReloadContext.Provider>
-    </>
+    </div>
   );
 }
