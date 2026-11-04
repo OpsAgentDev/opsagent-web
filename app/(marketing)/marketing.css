@@ -41,19 +41,34 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .menu-button { display: none; font: inherit; font-size: 15px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
 .mkt .menu-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .site-header nav { display: flex; align-items: center; gap: 24px; font-size: 15px; }
-.mkt .site-header nav a { color: var(--body); text-decoration: none; }
+.mkt .site-header nav a, .mkt .site-header .more-button { color: var(--body); text-decoration: none; white-space: nowrap; }
 .mkt .site-header nav a:hover, .mkt .site-header nav a[aria-current="page"] { color: var(--ink); }
 .mkt .site-header nav a[aria-current="page"] { text-decoration: underline; }
 .mkt .site-header .sign-in { padding-left: 24px; border-left: 1px solid var(--line); }
 .mkt .site-header nav a.join { padding: 9px 16px; color: var(--accent-ink); background: var(--accent); border-radius: 8px; font-weight: 600; }
 .mkt .site-header nav a.join:hover { color: var(--accent-ink); background: var(--accent-hover); }
-@media (max-width: 800px) {
+.mkt .site-header .more { position: relative; }
+.mkt .site-header .more-button { font: inherit; font-size: 15px; color: var(--body); background: none; border: 0; padding: 0; cursor: pointer; }
+.mkt .site-header .more-button:hover, .mkt .site-header .more-button[aria-expanded="true"] { color: var(--ink); }
+.mkt .site-header .more-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mkt .site-header .more-panel { display: none; position: absolute; top: calc(100% + 12px); left: -14px; min-width: 160px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.mkt .site-header .more-panel.open { display: grid; }
+.mkt .site-header .more-panel a { padding: 8px 10px; border-radius: 6px; }
+.mkt .site-header .more-panel a:hover { background: var(--surface-2); }
+@media (max-width: 1040px) {
+  .mkt .site-header nav { gap: 18px; }
+  .mkt .site-header .sign-in { padding-left: 18px; }
+}
+@media (max-width: 860px) {
   .mkt .menu-button { display: block; }
   .mkt .site-header nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .mkt .site-header nav.open { display: flex; }
   .mkt .site-header nav a { padding: 12px 0; }
   .mkt .site-header .sign-in { padding-left: 0; border-left: 0; }
   .mkt .site-header nav a.join { margin-top: 8px; text-align: center; }
+  .mkt .site-header .more-button { display: none; }
+  .mkt .site-header .more-panel { display: grid; position: static; min-width: 0; padding: 0; background: none; border: 0; box-shadow: none; }
+  .mkt .site-header .more-panel a { padding: 12px 0; border-radius: 0; }
 }
 
 /* Coming soon tag */
