@@ -123,3 +123,20 @@ test("marketing pages no longer say coming soon except for the mobile app", asyn
   await page.goto("/security");
   await expect(page.getByText("Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.")).toBeVisible();
 });
+
+test("Resources dropdown holds Docs and Contact; Escape closes it", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  const more = header.getByRole("button", { name: /Resources/ });
+  const docs = header.getByRole("link", { name: "Docs", exact: true });
+  await expect(header.getByRole("link", { name: "Pricing", exact: true })).toBeVisible();
+  await expect(docs).toBeHidden();
+  await more.click();
+  await expect(more).toHaveAttribute("aria-expanded", "true");
+  await expect(docs).toBeVisible();
+  await expect(header.getByRole("link", { name: "Contact", exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(docs).toBeHidden();
+  await expect(more).toBeFocused();
+});
