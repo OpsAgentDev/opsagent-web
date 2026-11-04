@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { MailIcon, ShieldIcon } from "@/components/marketing/landing-icons";
 import { ContactForm } from "@/components/marketing/ContactForm";
 import { TOPICS } from "@/components/marketing/contactTopics";
 
@@ -15,7 +17,22 @@ export default async function Contact({ searchParams }: { searchParams: Promise<
     <main className="page">
       <h1>Talk to us</h1>
       <p>Questions, security reports, partnerships. We reply to you by email.</p>
-      <ContactForm initialTopic={initial} />
+      <div className="contact-grid">
+        <ContactForm initialTopic={initial} />
+        <ul className="contact-card">
+          <li>
+            <span className="ico"><MailIcon /></span>
+            <p><strong>We reply by email</strong></p>
+          </li>
+          <li>
+            <span className="ico"><ShieldIcon /></span>
+            <p>
+              <strong>Security reports: choose Security as the topic</strong>
+              <Link href="/security">Security page</Link>
+            </p>
+          </li>
+        </ul>
+      </div>
     </main>
   );
 }

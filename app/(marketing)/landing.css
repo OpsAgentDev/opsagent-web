@@ -1,20 +1,4 @@
-/* Landing page only (imported by app/(marketing)/page.tsx). Every rule sits under .mkt. */
-
-.mkt { --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-
-/* Icon tiles shared by the sections below */
-.mkt .ico {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 40px;
-  height: 40px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 1px solid rgba(34, 211, 238, 0.22);
-  border-radius: 10px;
-}
-.mkt .ico-bad { color: var(--bad); background: var(--bad-bg); border-color: rgba(248, 113, 113, 0.24); }
+/* Landing page only (imported by app/(marketing)/page.tsx). Every rule sits under .mkt. Icon tiles and step badges live in marketing.css. */
 
 /* Hero */
 .mkt .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; padding: 80px 0 96px; }
@@ -196,7 +180,7 @@
   opacity: 0.6;
 }
 .mkt .steps li { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
-.mkt .steps .step-badge { order: -1; }
+.mkt .steps .step-badge { order: -1; margin-bottom: 22px; }
 .mkt .steps li::before {
   content: counter(step, decimal-leading-zero);
   display: block;
@@ -208,20 +192,6 @@
   font: 600 12px/1 var(--mono);
   letter-spacing: 0.06em;
   color: var(--accent);
-}
-.mkt .step-badge {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 22px;
-  color: var(--accent);
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: 14px;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 0 0 8px var(--bg);
 }
 
 /* What it checks: a card grid; the heading stays in view beside it */
