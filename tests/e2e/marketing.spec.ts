@@ -11,7 +11,7 @@ const NAV: [string, string][] = [
 test("header has every nav link and Join", async ({ page }) => {
   await page.goto("/");
   const header = page.getByRole("banner");
-  for (const [name, href] of NAV) await expect(header.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  for (const [name, href] of NAV) await expect(header.getByRole("link", { name, exact: true, includeHidden: true })).toHaveAttribute("href", href);
   await expect(header.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/sign-in");
   await expect(header.getByRole("link", { name: "Join the waitlist" })).toHaveAttribute("href", "/#waitlist");
   await expect(header.getByRole("link", { name: "OpsAgent" })).toHaveAttribute("href", "/");
@@ -19,7 +19,7 @@ test("header has every nav link and Join", async ({ page }) => {
 
 test("current page is marked in the nav", async ({ page }) => {
   await page.goto("/docs/connect-your-agent");
-  await expect(page.getByRole("banner").getByRole("link", { name: "Docs", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("banner").getByRole("link", { name: "Docs", exact: true, includeHidden: true })).toHaveAttribute("aria-current", "page");
 });
 
 test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
@@ -122,4 +122,21 @@ test("marketing pages no longer say coming soon except for the mobile app", asyn
   await expect(page.getByText(URGENT).first()).toBeVisible();
   await page.goto("/security");
   await expect(page.getByText("Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.")).toBeVisible();
+});
+
+test("Resources dropdown holds Docs and Contact; Escape closes it", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  const more = header.getByRole("button", { name: /Resources/ });
+  const docs = header.getByRole("link", { name: "Docs", exact: true });
+  await expect(header.getByRole("link", { name: "Pricing", exact: true })).toBeVisible();
+  await expect(docs).toBeHidden();
+  await more.click();
+  await expect(more).toHaveAttribute("aria-expanded", "true");
+  await expect(docs).toBeVisible();
+  await expect(header.getByRole("link", { name: "Contact", exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(docs).toBeHidden();
+  await expect(more).toBeFocused();
 });
