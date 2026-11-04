@@ -15,7 +15,7 @@ const MESSAGES = {
   failed: "Something went wrong. Please try again later.",
 };
 
-export function WaitlistForm({ source }: { source: "landing-hero" | "landing-footer" }) {
+export function WaitlistForm({ source }: { source: "landing-hero" | "landing-footer" | `feature-${string}` }) {
   const [state, setState] = useState<State>("idle");
   const [error, setError] = useState("");
   const id = `waitlist-${source}`;

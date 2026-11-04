@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 // Holds the nav links too: aria-current needs the pathname, and the panel needs the open state.
 type NavLink = { href: string; label: string };
 
-export function MenuToggle({ primary, resources }: { primary: NavLink[]; resources: NavLink[] }) {
+export function MenuToggle({ features, links }: { features: NavLink[]; links: NavLink[] }) {
   const [open, setOpen] = useState(false);
   const [more, setMore] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
@@ -42,6 +42,7 @@ export function MenuToggle({ primary, resources }: { primary: NavLink[]; resourc
     };
   }, [open, more]);
 
+  const inFeatures = features.some((l) => l.href === pathname);
   const close = () => { setOpen(false); setMore(false); };
   // Hover opens the dropdown on desktop only (a hover-capable pointer and the bar layout, not the phone menu).
   const hoverOpen = () => window.matchMedia("(hover: hover) and (min-width: 861px)").matches;
@@ -67,15 +68,16 @@ export function MenuToggle({ primary, resources }: { primary: NavLink[]; resourc
         {open ? "Close menu" : "Menu"}
       </button>
       <nav id="site-menu" aria-label="Main" className={open ? "open" : undefined}>
-        {primary.map(link)}
         <div className="more" onMouseEnter={enter} onMouseLeave={out}>
-          <button ref={moreButton} type="button" className="more-button" aria-expanded={more} aria-controls="site-more" onClick={() => setMore(hoverOpen() ? true : !more)}>
-            Resources <span aria-hidden="true">▾</span>
+          <button ref={moreButton} type="button" className="more-button" aria-expanded={more} aria-controls="site-more" aria-current={inFeatures ? "true" : undefined} onClick={() => setMore(hoverOpen() ? true : !more)}>
+            Features <span aria-hidden="true">▾</span>
           </button>
           <div id="site-more" className={more ? "more-panel open" : "more-panel"}>
-            {resources.map(link)}
+            <p className="more-label">Features</p>
+            {features.map(link)}
           </div>
         </div>
+        {links.map(link)}
         <Link href="/sign-in" className="sign-in" onClick={close}>Sign in</Link>
         <Link href="/#waitlist" className="join" onClick={close}>Join the waitlist</Link>
       </nav>

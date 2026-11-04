@@ -1,4 +1,4 @@
-/* Landing page only (imported by app/(marketing)/page.tsx). Every rule sits under .mkt. Icon tiles and step badges live in marketing.css. */
+/* Landing page and the alerts feature page (imported by both, for the alert demo). Every rule sits under .mkt. Icon tiles and step badges live in marketing.css. */
 
 /* Hero */
 .mkt .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; padding: 80px 0 96px; }
