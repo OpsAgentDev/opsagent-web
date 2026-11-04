@@ -140,3 +140,27 @@ test("Resources dropdown holds Docs and Contact; Escape closes it", async ({ pag
   await expect(docs).toBeHidden();
   await expect(more).toBeFocused();
 });
+
+test("pricing marks Team with the 14-day free trial badge", async ({ page }) => {
+  await page.goto("/pricing");
+  const team = page.locator("main .plans > li").filter({ has: page.getByRole("heading", { name: "Team" }) });
+  await expect(team.locator(".plan-badge")).toHaveText("14-day free trial");
+  await expect(page.locator("main .plan-badge")).toHaveCount(1);
+});
+
+test("security lists the three scoped reads as a real list", async ({ page }) => {
+  await page.goto("/security");
+  const section = page.locator("main section").filter({ has: page.getByRole("heading", { name: /What it reads/ }) });
+  const items = section.getByRole("list").getByRole("listitem");
+  await expect(items).toHaveCount(3);
+  await expect(items.first()).toHaveCSS("display", "list-item");
+  await expect(items.nth(1).locator("code")).toHaveText("opsagent:logs=allow");
+});
+
+test("docs Copy writes the MCP URL to the clipboard and says Copied", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/docs/connect-your-agent");
+  await page.getByRole("button", { name: "Copy MCP URL" }).click();
+  await expect(page.getByText("Copied", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("https://brain.opsagent.dev/mcp");
+});

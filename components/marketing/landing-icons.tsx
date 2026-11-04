@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 type IconProps = { size?: number };
 
-/** One stroke set for the landing page: 24px grid, 1.75 stroke, round caps. Decorative only. */
+/** One stroke set for the marketing pages: 24px grid, 1.75 stroke, round caps. Decorative only. */
 function Icon({ size = 20, children }: IconProps & { children: ReactNode }) {
   return (
     <svg
@@ -159,5 +159,29 @@ export const SunIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="4" />
     <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" />
+  </Icon>
+);
+/** A plain outlined square with two lines of text; deliberately not a chat bubble. */
+export const ChatSquareIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+    <path d="M7.5 9.5h9M7.5 13.5h6" />
+  </Icon>
+);
+export const ToggleIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="2.5" y="7" width="19" height="10" rx="5" />
+    <circle cx="16.5" cy="12" r="2.5" />
+  </Icon>
+);
+export const FlagIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5.5 21V4M5.5 4h11.5l-2.5 4.25L17 12.5H5.5" />
+  </Icon>
+);
+export const MailIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="5.5" width="18" height="13" rx="2" />
+    <path d="M3.5 7l8.5 6.5L20.5 7" />
   </Icon>
 );

@@ -49,15 +49,15 @@ export function ContactForm({ initialTopic }: { initialTopic: Topic }) {
       {state !== "done" && (
         <form onSubmit={submit} noValidate>
           <label htmlFor="c-name">Name</label>
-          <input id="c-name" name="name" required maxLength={100} autoComplete="name" />
+          <input id="c-name" name="name" required maxLength={100} autoComplete="name" placeholder="Your name" />
           <label htmlFor="c-email">Email</label>
-          <input id="c-email" name="email" type="email" required autoComplete="email" />
+          <input id="c-email" name="email" type="email" required autoComplete="email" placeholder="you@company.com" />
           <label htmlFor="c-topic">Topic</label>
           <select id="c-topic" name="topic" defaultValue={initialTopic}>
             {TOPICS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
           <label htmlFor="c-message">Message</label>
-          <textarea id="c-message" name="message" required minLength={10} maxLength={5000} rows={6} />
+          <textarea id="c-message" name="message" required minLength={10} maxLength={5000} rows={6} placeholder="How can we help?" />
           <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="contact-hp" />
           <button type="submit" aria-disabled={state === "pending"}>Send message</button>
           <p role="alert" className="waitlist-err">{error}</p>
