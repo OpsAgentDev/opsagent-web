@@ -43,6 +43,18 @@ export function MenuToggle({ primary, resources }: { primary: NavLink[]; resourc
   }, [open, more]);
 
   const close = () => { setOpen(false); setMore(false); };
+  // Hover opens the dropdown on desktop only (a hover-capable pointer and the bar layout, not the phone menu).
+  const hoverOpen = () => window.matchMedia("(hover: hover) and (min-width: 861px)").matches;
+  const leave = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const enter = () => {
+    if (!hoverOpen()) return;
+    clearTimeout(leave.current);
+    setMore(true);
+  };
+  const out = () => {
+    if (!hoverOpen()) return;
+    leave.current = setTimeout(() => setMore(false), 150);
+  };
   const link = (l: NavLink) => (
     <Link key={l.href} href={l.href} onClick={close} aria-current={pathname === l.href ? "page" : undefined}>
       {l.label}
@@ -56,8 +68,8 @@ export function MenuToggle({ primary, resources }: { primary: NavLink[]; resourc
       </button>
       <nav id="site-menu" aria-label="Main" className={open ? "open" : undefined}>
         {primary.map(link)}
-        <div className="more">
-          <button ref={moreButton} type="button" className="more-button" aria-expanded={more} aria-controls="site-more" onClick={() => setMore(!more)}>
+        <div className="more" onMouseEnter={enter} onMouseLeave={out}>
+          <button ref={moreButton} type="button" className="more-button" aria-expanded={more} aria-controls="site-more" onClick={() => setMore(hoverOpen() ? true : !more)}>
             Resources <span aria-hidden="true">▾</span>
           </button>
           <div id="site-more" className={more ? "more-panel open" : "more-panel"}>

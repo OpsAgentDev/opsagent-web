@@ -81,6 +81,8 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .site-header .more-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .site-header .more-panel { display: none; position: absolute; top: calc(100% + 12px); left: -14px; min-width: 160px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
 .mkt .site-header .more-panel.open { display: grid; }
+/* Bridges the gap under the button so the pointer can move into the panel without closing it. */
+.mkt .site-header .more-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -14px; height: 14px; }
 .mkt .site-header .more-panel a { padding: 8px 10px; border-radius: 6px; }
 .mkt .site-header .more-panel a:hover { background: var(--surface-2); }
 @media (max-width: 1040px) {
