@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { Pager, useCursors } from "@/components/pager";
 import { FindingActionDialog, type FindingAction } from "@/components/finding-action-dialog";
@@ -24,7 +25,6 @@ export default function Findings() {
     const query = { status: status || undefined, severity: severity || undefined, cursor, limit: PAGE_SIZE };
     return unwrap(api.GET("/orgs/{org}/findings", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, status, severity, cursor]);
-
 
   async function reopen(f: FindingSummary) {
     try {
@@ -57,7 +57,7 @@ export default function Findings() {
       </div>
       <ErrorNote error={error ?? actionError} />
       {loading && <p className="muted" role="status">Loading…</p>}
-      <table>
+      <table className="findings">
         <thead>
           <tr>
             <th>Severity</th>
@@ -70,25 +70,25 @@ export default function Findings() {
         <tbody>
           {page?.items.map((f) => (
             <tr key={f.id} data-id={f.id}>
-              <td>{f.severity}</td>
+              <td><Severity value={f.severity} /></td>
               <td><Link href={`/findings/${f.id}`}>{f.title}</Link></td>
-              <td className="muted">{f.resource_identity}</td>
-              <td>{f.status}</td>
-              <td className="row">
+              <td className="muted mono">{f.resource_identity}</td>
+              <td><Status value={f.status} /></td>
+              <td className="actions">
                 {f.status === "open" || f.status === "flapping" ? (
                   <>
-                    <button type="button" onClick={() => setActing({ finding: f, action: "snooze" })}>Snooze</button>
-                    <button type="button" onClick={() => setActing({ finding: f, action: "accept" })}>Accept</button>
+                    <button type="button" className="quiet" onClick={() => setActing({ finding: f, action: "snooze" })}>Snooze</button>
+                    <button type="button" className="quiet" onClick={() => setActing({ finding: f, action: "accept" })}>Accept</button>
                   </>
                 ) : f.status !== "resolved" ? (
-                  <button type="button" onClick={() => reopen(f)}>Reopen</button>
+                  <button type="button" className="quiet" onClick={() => reopen(f)}>Reopen</button>
                 ) : null}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {page?.items.length === 0 && <p className="muted">Nothing here.</p>}
+      {page?.items.length === 0 && <p className="muted empty">Nothing here.</p>}
       <Pager pager={pager} next={page?.next_cursor} />
       {acting && (
         <FindingActionDialog

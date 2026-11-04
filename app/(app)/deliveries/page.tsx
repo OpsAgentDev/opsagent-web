@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { Pager, useCursors } from "@/components/pager";
 import { api, unwrap } from "@/lib/api/client";
@@ -53,7 +54,7 @@ export default function Deliveries() {
       </div>
       <ErrorNote error={error ?? connections.error} />
       {loading && <p className="muted" role="status">Loading…</p>}
-      <table>
+      <table className="scroll">
         <thead>
           <tr>
             <th>Created</th>
@@ -72,14 +73,14 @@ export default function Deliveries() {
               <td>{d.kind}</td>
               <td className="muted">{d.connection_id ? (names.get(d.connection_id) ?? d.connection_id) : "organisation"}</td>
               <td>{d.channel}</td>
-              <td>{d.status}</td>
+              <td><Status value={d.status} /></td>
               <td>{d.attempts}</td>
               <td>{when(d.sent_at)}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {page?.items.length === 0 && <p className="muted">{connection || kind ? "No deliveries match these filters." : "No deliveries yet."}</p>}
+      {page?.items.length === 0 && <p className="muted empty">{connection || kind ? "No deliveries match these filters." : "No deliveries yet."}</p>}
       <Pager pager={pager} next={page?.next_cursor} />
     </main>
   );
