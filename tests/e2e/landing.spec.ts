@@ -6,8 +6,11 @@ const MAILPIT = process.env.MAILPIT_URL ?? "http://localhost:8025";
 test("landing renders every section", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "Your ops teammate that never sleeps." })).toBeVisible();
-  await expect(page.getByText("Sample briefing")).toBeVisible();
-  await expect(page.getByText("Sample alert")).toBeVisible();
+  await expect(page.getByText("Sample night")).toBeVisible();
+  await expect(page.getByText("While you slept")).toBeVisible();
+  for (const label of ["Overnight", "Night watch", "Morning briefing", "Urgent", "Everything"]) {
+    await expect(page.getByRole("tab", { name: label })).toBeVisible();
+  }
   await expect(page.locator("section#waitlist")).toHaveClass(/hero/);
   await expect(page.locator(".soon")).toHaveCount(1); // the mobile app only
   await expect(page.getByText("page you at 3am", { exact: false })).toHaveCount(0);
@@ -27,11 +30,52 @@ test("landing renders every section", async ({ page }) => {
   await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toBeVisible();
 });
 
-test("landing fits a 360px phone", async ({ page }) => {
-  await page.setViewportSize({ width: 360, height: 740 });
+test("landing fits a 320px phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
   await page.goto("/");
   await expect(page.getByRole("heading", { name: "Your ops teammate that never sleeps." })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+});
+
+test("demo tabs show each panel", async ({ page }) => {
+  await page.goto("/");
+  const panel = page.getByRole("tabpanel");
+  const cases: [string, string][] = [
+    ["Overnight", "While you slept"],
+    ["Night watch", "03:12"],
+    ["Morning briefing", "Morning briefing"],
+    ["Urgent", "snapshot left public"],
+    ["Everything", "Every finding names the resource"],
+  ];
+  for (const [tab, key] of cases) {
+    await page.getByRole("tab", { name: tab }).click();
+    await expect(panel.getByText(key, { exact: false }).first()).toBeVisible();
+  }
+});
+
+test("demo keyboard", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Overnight" }).focus();
+  await page.keyboard.press("End");
+  await expect(page.getByRole("tab", { name: "Everything" })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("tab", { name: "Overnight" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: "Overnight" })).toBeFocused();
+});
+
+test("demo respects reduced motion", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.waitForTimeout(7000);
+  await expect(page.getByRole("tab", { name: "Overnight" })).toHaveAttribute("aria-selected", "true");
+});
+
+test("demo without JS", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(page.getByText("While you slept")).toBeVisible();
+  await context.close();
 });
 
 test("dashboard keeps its own styles", async ({ page, request }) => {
