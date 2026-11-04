@@ -43,7 +43,8 @@ test("demo tabs show each panel", async ({ page }) => {
   const cases: [string, string][] = [
     ["Overnight", "While you slept"],
     ["Night watch", "03:12"],
-    ["Morning briefing", "Morning briefing"],
+    ["Morning briefing", "Sample briefing"],
+    ["Urgent", "Sample alert"],
     ["Urgent", "snapshot left public"],
     ["Everything", "Every finding names the resource"],
   ];
@@ -51,6 +52,14 @@ test("demo tabs show each panel", async ({ page }) => {
     await page.getByRole("tab", { name: tab }).click();
     await expect(panel.getByText(key, { exact: false }).first()).toBeVisible();
   }
+});
+
+test("demo advances by itself until clicked", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("tab", { name: "Night watch" })).toHaveAttribute("aria-selected", "true", { timeout: 8000 });
+  await page.getByRole("tab", { name: "Urgent" }).click();
+  await page.waitForTimeout(7000);
+  await expect(page.getByRole("tab", { name: "Urgent" })).toHaveAttribute("aria-selected", "true");
 });
 
 test("demo keyboard", async ({ page }) => {
