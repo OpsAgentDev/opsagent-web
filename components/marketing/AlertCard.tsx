@@ -18,9 +18,21 @@ export function AlertCard() {
           <p className="finding">
             Database <code>prod-db</code> snapshot left public
           </p>
-          <p className="cites">Sent to #ops right away</p>
+          <p className="cites">Cites the snapshot&apos;s restore permission, which is set to public.</p>
+          <dl className="alert-evidence">
+            <dt>Resource</dt>
+            <dd>
+              <code>prod-db</code> snapshot
+            </dd>
+            <dt>Check</dt>
+            <dd>Public exposure</dd>
+            <dt>Evidence</dt>
+            <dd>Restore permission: public</dd>
+          </dl>
+          <p className="alert-sent">Sent to #ops right away · 03:12</p>
         </div>
       </div>
+      <figcaption className="briefing-foot">Read-only. Nothing in your cloud was changed.</figcaption>
     </figure>
   );
 }

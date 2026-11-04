@@ -150,7 +150,6 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .briefing-foot { padding: 14px 22px; background: var(--surface-2); border-top: 1px solid var(--line); font-size: 13px; color: var(--soft); }
 
 .mkt .hero-note { margin-top: 14px; font-size: 14px; color: var(--soft); max-width: 34em; }
-.mkt .hero-cards { display: grid; gap: 20px; }
 .mkt .alert-body { display: flex; gap: 14px; padding: 18px 22px; }
 .mkt .alert .briefing-foot { margin: 0; }
 

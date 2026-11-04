@@ -33,7 +33,7 @@ export function BriefingCard() {
         <Mark size={28} />
         <div>
           <p className="briefing-title">Morning briefing</p>
-          <p className="briefing-meta">Tuesday, 08:00</p>
+          <p className="briefing-meta">Tuesday 08:00 · #ops</p>
         </div>
         <span className="briefing-sample">Sample briefing</span>
       </div>
@@ -48,7 +48,7 @@ export function BriefingCard() {
           </li>
         ))}
       </ul>
-      <figcaption className="briefing-foot">Read-only. Nothing in your cloud was changed.</figcaption>
+      <figcaption className="briefing-foot">Skipped on mornings when nothing changed.</figcaption>
     </figure>
   );
 }
