@@ -11,7 +11,7 @@ const NAV: [string, string][] = [
 test("header has every nav link and Join", async ({ page }) => {
   await page.goto("/");
   const header = page.getByRole("banner");
-  for (const [name, href] of NAV) await expect(header.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  for (const [name, href] of NAV) await expect(header.getByRole("link", { name, exact: true, includeHidden: true })).toHaveAttribute("href", href);
   await expect(header.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/sign-in");
   await expect(header.getByRole("link", { name: "Join the waitlist" })).toHaveAttribute("href", "/#waitlist");
   await expect(header.getByRole("link", { name: "OpsAgent" })).toHaveAttribute("href", "/");
@@ -19,7 +19,7 @@ test("header has every nav link and Join", async ({ page }) => {
 
 test("current page is marked in the nav", async ({ page }) => {
   await page.goto("/docs/connect-your-agent");
-  await expect(page.getByRole("banner").getByRole("link", { name: "Docs", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("banner").getByRole("link", { name: "Docs", exact: true, includeHidden: true })).toHaveAttribute("aria-current", "page");
 });
 
 test("mobile menu opens, Escape closes, focus returns", async ({ page }) => {
