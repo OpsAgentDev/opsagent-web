@@ -164,3 +164,16 @@ test("docs Copy writes the MCP URL to the clipboard and says Copied", async ({ p
   await expect(page.getByText("Copied", { exact: true })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("https://brain.opsagent.dev/mcp");
 });
+
+test("Resources dropdown opens on hover and closes when the pointer leaves", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  const docs = header.getByRole("link", { name: "Docs", exact: true });
+  await header.getByRole("button", { name: /Resources/ }).hover();
+  await expect(docs).toBeVisible();
+  await docs.hover(); // crossing into the panel keeps it open
+  await expect(docs).toBeVisible();
+  await page.mouse.move(600, 500);
+  await expect(docs).toBeHidden();
+});
