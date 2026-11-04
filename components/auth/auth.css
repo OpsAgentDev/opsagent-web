@@ -1,7 +1,11 @@
 /* Sign-up and sign-in. Scoped under .mkt like marketing.css, whose tokens it uses. */
-.mkt .auth { max-width: 440px; padding: 72px var(--gutter) 96px; }
+.mkt.auth-shell { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px var(--gutter) 64px; }
+.mkt .auth-back { align-self: flex-start; font-size: 15px; color: var(--soft); text-decoration: none; }
+.mkt .auth-back:hover { color: var(--ink); }
+.mkt .auth-brand { margin-top: 56px; }
+.mkt .auth { width: 100%; max-width: 400px; padding: 24px 0 0; }
 .mkt .auth-options { display: grid; gap: 12px; }
-.mkt .auth h1 { margin-bottom: 20px; font-size: clamp(30px, 2vw + 18px, 38px); line-height: 1.15; letter-spacing: -0.025em; }
+.mkt .auth h1 { text-align: center; margin-bottom: 20px; font-size: clamp(30px, 2vw + 18px, 38px); line-height: 1.15; letter-spacing: -0.025em; }
 .mkt .auth p { color: var(--body); }
 .mkt .auth form { display: grid; gap: 12px; }
 .mkt .auth label { display: grid; gap: 6px; font-size: 15px; font-weight: 600; color: var(--ink); }
@@ -33,3 +37,6 @@
 .mkt .auth-link:hover { color: var(--accent-hover); }
 .mkt .auth .error { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--bad-bg); border-left: 3px solid var(--bad); border-radius: 6px; }
 .mkt .auth [role="status"] { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; }
+/* The form's submit: solid and light, so it never reads as another field under the input. */
+.mkt .auth form .auth-btn:not(.primary) { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+.mkt .auth form .auth-btn:not(.primary):hover:not(:disabled) { background: #ffffff; border-color: #ffffff; }
