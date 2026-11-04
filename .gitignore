@@ -7,3 +7,6 @@ test-results/
 .env*.local
 brain-e2e.log
 web-e2e.log
+.env
+.env.*
+!.env.example
