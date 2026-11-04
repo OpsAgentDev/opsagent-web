@@ -462,3 +462,4 @@ body:has(.mkt) { background: var(--bg); }
 /* Privacy, Terms */
 .mkt .legal-list, .mkt .page .bullets { margin-top: 12px; padding-left: 1.3em; list-style: disc; max-width: 40em; color: var(--body); }
 .mkt .legal-list li + li, .mkt .page .bullets li + li { margin-top: 6px; }
+.mkt .copy-status.failed { color: var(--bad); }

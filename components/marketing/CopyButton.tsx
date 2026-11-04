@@ -22,7 +22,7 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
 
   return (
     <>
-      <span className="copy-status" aria-live="polite">{status}</span>
+      <span className={status === "Copy failed" ? "copy-status failed" : "copy-status"} aria-live="polite">{status}</span>
       <button type="button" className="copy-btn" aria-label={label} onClick={copy}>
         Copy
       </button>
