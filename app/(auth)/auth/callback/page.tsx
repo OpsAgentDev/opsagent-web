@@ -39,7 +39,7 @@ function Confirm() {
 export default function Callback() {
   return (
     <main className="auth">
-      <h1>Sign in to OpsAgent</h1>
+      <h1>Sign in</h1>
       <Suspense>
         <Confirm />
       </Suspense>

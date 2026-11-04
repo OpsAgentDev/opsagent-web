@@ -4,18 +4,22 @@ import { codeInMail } from "./helpers";
 test("sign-up page shows three options", async ({ page }) => {
   await page.goto("/sign-up");
   const main = page.getByRole("main");
-  await expect(main.getByRole("heading", { name: "Create your OpsAgent account" })).toBeVisible();
+  await expect(main.getByRole("heading", { name: "Create your account" })).toBeVisible();
   for (const name of ["Continue with Google", "Continue with GitHub", "Send link and code"]) {
     await expect(main.getByRole("button", { name })).toBeVisible();
   }
   await expect(main.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/sign-in");
   await expect(main.getByText("After you sign in we'll suggest adding a passkey, so next time is one tap.")).toBeVisible();
+  // Bare page: no site header or footer, only a way home.
+  await expect(page.getByRole("banner")).toHaveCount(0);
+  await expect(page.getByRole("contentinfo")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "← Back to home" })).toHaveAttribute("href", "/");
 });
 
 test("sign-in signs in with the emailed code", async ({ page, request }) => {
   const email = `e2e-code-${Date.now()}@example.com`;
   await page.goto("/sign-in");
-  await expect(page.getByRole("heading", { name: "Sign in to OpsAgent" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in", exact: true })).toBeVisible();
   await expect(page.getByRole("main").getByRole("link", { name: "Create an account" })).toHaveAttribute("href", "/sign-up");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();

@@ -1,8 +1,16 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
-import MarketingLayout from "../(marketing)/layout";
+import { Logo } from "@/components/brand/Logo";
+import "../(marketing)/marketing.css";
 import "@/components/auth/auth.css";
 
-// Sign-in pages wear the marketing frame: SiteHeader, footer and the dark marketing styles.
+// Sign-in pages stay bare: the marketing tokens and styles, but no site header or footer. Only a way home.
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  return <MarketingLayout>{children}</MarketingLayout>;
+  return (
+    <div className="mkt auth-shell">
+      <Link href="/" className="auth-back">← Back to home</Link>
+      <div className="auth-brand"><Logo size={28} /></div>
+      {children}
+    </div>
+  );
 }

@@ -107,7 +107,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
 
   return (
     <div className="auth-options">
-      <h1>{signIn ? "Sign in to OpsAgent" : "Create your OpsAgent account"}</h1>
+      <h1>{signIn ? "Sign in" : "Create your account"}</h1>
       {alert}
       {signIn ? passkeySlot : null}
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}><GoogleIcon />Continue with Google</button>
