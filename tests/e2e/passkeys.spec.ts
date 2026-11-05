@@ -1,4 +1,4 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { codeInMail, signUp } from "./helpers";
 
 const CARD = "Add a passkey (recommended)";
@@ -12,30 +12,25 @@ async function authenticator(page: Page) {
   });
 }
 
-async function signIn(page: Page, request: APIRequestContext, prefix: string) {
-  const email = `e2e-${prefix}-${Date.now()}@example.com`;
-  await page.goto("/sign-in");
-  await page.getByLabel("Email").fill(email);
-  await page.getByRole("button", { name: "Send link and code" }).click();
-  await page.getByLabel("Code").fill(await codeInMail(request, email));
-  await expect(page).toHaveURL(/\/dashboard$/);
-}
-
-test("new user sees the recommendation and can dismiss it", async ({ page, request }) => {
-  await signIn(page, request, "prompt");
+test("a user with an organisation sees the recommendation off the dashboard and can dismiss it", async ({ page, request }) => {
+  await signUp(page, request); // the welcome screen and the dashboard checklist carry no card
+  await page.goto("/findings");
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
   await expect(page.getByText("Sign in next time with your fingerprint, face or device PIN. No email to wait for.")).toBeVisible();
   await page.getByRole("button", { name: "Not now" }).click();
   await expect(page.getByRole("heading", { name: CARD })).toBeHidden();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Findings" })).toBeVisible();
   await expect(page.getByRole("heading", { name: CARD })).toBeHidden();
 });
 
 test("add passkey from the prompt, then sign in with it", async ({ page, request }) => {
   await authenticator(page);
   await signUp(page, request); // Settings pages sit behind an organisation
-  await page.getByRole("button", { name: "Add a passkey", exact: true }).click();
+  // On the dashboard the checklist's passkey row carries the nudge; it goes once the layout knows about the passkey.
+  const add = page.getByRole("button", { name: "Add a passkey", exact: true });
+  await add.click();
+  await expect(add).toBeHidden();
   await expect(page.getByRole("heading", { name: CARD })).toBeHidden();
 
   await page.goto("/settings/security");
@@ -61,7 +56,7 @@ test("remove passkey", async ({ page, request }) => {
 
   await main.getByRole("button", { name: /^Remove/ }).click();
   await expect(main.getByText("No passkeys yet.")).toBeVisible();
-  await page.goto("/dashboard");
+  await page.goto("/findings"); // the dashboard checklist carries the nudge while setup is open
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
 });
 
