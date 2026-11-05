@@ -4,7 +4,7 @@ import * as I from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
   title: "What it checks · OpsAgent",
-  description: "Ten deterministic, read-only checks across cost, security, backups, certificates, logging, GPUs, secrets, drift and deploys. Every finding cites its evidence.",
+  description: "Ten deterministic, read-only checks across cost, security, backups, certificates, logging, encryption, hardening and GPUs. Every finding cites its evidence.",
 };
 
 const NIGHTLY = "Nightly";
@@ -60,24 +60,24 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
     runs: NIGHTLY,
   },
   {
-    title: "Leaked secrets that are still active",
-    Icon: I.SecretIcon,
-    looks: "Secrets GitHub secret scanning already flagged, checked against your cloud to see whether the key is still active. OpsAgent does not scan your code itself.",
-    evidence: "The GitHub alert and the key's live status. Needs GitHub secret scanning on your plan.",
+    title: "Encryption at rest",
+    Icon: I.ShieldIcon,
+    looks: "Database storage that is not encrypted, unencrypted disks (more urgent when attached), and unencrypted snapshots you own. Encryption cannot be switched on in place, so each finding says how to move to an encrypted copy.",
+    evidence: "The encryption flag on each database, disk and snapshot.",
     runs: NIGHTLY,
   },
   {
-    title: "Infrastructure-as-code drift",
-    Icon: I.DriftIcon,
-    looks: "Resources your Terraform state says exist but are gone, and live resources no state manages.",
-    evidence: "Your Terraform state compared with the live inventory. Runs only when you configure a state source.",
+    title: "Instance hardening",
+    Icon: I.CloudIcon,
+    looks: "Servers that still accept the older instance metadata service (IMDSv1), which makes credential theft easier. More urgent when the server has a public address.",
+    evidence: "Each instance's metadata settings and whether it has a public address.",
     runs: NIGHTLY,
   },
   {
-    title: "Deploy and pipeline health",
-    Icon: I.PipelineIcon,
-    looks: "Failed pipeline runs on your default branch, and deploys followed by an alarm within an hour, flagged as rollback candidates.",
-    evidence: "Deploy markers, function versions, GitHub workflow runs and alarms.",
+    title: "Credential depth",
+    Icon: I.KeyIcon,
+    looks: "Access keys that were created and never used, users holding two active keys, and console passwords unused for 90 days.",
+    evidence: "The credential report: key creation and last-use dates and password activity.",
     runs: NIGHTLY,
   },
 ];
@@ -119,6 +119,7 @@ export default function Checks() {
             </li>
           ))}
         </ol>
+        <p>Leaked-secret follow-up, infrastructure-as-code drift and deploy health come after launch.</p>
       </section>
     </FeaturePage>
   );
