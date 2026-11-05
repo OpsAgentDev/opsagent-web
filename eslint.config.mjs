@@ -1,10 +1,10 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 
-const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
-
-export default [
+const config = [
   { ignores: [".next/**", "lib/api/schema.d.ts", "playwright-report/**", "test-results/**"] },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextVitals,
+  ...nextTs,
   {
     // lib/api/client.ts is the only place that talks to brain.
     ignores: ["lib/api/client.ts"],
@@ -12,4 +12,10 @@ export default [
   },
   { rules: { "no-console": "error" } },
   { files: ["lib/log.ts"], rules: { "no-console": "off" } },
+  {
+    // New in react-hooks 7 (React Compiler checks); not enforced before Next 16, and the flagged patterns are intentional.
+    rules: { "react-hooks/set-state-in-effect": "off", "react-hooks/purity": "off" },
+  },
 ];
+
+export default config;
