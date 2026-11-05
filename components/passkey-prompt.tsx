@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
-import { log } from "@/lib/log";
-import { addPasskey, cancelled, DISMISSED_KEY, isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
+import { usePasskeyAdd } from "@/lib/use-passkey-add";
+import { DISMISSED_KEY, isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
 
 /** The recommendation card, shown by the (app) layout while the user has no passkey. "Not now" hides it for 30 days. */
 export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
@@ -10,22 +10,8 @@ export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
   const [hidden, setHidden] = useState(
     () => !supported() || isDismissed(readDismissedAt(localStorage), Date.now()),
   );
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const { busy, error, add } = usePasskeyAdd(onAdded);
   if (hidden) return null;
-
-  async function add() {
-    setBusy(true);
-    setError(null);
-    try {
-      await addPasskey();
-      onAdded();
-    } catch (err) {
-      log.warn("adding a passkey failed", { name: err instanceof Error ? err.name : undefined });
-      if (!cancelled(err)) setError(err as Error);
-      setBusy(false);
-    }
-  }
 
   function notNow() {
     try {

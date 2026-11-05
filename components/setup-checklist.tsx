@@ -1,16 +1,17 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
 import { loadBilling } from "@/lib/billing";
 import { isOwner, liveRecipients } from "@/lib/delivery";
 import { log } from "@/lib/log";
 import { useSetup } from "@/lib/org";
-import { latestScanStats } from "@/lib/scan";
+import { hasScanRun } from "@/lib/scan";
 import { requiredOpen, setupSteps, type SetupInputs, type StepId } from "@/lib/setup-steps";
 import { useApi } from "@/lib/use-api";
-import { addPasskey, cancelled, supported } from "@/lib/webauthn";
+import { usePasskeyAdd } from "@/lib/use-passkey-add";
+import { supported } from "@/lib/webauthn";
 
 type Reads = Omit<SetupInputs, "hasPasskey">;
 
@@ -30,12 +31,12 @@ async function loadReads(org: string): Promise<Reads> {
     soft("recipients", unwrap(api.GET("/orgs/{org}/recipients", path))),
   ]);
   const first = conns?.[0];
-  const stats = first ? await soft("scan", latestScanStats(org, first.id)) : undefined;
+  const ran = first ? await soft("scan", hasScanRun(org, first.id)) : undefined;
   const delivered = !!integrations?.some((i) => i.status === "active") || !!(recipients && liveRecipients(recipients.items).length);
   return {
     billing: billing ?? null,
     connections: conns ? conns.length : null,
-    scanned: stats === undefined ? null : stats !== null,
+    scanned: ran ?? null,
     delivery: delivered ? true : integrations && recipients ? false : null,
   };
 }
@@ -68,8 +69,7 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
 }) {
   const { setChecklistOpen } = useSetup();
   const { data } = useApi(() => loadReads(org), [org]);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const { busy, error, add } = usePasskeyAdd(onPasskeyAdded);
   const steps = data && setupSteps({ ...data, hasPasskey: hasPasskey || !supported() });
   const open = steps ? requiredOpen(steps) : null;
   // Tells the layout to hold back its own passkey card while this shows (null: not known yet).
@@ -80,24 +80,11 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
   if (!steps || !open) return null;
 
   const owner = isOwner(role);
-  async function add() {
-    setBusy(true);
-    setError(null);
-    try {
-      await addPasskey();
-      onPasskeyAdded();
-    } catch (err) {
-      log.warn("adding a passkey failed", { name: err instanceof Error ? err.name : undefined });
-      if (!cancelled(err)) setError(err as Error);
-      setBusy(false);
-    }
-  }
-
   function action(id: StepId) {
     const ask = (what: string) => <span className="muted">Ask an owner to {what}.</span>;
     switch (id) {
       case "trial": return owner ? <Link href="/settings/billing">Start free trial</Link> : ask("start the trial");
-      case "aws": return <Link href="/onboarding/connect-aws">Connect an AWS account</Link>;
+      case "aws": return owner ? <Link href="/onboarding/connect-aws">Connect an AWS account</Link> : ask("connect AWS");
       case "scan": return <span className="muted">Scanning, this takes a few minutes</span>;
       case "delivery": return owner ? <Link href="/settings/delivery">Set up delivery</Link> : ask("choose where briefings go");
       case "passkey": return <button type="button" disabled={busy} onClick={add}>Add a passkey</button>;

@@ -12,3 +12,9 @@ export async function latestScanStats(org: string, connection: string): Promise<
   const run = await unwrap(api.GET("/orgs/{org}/runs/{id}", { params: { path: { org, id: last.id } } }));
   return (run.stats ?? null) as ScanStats | null;
 }
+
+/** True when the connection has any full scan, finished or not; one small read. */
+export async function hasScanRun(org: string, connection: string): Promise<boolean> {
+  const query = { connection, type: "full_scan", limit: 1 };
+  return (await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }))).items.length > 0;
+}
