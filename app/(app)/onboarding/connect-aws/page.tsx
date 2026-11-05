@@ -60,8 +60,10 @@ export default function ConnectAws() {
   return (
     <main>
       <h1>Connect an AWS account</h1>
+      <p className="muted step-note">Step {created ? 2 : 1} of 2</p>
       {!created ? (
         <form className="stack" onSubmit={create}>
+          <p>Name this account so you can tell it apart later, for example production. Next you create a read-only role in AWS; OpsAgent never gets keys to your account.</p>
           {FAKE_ENABLED && (
             <fieldset className="row">
               <legend>Provider</legend>
@@ -83,10 +85,11 @@ export default function ConnectAws() {
         <form className="stack" onSubmit={verify}>
           {created.quick_create_url && (
             <>
-              <p>
-                1. Create the read-only role in your account (CloudFormation opens in a new tab), then copy the
-                role ARN from the stack outputs.
-              </p>
+              <ol className="how">
+                <li>Launch the stack. CloudFormation opens in a new tab with everything filled in; tick the acknowledgement and create it.</li>
+                <li>When it finishes, open its Outputs tab and copy the role ARN.</li>
+                <li>Paste the ARN below and verify.</li>
+              </ol>
               <a className="button" href={created.quick_create_url} target="_blank" rel="noreferrer">
                 Launch stack in AWS
               </a>
