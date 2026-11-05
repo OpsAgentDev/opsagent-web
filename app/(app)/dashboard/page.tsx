@@ -2,23 +2,12 @@
 import Link from "next/link";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
+import { SetupChecklist } from "@/components/setup-checklist";
 import { api, unwrap, type Connection } from "@/lib/api/client";
 import { SEVERITIES } from "@/lib/api/enums";
-import { useOrg } from "@/lib/org";
+import { useOrg, useSetup } from "@/lib/org";
+import { latestScanStats } from "@/lib/scan";
 import { useApi } from "@/lib/use-api";
-
-/** `Run.stats` is an untyped object in the contract; for `full_scan` it carries these keys. */
-type ScanStats = { score?: number; counts_by_severity?: Partial<Record<string, number>> };
-
-// Two small reads (latest run id, then its stats) instead of paging every open finding.
-async function latestScanStats(org: string, connection: string): Promise<ScanStats | null> {
-  const query = { connection, type: "full_scan", limit: 1 };
-  const runs = await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }));
-  const last = runs.items[0];
-  if (!last) return null;
-  const run = await unwrap(api.GET("/orgs/{org}/runs/{id}", { params: { path: { org, id: last.id } } }));
-  return (run.stats ?? null) as ScanStats | null;
-}
 
 function ConnectionCard({ org, c }: { org: string; c: Connection }) {
   const { data: stats, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
@@ -60,6 +49,7 @@ function ConnectionCard({ org, c }: { org: string; c: Connection }) {
 
 export default function Dashboard() {
   const org = useOrg();
+  const { hasPasskey, reloadSession } = useSetup();
   const { data: connections, error } = useApi(
     () => unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org: org.slug } } })),
     [org.slug],
@@ -67,12 +57,8 @@ export default function Dashboard() {
   return (
     <main>
       <h1>Dashboard</h1>
+      <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} />
       <ErrorNote error={error} />
-      {connections?.length === 0 && (
-        <p className="empty">
-          No cloud account yet. <Link href="/onboarding/connect-aws">Connect an AWS account</Link>
-        </p>
-      )}
       <div className="cards">
         {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} />)}
       </div>

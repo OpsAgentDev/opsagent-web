@@ -162,3 +162,31 @@
   .app table.findings td:nth-child(5) { text-align: left; margin-top: 4px; }
   .app table.findings td:nth-child(5):empty { display: none; }
 }
+
+/* First run: welcome screen and dashboard setup checklist */
+.app .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.app .welcome-bar { justify-content: space-between; }
+.app main.welcome { max-width: 520px; margin: 0 auto; padding: 48px var(--gutter) 64px; }
+.app .welcome .eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.app .welcome form.stack { max-width: none; }
+.app .welcome form.stack p { margin: 0; }
+.app .steps-strip { display: flex; gap: 8px 16px; margin: 32px 0 0; padding: 16px 0 0; list-style: none; border-top: 1px solid var(--line); font-size: 14px; color: var(--soft); }
+.app .steps-strip li { display: flex; align-items: center; gap: 8px; flex: 1 1 0; }
+.app .steps-strip li[aria-current="step"] { color: var(--ink); }
+.app .steps-strip .n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-strong); font-size: 12px; }
+.app .steps-strip li[aria-current="step"] .n { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+@media (max-width: 640px) { .app .steps-strip { flex-direction: column; } }
+
+.app .checklist-card { margin-bottom: 24px; }
+.app .checklist-card h2 { margin: 0 0 12px; font-size: 18px; }
+.app .checklist { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.app .checklist li { display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; align-items: start; padding: 10px 12px; border-radius: 8px; color: var(--soft); }
+.app .checklist li p { margin: 2px 0 0; font-size: 13px; }
+.app .checklist li strong { font-weight: 600; }
+.app .checklist li .mark { margin-top: 1px; }
+.app .checklist li[data-state="done"] .mark { color: var(--ok); }
+.app .checklist li[data-state="current"] { color: var(--body); background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
+.app .checklist li[data-state="current"] strong { color: var(--ink); }
+.app .checklist li[data-state="current"] .mark { color: var(--accent); }
+.app .checklist .act { align-self: center; font-size: 14px; }
+@media (max-width: 640px) { .app .checklist li { grid-template-columns: 20px 1fr; } .app .checklist .act { grid-column: 2; } }

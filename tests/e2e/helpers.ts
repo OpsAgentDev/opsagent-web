@@ -54,19 +54,29 @@ export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }
 
-/** Signs a new user in with the emailed code and creates an organisation; returns the email. */
-export async function signUp(page: Page, request: APIRequestContext): Promise<string> {
+/** Signs a new user in with the emailed code (no organisation yet); returns the email. */
+export async function signIn(page: Page, request: APIRequestContext): Promise<string> {
   const email = `e2e-${Date.now()}@example.com`;
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));
   await expect(page).toHaveURL(/\/dashboard$/);
+  return email;
+}
 
+/** Creates an organisation from the welcome form and waits for it to exist. */
+export async function createOrg(page: Page): Promise<void> {
   await page.getByLabel("Organisation name").fill(`E2E ${Date.now()}`);
   await page.getByRole("button", { name: "Create organisation" }).click();
   // Wait for the organisation to exist before the caller navigates away.
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeHidden();
+}
+
+/** Signs a new user in with the emailed code and creates an organisation; returns the email. */
+export async function signUp(page: Page, request: APIRequestContext): Promise<string> {
+  const email = await signIn(page, request);
+  await createOrg(page);
   return email;
 }
 

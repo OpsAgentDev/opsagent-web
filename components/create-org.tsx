@@ -1,9 +1,9 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
 
-export function CreateOrg({ onCreated }: { onCreated: () => void }) {
+export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?: ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
@@ -21,9 +21,10 @@ export function CreateOrg({ onCreated }: { onCreated: () => void }) {
   return (
     <form className="stack" onSubmit={submit}>
       <h1>Create your organisation</h1>
+      {intro}
       <label>
         Organisation name
-        <input name="name" required />
+        <input name="name" required autoFocus />
       </label>
       <button type="submit">Create organisation</button>
       <ErrorNote error={error} />
