@@ -3,6 +3,7 @@ import { WaitlistForm } from "@/components/marketing/WaitlistForm";
 import { AlertDemo } from "@/components/marketing/AlertDemo";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { PhoneMockup } from "@/components/marketing/PhoneMockup";
+import { NumberStrip } from "@/components/marketing/NumberStrip";
 import * as I from "@/components/marketing/landing-icons";
 import { MCP_URL } from "@/lib/agents";
 import "./landing.css";
@@ -55,6 +56,7 @@ export default function Home() {
   return (
     <main>
       <section className="hero" id="waitlist">
+        <div className="glow" aria-hidden="true" />
         <div className="hero-text">
           <h1>Your ops teammate that never sleeps.</h1>
           <p className="lead">
@@ -66,9 +68,9 @@ export default function Home() {
           </p>
           <WaitlistForm source="landing-hero" />
           <ul className="trust">
-            <li><I.ShieldIcon size={18} />Read-only</li>
-            <li><I.ClockIcon size={18} />Every 15 minutes</li>
-            <li><I.CloudIcon size={18} />No data leaves your account</li>
+            <li style={{ "--i": 0 } as React.CSSProperties}><I.ShieldIcon size={18} />Read-only</li>
+            <li style={{ "--i": 1 } as React.CSSProperties}><I.ClockIcon size={18} />Every 15 minutes</li>
+            <li style={{ "--i": 2 } as React.CSSProperties}><I.CloudIcon size={18} />No data leaves your account</li>
           </ul>
           <p className="hero-who">
             Built for the founding engineer who owns the cloud bill, and for the developer who inherited the
@@ -79,6 +81,8 @@ export default function Home() {
           <AlertDemo />
         </div>
       </section>
+
+      <NumberStrip />
 
       <section className="section daynight-row" aria-labelledby="day-night-h">
         <h2 id="day-night-h">While you sleep, and when you wake</h2>

@@ -1,11 +1,91 @@
 /* Landing page and the alerts feature page (imported by both, for the alert demo). Every rule sits under .mkt. Icon tiles and step badges live in marketing.css. */
 
+/* Page frame: full-bleed glows and bands are clipped here, never scrolled to. */
+.mkt:has(main > .hero) { overflow-x: clip; }
+
 /* Hero */
-.mkt .hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; padding: 80px 0 96px; }
+.mkt .hero { position: relative; isolation: isolate; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 56px; padding: 80px 0 96px; }
+
+/* Ambient background: a faint grid and two slow cyan glows, faded out at the edges. Shared by the closing call to action. */
+.mkt .glow {
+  position: absolute;
+  z-index: -1;
+  inset: -40px -50vw 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 40%, #000 30%, transparent 75%);
+}
+.mkt .glow::before, .mkt .glow::after {
+  content: "";
+  position: absolute;
+  width: 720px;
+  height: 720px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.16), rgba(34, 211, 238, 0) 62%);
+}
+.mkt .glow::before { left: calc(50% + 40px); top: -180px; }
+.mkt .glow::after { left: calc(50% - 760px); top: 160px; width: 560px; height: 560px; background: radial-gradient(circle, rgba(56, 189, 248, 0.11), rgba(56, 189, 248, 0) 62%); }
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .glow::before { animation: glow-drift 26s ease-in-out infinite alternate; }
+  .mkt .glow::after { animation: glow-drift 32s ease-in-out -9s infinite alternate-reverse; }
+}
+@keyframes glow-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-120px, 60px) scale(1.12); }
+}
+
+/* Scroll reveals (Reveal.tsx): `.rv` content rises in once its reveal enters the viewport. Hidden only with JavaScript on and motion allowed. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .mkt .reveal:not([data-in]) .rv, html.js .mkt .reveal.rv:not([data-in]) { opacity: 0; }
+  html.js .mkt .reveal[data-in] .rv, html.js .mkt .reveal.rv[data-in] {
+    animation: rv-rise 720ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+}
+@keyframes rv-rise { from { opacity: 0; transform: translateY(24px); } }
+
+/* Bands: a faint tinted full-bleed background that alternates with flat sections. */
+.mkt .band { position: relative; border-top: 0; }
+.mkt .band::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 -50vw;
+  background: rgba(22, 32, 54, 0.55);
+  border-block: 1px solid var(--line);
+}
+.mkt .band + .section { border-top: 0; }
+.mkt main:has(> .band) { position: relative; isolation: isolate; }
+
+/* Number strip */
+.mkt .numbers { padding: 56px 0; }
+.mkt .numbers ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.mkt .numbers li { padding: 4px 28px; border-left: 1px solid var(--line); }
+.mkt .numbers li:first-child { padding-left: 0; border-left: 0; }
+.mkt .numbers strong {
+  display: block;
+  font-size: clamp(40px, 2.4vw + 22px, 56px);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.mkt .numbers .count { display: inline-block; text-align: left; }
+.mkt .numbers .unit { font-size: 0.45em; font-weight: 600; letter-spacing: -0.01em; color: var(--accent); }
+.mkt .numbers li > span { display: block; margin-top: 12px; font-size: 14.5px; line-height: 1.45; color: var(--soft); max-width: 18em; }
+.mkt .numbers li::before { content: ""; display: block; width: 24px; height: 2px; margin-bottom: 18px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 12px rgba(34, 211, 238, 0.6); }
 .mkt .hero-demo { min-width: 0; }
 .mkt .trust { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 22px; font-size: 13.5px; color: var(--body); }
 .mkt .trust li { display: inline-flex; align-items: center; gap: 8px; }
 .mkt .trust svg { color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .trust li { animation: demo-in 480ms ease-out backwards; animation-delay: calc(300ms + var(--i, 0) * 80ms); }
+}
 
 /* Alert demo */
 .mkt .demo { display: grid; gap: 14px; }
@@ -53,6 +133,17 @@
   animation: demo-progress linear forwards;
 }
 @keyframes demo-progress { to { transform: scaleX(1); } }
+
+/* The sample night under the tabs: a marker shows where in the night the open tab sits. */
+.mkt .demo-line { position: relative; height: 26px; margin: -2px 10px 0; }
+.mkt .demo-line::before, .mkt .demo-line-fill { content: ""; position: absolute; left: 0; right: 0; top: 18px; height: 2px; border-radius: 2px; background: var(--line); }
+.mkt .demo-line-fill { right: auto; width: calc(var(--at) * 100%); background: var(--accent); opacity: 0.55; }
+.mkt .demo-line-mark { position: absolute; top: 14px; left: calc(var(--at) * 100%); width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-bg), 0 0 14px rgba(34, 211, 238, 0.7); }
+.mkt .demo-line-mark span { position: absolute; right: 2px; bottom: 12px; font: 600 11px/1.6 var(--mono); color: var(--accent); white-space: nowrap; }
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .demo-line-fill { transition: width 700ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  .mkt .demo-line-mark { transition: left 700ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+}
 
 /* All panels share one grid cell, so the hero does not jump between tabs; hidden ones keep their space. */
 .mkt .demo-panels { display: grid; }
@@ -127,8 +218,7 @@
 .mkt .demo-pill { padding: 3px 9px; font-size: 12px; font-weight: 600; line-height: 1.3; border-radius: 999px; white-space: nowrap; }
 .mkt .pill-ok { color: var(--ok); background: var(--ok-bg); }
 .mkt .pill-bad { color: var(--bad); background: var(--bad-bg); }
-.mkt .pill-next { color: var(--soft); background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
-.mkt .demo-log li.is-next { opacity: 0.6; }
+.mkt .demo-log li[data-pending] { visibility: hidden; }
 
 /* Everything */
 .mkt .demo-findings li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; gap: 14px; padding: 13px 22px; }
@@ -148,16 +238,35 @@
   .mkt .demo-panel:not([hidden]) li:nth-child(3) { animation-delay: 120ms; }
   .mkt .demo-panel:not([hidden]) li:nth-child(4) { animation-delay: 180ms; }
   .mkt .demo-panel:not([hidden]) li:nth-child(5) { animation-delay: 240ms; }
-  .mkt .demo-panel:not([hidden]) .demo-log li.is-new { animation: demo-log-new 4s ease-out 300ms infinite both; }
+  .mkt .demo-panel:not([hidden]) .demo-log li { animation: none; }
+  .mkt .demo-panel:not([hidden]) .demo-log li.is-live { animation: demo-in 420ms ease-out both; }
+  .mkt .demo-log li.is-live .pill-ok { animation: pill-ping 1100ms ease-out 200ms; }
+  .mkt .demo-log li.is-live.is-new { background: rgba(248, 113, 113, 0.06); transition: background 600ms; }
+  /* Overnight: the night's runs tick in left to right, then the alert marker drops in. */
+  .mkt .demo-panel:not([hidden]) .demo-ticks > span:not(.demo-alert-mark) { animation: tick-in 300ms ease-out backwards; animation-delay: calc(var(--t, 0) * 18ms); }
+  .mkt .demo-panel:not([hidden]) .demo-alert-mark { animation: demo-in 420ms ease-out 760ms backwards; }
+  /* Urgent: the alert slides in and its dot sends out one soft ring. */
+  .mkt .demo-panel:not([hidden]) .alert-body { animation: alert-in 520ms cubic-bezier(0.2, 0.7, 0.2, 1) 120ms backwards; }
+  .mkt .demo-panel:not([hidden]) .alert .dot-bad { position: relative; }
+  .mkt .demo-panel:not([hidden]) .alert .dot-bad::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--bad);
+    opacity: 0;
+    animation: ring 1400ms ease-out 500ms;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .mkt .demo-progress { display: none; }
 }
 @keyframes demo-in { from { opacity: 0; transform: translateY(6px); } }
-@keyframes demo-log-new {
-  0% { opacity: 0; transform: translateY(6px); }
-  12%, 100% { opacity: 1; transform: none; }
-}
+@keyframes mark-in { from { opacity: 0; transform: translate(-50%, -8px); } }
+@keyframes tick-in { from { opacity: 0; transform: scaleY(0.2); } }
+@keyframes alert-in { from { opacity: 0; transform: translateX(14px); } }
+@keyframes ring { from { opacity: 0.8; transform: scale(1); } to { opacity: 0; transform: scale(3.2); } }
+@keyframes pill-ping { from { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); } to { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); } }
 
 /* While you sleep, and when you wake: a compact caption row under the hero */
 .mkt .daynight-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 48px; align-items: start; padding: 56px 0; }
@@ -289,6 +398,8 @@
 .mkt .byo .mcp-url + p { margin-top: 20px; }
 
 @media (max-width: 900px) {
+  .mkt .numbers ul { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
+  .mkt .numbers li:nth-child(3) { padding-left: 0; border-left: 0; }
   .mkt .hero { grid-template-columns: minmax(0, 1fr); gap: 48px; }
   .mkt .daynight-row { grid-template-columns: minmax(0, 1fr); gap: 28px; }
   .mkt .daynight-row h2 { max-width: none; }
