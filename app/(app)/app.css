@@ -134,6 +134,24 @@
 .app .counts li.zero strong { color: var(--soft); font-weight: 400; }
 .app .add-more { margin-top: 20px; }
 
+/* UX pass 1: findings summary, dashboard top issues, connection panel, trial panel */
+.app .summary { margin: 0 0 12px; font-size: 14px; color: var(--ink); }
+.app .view-all { margin: 16px 0 8px; font-size: 14px; font-weight: 600; }
+.app .top-issues { display: grid; gap: 8px; margin: 0; padding: 12px 0 0; list-style: none; border-top: 1px solid var(--line); }
+.app .top-issues li { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
+.app .top-issues li a { min-width: 0; overflow-wrap: anywhere; }
+.app .top-issues-none { margin: 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; }
+.app .score span + span { margin-top: 2px; }
+.app .conn-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 20px; }
+.app .conn-title h1 { margin: 0; }
+.app .conn-sentence { flex: 1 0 100%; margin: 0; color: var(--body); }
+.app .facts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin: 0 0 20px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.app .facts dt { color: var(--soft); font-size: 13px; }
+.app .facts dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.app .trial-panel { max-width: 60ch; }
+.app .trial-panel h2 { margin: 0 0 8px; font-size: 17px; }
+.app .trial-panel p { margin: 0; }
+
 /* Finding page */
 .app section.stack + .stack { margin-top: 16px; }
 .app section > div > p.muted { margin: 16px 0 6px; font-size: 13px; }
@@ -154,13 +172,12 @@
   .app table.findings tr { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; padding: 14px; border-bottom: 1px solid var(--line); }
   .app table.findings tbody tr:last-child { border-bottom: 0; }
   .app table.findings td { display: block; padding: 0; border: 0; background: none; }
-  .app table.findings td:nth-child(2), .app table.findings td:nth-child(3), .app table.findings td:nth-child(5) { grid-column: 1 / -1; }
-  .app table.findings td:nth-child(2) { grid-row: 2; font-size: 15px; }
-  .app table.findings td:nth-child(3) { grid-row: 3; }
-  .app table.findings td:nth-child(4) { grid-row: 1; grid-column: 2; }
-  .app table.findings td:nth-child(5) { grid-row: 4; }
-  .app table.findings td:nth-child(5) { text-align: left; margin-top: 4px; }
-  .app table.findings td:nth-child(5):empty { display: none; }
+  .app table.findings td.c-title, .app table.findings td.c-res, .app table.findings td.c-actions { grid-column: 1 / -1; }
+  .app table.findings td.c-title { grid-row: 2; font-size: 15px; }
+  .app table.findings td.c-res { grid-row: 3; }
+  .app table.findings td.c-status { grid-row: 1; grid-column: 2; }
+  .app table.findings td.c-actions { grid-row: 4; text-align: left; margin-top: 4px; }
+  .app table.findings td.c-actions:empty { display: none; }
 }
 
 /* First run: welcome screen and dashboard setup checklist */

@@ -48,3 +48,14 @@ export function isSlackUrl(url: string): boolean {
     return false;
   }
 }
+
+const DELIVERY_STATUS: Record<string, string> = {
+  sent: "Sent",
+  failed: "Failed",
+  fallback_email: "Sent by email (Slack not connected)",
+  skipped: "Skipped",
+  pending: "Waiting",
+};
+
+/** Human text for a delivery status; a status brain adds later shows as is. */
+export const deliveryStatusText = (s: string) => DELIVERY_STATUS[s] ?? s;

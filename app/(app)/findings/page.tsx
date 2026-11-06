@@ -7,6 +7,7 @@ import { Pager, useCursors } from "@/components/pager";
 import { FindingActionDialog, type FindingAction } from "@/components/finding-action-dialog";
 import { api, unwrap, type FindingSummary } from "@/lib/api/client";
 import { SEVERITIES, STATUSES } from "@/lib/api/enums";
+import { findingsSummary } from "@/lib/findings";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -36,6 +37,9 @@ export default function Findings() {
     }
   }
 
+  const summary = page && findingsSummary(page.items, { more: !!page.next_cursor || pager.cursors.length > 1, status });
+  const showStatus = status !== "open"; // every row would say "open"
+
   return (
     <main>
       <h1>Findings</h1>
@@ -57,28 +61,29 @@ export default function Findings() {
       </div>
       <ErrorNote error={error ?? actionError} />
       {loading && <p className="muted" role="status">Loading…</p>}
+      {summary && <p className="summary" data-testid="findings-summary">{summary}</p>}
       <table className="findings">
         <thead>
           <tr>
             <th>Severity</th>
             <th>Finding</th>
             <th>Resource</th>
-            <th>Status</th>
+            {showStatus && <th>Status</th>}
             <th />
           </tr>
         </thead>
         <tbody>
           {page?.items.map((f) => (
             <tr key={f.id} data-id={f.id}>
-              <td><Severity value={f.severity} /></td>
-              <td><Link href={`/findings/${f.id}`}>{f.title}</Link></td>
-              <td className="muted mono">{f.resource_identity}</td>
-              <td><Status value={f.status} /></td>
-              <td className="actions">
+              <td className="c-sev"><Severity value={f.severity} /></td>
+              <td className="c-title"><Link href={`/findings/${f.id}`}>{f.title}</Link></td>
+              <td className="c-res muted mono">{f.resource_identity}</td>
+              {showStatus && <td className="c-status"><Status value={f.status} /></td>}
+              <td className="c-actions actions">
                 {f.status === "open" || f.status === "flapping" ? (
                   <>
-                    <button type="button" className="quiet" onClick={() => setActing({ finding: f, action: "snooze" })}>Snooze</button>
-                    <button type="button" className="quiet" onClick={() => setActing({ finding: f, action: "accept" })}>Accept</button>
+                    <button type="button" className="quiet" title="Hide this finding until a date you pick (7 days by default)" onClick={() => setActing({ finding: f, action: "snooze" })}>Snooze</button>
+                    <button type="button" className="quiet" title="Mark as an accepted risk" onClick={() => setActing({ finding: f, action: "accept" })}>Accept</button>
                   </>
                 ) : f.status !== "resolved" ? (
                   <button type="button" className="quiet" onClick={() => reopen(f)}>Reopen</button>

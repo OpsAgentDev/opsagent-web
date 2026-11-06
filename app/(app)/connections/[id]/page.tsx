@@ -1,7 +1,7 @@
 "use client";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ConnectionActions, ConnectionFacts, ConnectionHeader } from "@/components/connection-status";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type Connection } from "@/lib/api/client";
 import { useOrg } from "@/lib/org";
@@ -51,31 +51,10 @@ export default function ConnectionPage() {
   if (!c) return <main>{error ? <ErrorNote error={error} /> : <p className="muted">Loading…</p>}</main>;
   return (
     <main>
-      <h1>{c.display_name ?? c.id}</h1>
-      <dl>
-        <dt>Status</dt>
-        <dd data-testid="connection-status">{c.status}</dd>
-        {c.status_reason && (
-          <>
-            <dt>Reason</dt>
-            <dd>{c.status_reason}</dd>
-          </>
-        )}
-        <dt>Account</dt>
-        <dd>{c.external_account_id ?? "–"}</dd>
-        <dt>Nightly scan</dt>
-        <dd>{c.scan_time_local ?? "default"}</dd>
-        <dt>Briefing</dt>
-        <dd>{c.briefing_time_local ?? "default"}</dd>
-      </dl>
+      <ConnectionHeader c={c} />
+      <ConnectionFacts c={c} />
       {c.last_verification && <LastVerification v={c.last_verification} />}
-      <div className="row">
-        <button type="button" onClick={scanNow} disabled={!SCANNABLE.has(c.status)}>
-          Scan now
-        </button>
-        {scan.started && <span>Scan started. Findings appear as checks finish.</span>}
-        <Link href={`/connections/${c.id}/briefing`}>Preview briefing</Link>
-      </div>
+      <ConnectionActions c={c} canScan={SCANNABLE.has(c.status)} onScan={scanNow} started={!!scan.started} />
       <ErrorNote error={scan.error ?? error} />
     </main>
   );

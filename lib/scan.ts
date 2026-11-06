@@ -18,3 +18,9 @@ export async function hasScanRun(org: string, connection: string): Promise<boole
   const query = { connection, type: "full_scan", limit: 1 };
   return (await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }))).items.length > 0;
 }
+
+/** Open findings in the run's counts, or null when the run reported none. */
+export function openTotal(stats: ScanStats): number | null {
+  const counts = stats.counts_by_severity;
+  return counts ? Object.values(counts).reduce<number>((a, n) => a + (n ?? 0), 0) : null;
+}
