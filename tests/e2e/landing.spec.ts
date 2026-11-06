@@ -37,6 +37,61 @@ test("landing fits a 320px phone", async ({ page }) => {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });
 
+test("landing has no horizontal overflow at 390px", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.locator(".numbers").scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test("number strip counts up to its final values", async ({ page }) => {
+  await page.goto("/");
+  const strip = page.locator(".numbers");
+  await strip.scrollIntoViewIfNeeded();
+  await expect(strip.locator("strong")).toHaveText(["15 min", "10", "0", "1"]);
+  await expect(strip).toContainText("checks run every night");
+});
+
+test("with reduced motion every section shows without scrolling", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  for (const sel of [".trust li", ".numbers li", "#how-it-works li", "#what-it-checks li", "#never li", ".phone-note", ".mcp-url code"]) {
+    const items = page.locator(sel);
+    for (let i = 0; i < (await items.count()); i++) {
+      // Effective opacity: an ancestor at 0 hides the item too.
+      const opacity = await items.nth(i).evaluate((e) => {
+        let o = 1;
+        for (let n: Element | null = e; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
+        return o;
+      });
+      expect(opacity, `${sel} #${i}`).toBe(1);
+    }
+  }
+  await expect(page.locator(".numbers strong").first()).toHaveText("15 min");
+});
+
+test("product shots are sized, described and labelled Sample", async ({ page }) => {
+  await page.goto("/");
+  const shots = page.locator("#product img");
+  await expect(shots).toHaveCount(3);
+  for (let i = 0; i < 3; i++) {
+    const img = shots.nth(i);
+    await expect(img).toHaveAttribute("alt", /.{20,}/);
+    await expect(img).toHaveAttribute("width", /^\d+$/);
+    await expect(img).toHaveAttribute("height", /^\d+$/);
+  }
+  await expect(page.locator("#product").getByText("Sample data")).toHaveCount(3);
+});
+
+test("a section below the fold reveals once scrolled to", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const card = page.locator("#what-it-checks li").first();
+  expect(await card.evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+  await card.scrollIntoViewIfNeeded();
+  await expect.poll(() => card.evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
+});
+
 test("demo tabs show each panel", async ({ page }) => {
   await page.goto("/");
   const panel = page.getByRole("tabpanel");
