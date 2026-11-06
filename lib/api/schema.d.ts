@@ -689,6 +689,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Lists findings, most severe first (critical, high, medium, low, info), then oldest first. */
         get: operations["findings_list"];
         put?: never;
         post?: never;

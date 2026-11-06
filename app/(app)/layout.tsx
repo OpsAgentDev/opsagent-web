@@ -7,6 +7,7 @@ import { ErrorNote } from "@/components/error-note";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { Welcome } from "@/components/welcome";
 import { api, ApiError, unwrap } from "@/lib/api/client";
+import { showPasskeyPrompt } from "@/lib/passkey-scope";
 import { OrgContext, SessionReloadContext, SetupContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 import "./app.css";
@@ -32,8 +33,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   // shortcut: first organisation only; add a switcher when a user belongs to several.
   const org = data.orgs[0];
   if (!org) return <div className="app"><Welcome email={data.me.email} onCreated={reload} /></div>;
-  // On the dashboard, wait for the checklist's answer so the card does not flash in and out.
-  const showPrompt = !data.me.has_passkey && (checklistOpen === false || (checklistOpen === null && pathname !== "/dashboard"));
+  // The card shows on the dashboard (once the checklist has said it is closed) and on Settings → Security only.
+  const showPrompt = showPasskeyPrompt({ hasPasskey: data.me.has_passkey, pathname, checklistOpen });
 
   return (
     <div className="app">

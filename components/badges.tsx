@@ -4,6 +4,6 @@ export function Severity({ value }: { value: string }) {
 }
 
 /** Status chip for findings and connections (open, snoozed, accepted, connected, …). */
-export function Status({ value }: { value: string }) {
-  return <span className={`chip-status st-${value}`}>{value}</span>;
+export function Status({ value, label }: { value: string; label?: string }) {
+  return <span className={`chip-status st-${value}`}>{label ?? value}</span>;
 }

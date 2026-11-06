@@ -2,14 +2,15 @@
 import Link from "next/link";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
+import { TopIssues } from "@/components/top-issues";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { api, unwrap, type Connection } from "@/lib/api/client";
 import { SEVERITIES } from "@/lib/api/enums";
 import { useOrg, useSetup } from "@/lib/org";
-import { latestScanStats } from "@/lib/scan";
+import { latestScanStats, openTotal } from "@/lib/scan";
 import { useApi } from "@/lib/use-api";
 
-function ConnectionCard({ org, c }: { org: string; c: Connection }) {
+function ConnectionCard({ org, c, several }: { org: string; c: Connection; several: boolean }) {
   const { data: stats, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
   return (
     <div className="card">
@@ -23,25 +24,36 @@ function ConnectionCard({ org, c }: { org: string; c: Connection }) {
         <Status value={c.status} />
       </div>
       <ErrorNote error={error} />
-      {stats === null && <p className="muted empty">No scan results yet.</p>}
+      {stats === null && (
+        <p className="muted empty">
+          {c.status === "connected" ? "Scanning your account. First results appear in a few minutes." : "Waiting for verification."}
+        </p>
+      )}
       {stats && (
-        <div className="conn-body">
-          <p className="score">
-            <strong>{stats.score ?? "–"}</strong>
-            <span>Posture score</span>
+        <>
+          <div className="conn-body">
+            <p className="score" title="Higher is better">
+              <strong>{stats.score ?? "–"}</strong>
+              <span>out of 100</span>
+              <span>Posture score</span>
+            </p>
+            <ul className="counts" aria-label="Open findings by severity">
+              {SEVERITIES.map((s) => {
+                const n = stats.counts_by_severity?.[s] ?? 0;
+                return (
+                  <li key={s} className={n ? undefined : "zero"}>
+                    <Severity value={s} />
+                    <strong>{n}</strong>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <p className="view-all">
+            <Link href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</Link>
           </p>
-          <ul className="counts" aria-label="Open findings by severity">
-            {SEVERITIES.map((s) => {
-              const n = stats.counts_by_severity?.[s] ?? 0;
-              return (
-                <li key={s} className={n ? undefined : "zero"}>
-                  <Severity value={s} />
-                  <strong>{n}</strong>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+          <TopIssues org={org} connection={c.id} />
+        </>
       )}
     </div>
   );
@@ -60,7 +72,7 @@ export default function Dashboard() {
       <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} />
       <ErrorNote error={error} />
       <div className="cards">
-        {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} />)}
+        {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
       </div>
       {!!connections?.length && (
         <p className="add-more">
