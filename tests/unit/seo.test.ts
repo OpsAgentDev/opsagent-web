@@ -6,7 +6,7 @@ describe("seo", () => {
   it("sitemap lists https pages only", () => {
     const urls = sitemap().map((e) => e.url);
     expect(urls).toContain("https://opsagent.dev/pricing");
-    expect(urls.every((u) => u.startsWith("https://opsagent.dev"))).toBe(true);
+    expect(urls.every((u) => new URL(u).origin === "https://opsagent.dev")).toBe(true);
   });
   it("robots allows all and points to the sitemap", () => {
     expect(robots().sitemap).toBe("https://opsagent.dev/sitemap.xml");
