@@ -44,7 +44,7 @@ async function loadReads(org: string): Promise<Reads> {
 const COPY: Record<StepId, { title: string; why: string }> = {
   org: { title: "Create your organisation", why: "It owns your cloud connections, findings and billing." },
   trial: { title: "Start your free trial", why: "Connecting a cloud account needs a plan; the trial is free." },
-  aws: { title: "Connect AWS", why: "Read-only access, so OpsAgent can scan your account." },
+  aws: { title: "Connect a cloud account (optional)", why: "Read-only access, so OpsAgent can scan it. AWS is available now, more clouds are coming. You can do this later." },
   scan: { title: "Run your first scan", why: "OpsAgent starts on its own once an account is connected." },
   delivery: { title: "Choose where briefings go", why: "Slack or email, so findings reach you without opening the app." },
   passkey: { title: "Add a passkey (optional)", why: "Sign in with your fingerprint, face or device PIN." },
@@ -61,8 +61,10 @@ function Mark({ state }: { state: string }) {
 }
 
 /** The dashboard's setup checklist; renders nothing until every read settles and again once required steps are done. */
-export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
+export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded, skipped, onSkip }: {
   org: string;
+  skipped: boolean;
+  onSkip: () => void;
   role: string;
   hasPasskey: boolean;
   onPasskeyAdded: () => void;
@@ -71,7 +73,7 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
   const { data } = useApi(() => loadReads(org), [org]);
   const { busy, error, add } = usePasskeyAdd(onPasskeyAdded);
   const steps = data && setupSteps({ ...data, hasPasskey: hasPasskey || !supported() });
-  const open = steps ? requiredOpen(steps) : null;
+  const open = steps ? requiredOpen(steps) && !skipped : null;
   // Tells the layout to hold back its own passkey card while this shows (null: not known yet).
   useEffect(() => {
     setChecklistOpen(open);
@@ -84,7 +86,7 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
     const ask = (what: string) => <span className="muted">Ask an owner to {what}.</span>;
     switch (id) {
       case "trial": return owner ? <Link href="/settings/billing">Start free trial</Link> : ask("start the trial");
-      case "aws": return owner ? <Link href="/onboarding/connect-aws">Connect an AWS account</Link> : ask("connect AWS");
+      case "aws": return owner ? <Link href="/onboarding/connect-aws">Connect an AWS account</Link> : ask("connect a cloud account");
       case "scan": return <span className="muted">Scanning, this takes a few minutes</span>;
       case "delivery": return owner ? <Link href="/settings/delivery">Set up delivery</Link> : ask("choose where briefings go");
       case "passkey": return <button type="button" disabled={busy} onClick={add}>Add a passkey</button>;
@@ -109,6 +111,7 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded }: {
           </li>
         ))}
       </ol>
+      <p className="skip"><button type="button" className="link" onClick={onSkip}>Skip for now</button></p>
       <ErrorNote error={error} />
     </section>
   );

@@ -1,7 +1,7 @@
 import { Logo } from "@/components/brand/Logo";
 import { CreateOrg } from "@/components/create-org";
 
-const STEPS = ["Create your organisation", "Connect AWS", "Get your first briefing"];
+const STEPS = ["Create your organisation", "Connect a cloud account (optional)", "Get your first briefing"];
 
 /** What a user with no organisation sees: a slim bar (no links that cannot work yet), the form, and the road ahead. */
 export function Welcome({ email, onCreated }: { email: string; onCreated: () => void }) {

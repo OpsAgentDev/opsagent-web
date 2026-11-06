@@ -9,18 +9,24 @@ test("new user sees the welcome, then a setup checklist that follows their progr
   await expect(page.getByLabel("Organisation name")).toBeFocused();
   await expect(page.getByRole("link", { name: "Findings" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Add a passkey (recommended)" })).toHaveCount(0);
-  await expect(page.getByRole("list", { name: "What happens next" }).getByText("Connect AWS")).toBeVisible();
+  await expect(page.getByRole("list", { name: "What happens next" }).getByText("Connect a cloud account")).toBeVisible();
 
   // Checklist: Connect AWS is the current step.
   await createOrg(page);
   const checklist = page.getByRole("list", { name: "Setup" });
-  const row = checklist.getByRole("listitem").filter({ hasText: "Connect AWS" });
+  const row = checklist.getByRole("listitem").filter({ hasText: "Connect a cloud account" });
   await expect(row).toHaveAttribute("aria-current", "step");
   await expect(row.getByRole("link", { name: "Connect an AWS account" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Add a passkey (recommended)" })).toHaveCount(0); // the checklist carries the nudge
 
+  // Skipping hides the checklist and leaves a way back.
+  await page.getByRole("button", { name: "Skip for now" }).click();
+  await expect(checklist).toHaveCount(0);
+  await page.getByRole("button", { name: "Show setup steps" }).click();
+  await expect(checklist).toBeVisible();
+
   // After connecting, the row is done.
   await connectNoisy(page);
   await page.goto("/dashboard");
-  await expect(checklist.getByRole("listitem").filter({ hasText: "Connect AWS" })).toHaveAttribute("data-state", "done");
+  await expect(checklist.getByRole("listitem").filter({ hasText: "Connect a cloud account" })).toHaveAttribute("data-state", "done");
 });
