@@ -70,6 +70,28 @@ test("with reduced motion every section shows without scrolling", async ({ page 
   await expect(page.locator(".numbers strong").first()).toHaveText("15 min");
 });
 
+test("product shots are sized, described and labelled Sample", async ({ page }) => {
+  await page.goto("/");
+  const shots = page.locator("#product img");
+  await expect(shots).toHaveCount(3);
+  for (let i = 0; i < 3; i++) {
+    const img = shots.nth(i);
+    await expect(img).toHaveAttribute("alt", /.{20,}/);
+    await expect(img).toHaveAttribute("width", /^\d+$/);
+    await expect(img).toHaveAttribute("height", /^\d+$/);
+  }
+  await expect(page.locator("#product").getByText("Sample data")).toHaveCount(3);
+});
+
+test("a section below the fold reveals once scrolled to", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const card = page.locator("#what-it-checks li").first();
+  expect(await card.evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+  await card.scrollIntoViewIfNeeded();
+  await expect.poll(() => card.evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
+});
+
 test("demo tabs show each panel", async ({ page }) => {
   await page.goto("/");
   const panel = page.getByRole("tabpanel");

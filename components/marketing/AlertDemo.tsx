@@ -64,7 +64,7 @@ const LOG: { at: string; text: ReactNode; status: string; bad?: boolean }[] = [
   { at: "03:00", text: "Public exposure", status: "clear" },
   { at: "03:12", text: <>Database <code>prod-db</code> snapshot left public</>, status: "alert sent", bad: true },
 ];
-const LOG_STEP_MS = 1300;
+const LOG_STEP_MS = 1100; // reaches the 03:12 alert well inside the 6 s a tab stays open
 const LOG_HOLD = 2; // steps the full log stays up before the night starts again
 
 /** While its tab is open (and motion is allowed), check lines arrive one by one; otherwise the full log shows. */
