@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { TopIssues } from "@/components/top-issues";
@@ -8,6 +9,7 @@ import { api, unwrap, type Connection } from "@/lib/api/client";
 import { SEVERITIES } from "@/lib/api/enums";
 import { useOrg, useSetup } from "@/lib/org";
 import { latestScanStats, openTotal } from "@/lib/scan";
+import { isSkipped, setSkipped } from "@/lib/setup-skip";
 import { useApi } from "@/lib/use-api";
 
 function ConnectionCard({ org, c, several }: { org: string; c: Connection; several: boolean }) {
@@ -66,10 +68,18 @@ export default function Dashboard() {
     () => unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org: org.slug } } })),
     [org.slug],
   );
+  const [skipped, setSkippedState] = useState(false);
+  useEffect(() => setSkippedState(isSkipped(org.slug)), [org.slug]);
+  const toggleSkip = (v: boolean) => { setSkipped(org.slug, v); setSkippedState(v); };
   return (
     <main>
       <h1>Dashboard</h1>
-      <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} />
+      <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} skipped={skipped} onSkip={() => toggleSkip(true)} />
+      {skipped && connections && !connections.length && (
+        <p className="muted empty">
+          No cloud account connected yet. <button type="button" className="link" onClick={() => toggleSkip(false)}>Show setup steps</button>
+        </p>
+      )}
       <ErrorNote error={error} />
       <div className="cards">
         {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
