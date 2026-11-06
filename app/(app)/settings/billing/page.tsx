@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
 import { goToStripe, loadBilling } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
@@ -46,6 +47,7 @@ function BillingPage() {
   const owner = org.role === "owner";
   const status = data?.status;
   const subscribed = status === "trialing" || status === "active" || status === "past_due" || status === "paused";
+  const noPlan = status === "none" || status === "trial_ended" || status === "canceled";
   const days = data?.trial_ends_at ? Math.max(0, Math.ceil((Date.parse(data.trial_ends_at) - Date.now()) / 864e5)) : 0;
   const tier = data?.tier ? TIERS[data.tier] : undefined;
   const n = data?.quantity ?? 0;
@@ -72,7 +74,8 @@ function BillingPage() {
           {data.current_period_end && subscribed && status !== "trialing" && (
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
-          {!owner && <p className="muted">Only an owner can change the plan.</p>}
+          {!owner && <p className="muted">{noPlan ? "Only an owner can start a plan." : "Only an owner can change the plan."}</p>}
+          {owner && noPlan && <TrialPanel />}
           {owner && subscribed && (
             <button type="button" className="fit" disabled={busy} onClick={portal}>Manage billing</button>
           )}

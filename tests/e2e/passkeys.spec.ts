@@ -12,15 +12,15 @@ async function authenticator(page: Page) {
   });
 }
 
-test("a user with an organisation sees the recommendation off the dashboard and can dismiss it", async ({ page, request }) => {
+test("a user with an organisation sees the recommendation on Settings > Security and can dismiss it", async ({ page, request }) => {
   await signUp(page, request); // the welcome screen and the dashboard checklist carry no card
-  await page.goto("/findings");
+  await page.goto("/settings/security");
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
   await expect(page.getByText("Sign in next time with your fingerprint, face or device PIN. No email to wait for.")).toBeVisible();
   await page.getByRole("button", { name: "Not now" }).click();
   await expect(page.getByRole("heading", { name: CARD })).toBeHidden();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Findings" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Security" })).toBeVisible();
   await expect(page.getByRole("heading", { name: CARD })).toBeHidden();
 });
 
@@ -56,7 +56,7 @@ test("remove passkey", async ({ page, request }) => {
 
   await main.getByRole("button", { name: /^Remove/ }).click();
   await expect(main.getByText("No passkeys yet.")).toBeVisible();
-  await page.goto("/findings"); // the dashboard checklist carries the nudge while setup is open
+  await page.reload(); // the card shows on Settings > Security once the layout knows the passkey is gone
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
 });
 

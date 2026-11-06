@@ -5,6 +5,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Pager, useCursors } from "@/components/pager";
 import { api, unwrap } from "@/lib/api/client";
 import { DELIVERY_KINDS } from "@/lib/api/enums";
+import { deliveryStatusText } from "@/lib/delivery";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -73,14 +74,14 @@ export default function Deliveries() {
               <td>{d.kind}</td>
               <td className="muted">{d.connection_id ? (names.get(d.connection_id) ?? d.connection_id) : "organisation"}</td>
               <td>{d.channel}</td>
-              <td><Status value={d.status} /></td>
+              <td><Status value={d.status} label={deliveryStatusText(d.status)} /></td>
               <td>{d.attempts}</td>
               <td>{when(d.sent_at)}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {page?.items.length === 0 && <p className="muted empty">{connection || kind ? "No deliveries match these filters." : "No deliveries yet."}</p>}
+      {page?.items.length === 0 && <p className="muted empty">{connection || kind ? "No deliveries match these filters." : "Nothing sent yet. Briefings and alerts appear here once a scan has run."}</p>}
       <Pager pager={pager} next={page?.next_cursor} />
     </main>
   );

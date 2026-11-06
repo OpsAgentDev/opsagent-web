@@ -1,9 +1,10 @@
 import { Mark } from "@/components/brand/Logo";
+import { Reveal } from "@/components/marketing/Reveal";
 
-/** CSS-drawn phone showing the urgent alert on a lock screen; the app is not out yet, so it is a sample. */
+/** CSS-drawn phone showing the urgent alert on a lock screen; the app is not out yet, so it is a sample. The alert slides in once on scroll. */
 export function PhoneMockup() {
   return (
-    <figure className="phone" aria-label="Sample lock-screen alert from the coming mobile app">
+    <Reveal as="figure" className="phone" aria-label="Sample lock-screen alert from the coming mobile app">
       <div className="phone-screen">
         <span className="phone-notch" aria-hidden="true" />
         <p className="phone-date">Tuesday</p>
@@ -21,6 +22,6 @@ export function PhoneMockup() {
         </div>
         <span className="phone-sample">Sample</span>
       </div>
-    </figure>
+    </Reveal>
   );
 }

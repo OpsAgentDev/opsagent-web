@@ -37,7 +37,7 @@ test("delivery settings, briefing preview, deliveries, recipient confirm and uns
   await page.goto("/deliveries");
   await page.getByLabel("Kind").selectOption("briefing");
   await expect(page.locator("tbody tr")).toHaveCount(1);
-  await expect(page.locator("tbody tr")).toContainText("fallback_email");
+  await expect(page.locator("tbody tr")).toContainText("Sent by email (Slack not connected)");
 
   // The weekly mail carries the unsubscribe footer; make it due now and tick the scheduler.
   sql(`UPDATE schedules SET next_due_at = now() WHERE job_type = 'deliver_weekly' AND connection_id = '${connection}'`);
