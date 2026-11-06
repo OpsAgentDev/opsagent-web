@@ -9,7 +9,7 @@ export function ConnectionHeader({ c }: { c: Connection }) {
     <header className="conn-title">
       <h1>{c.display_name ?? c.id}</h1>
       <span data-testid="connection-status"><Status value={c.status} /></span>
-      <p className="conn-sentence">{connectionSentence(c.status, c.status_reason) ?? c.status_reason}</p>
+      <p className="conn-sentence" role="status">{connectionSentence(c.status, c.status_reason) ?? c.status_reason}</p>
     </header>
   );
 }

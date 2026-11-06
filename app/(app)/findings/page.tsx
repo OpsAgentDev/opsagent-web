@@ -37,7 +37,8 @@ export default function Findings() {
     }
   }
 
-  const summary = page && findingsSummary(page.items, { more: !!page.next_cursor || pager.cursors.length > 1, status });
+  // Only for the rows that match the filter on screen: while the next page loads (or failed) the old rows would give a wrong line.
+  const summary = page && !loading && !error && findingsSummary(page.items, { more: !!page.next_cursor || pager.cursors.length > 1, status });
   const showStatus = status !== "open"; // every row would say "open"
 
   return (

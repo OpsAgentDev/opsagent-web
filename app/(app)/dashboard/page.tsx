@@ -10,7 +10,7 @@ import { useOrg, useSetup } from "@/lib/org";
 import { latestScanStats, openTotal } from "@/lib/scan";
 import { useApi } from "@/lib/use-api";
 
-function ConnectionCard({ org, c }: { org: string; c: Connection }) {
+function ConnectionCard({ org, c, several }: { org: string; c: Connection; several: boolean }) {
   const { data: stats, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
   return (
     <div className="card">
@@ -50,7 +50,7 @@ function ConnectionCard({ org, c }: { org: string; c: Connection }) {
             </ul>
           </div>
           <p className="view-all">
-            <Link href="/findings">View all {openTotal(stats) ?? ""} findings</Link>
+            <Link href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</Link>
           </p>
           <TopIssues org={org} connection={c.id} />
         </>
@@ -72,7 +72,7 @@ export default function Dashboard() {
       <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} />
       <ErrorNote error={error} />
       <div className="cards">
-        {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} />)}
+        {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
       </div>
       {!!connections?.length && (
         <p className="add-more">

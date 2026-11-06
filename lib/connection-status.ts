@@ -1,5 +1,6 @@
 // Plain-language text for the connection page. Unknown statuses return null so the caller can show the raw value.
 const SENTENCES: Record<string, string> = {
+  pending: "Waiting to be verified.",
   verifying: "Checking the role. This usually takes under a minute.",
   connected: "Connected. OpsAgent checks this account every night and urgent issues every 15 minutes.",
   revoked: "The role no longer works. Reconnect to resume checks.",
@@ -8,7 +9,9 @@ const SENTENCES: Record<string, string> = {
 
 export function connectionSentence(status: string, reason?: string | null): string | null {
   if (status === "degraded") return reason || "Some checks can't read this account right now.";
-  return SENTENCES[status] ?? null;
+  const s = SENTENCES[status];
+  // Keep the reason brain gives for a lost connection beside the plain sentence.
+  return s && reason && (status === "revoked" || status === "disconnected") ? `${s} ${reason}` : (s ?? null);
 }
 
 /** `default` (or nothing) means the organisation's schedule; a custom time stays as is. */
