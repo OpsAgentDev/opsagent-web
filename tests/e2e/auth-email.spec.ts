@@ -48,7 +48,6 @@ test("the code step reads as a code field and a wrong code refocuses it", async 
 
   const code = page.getByLabel("Code");
   await expect(code).toHaveAttribute("placeholder", "123456");
-  await expect(code).toHaveAttribute("maxlength", "6");
   await expect(code).toHaveAttribute("inputmode", "numeric");
   await expect(code).toHaveAttribute("autocomplete", "one-time-code");
   await expect(code).toBeFocused();

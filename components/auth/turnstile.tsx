@@ -46,7 +46,7 @@ export function Turnstile({ onToken, resetKey = 0 }: { onToken: (token: string |
         sitekey: TURNSTILE_SITE_KEY,
         theme: "dark",
         size: "flexible",
-        callback: (t: string) => report.current(t),
+        callback: (t: string) => { setFailed(false); report.current(t); },
         "expired-callback": () => report.current(null),
         "error-callback": fail,
       });

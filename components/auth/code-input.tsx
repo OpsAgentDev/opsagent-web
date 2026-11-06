@@ -17,13 +17,12 @@ export function CodeInput({ onComplete, disabled }: { onComplete: (code: string)
         name="code"
         inputMode="numeric"
         autoComplete="one-time-code"
-        maxLength={6}
         placeholder="123456"
         autoFocus
         value={value}
         disabled={disabled}
         onChange={(e) => change(e.target.value)}
-        // maxLength would cut a pasted "123 456" at six characters; take the digits instead.
+        // Take the digits from a pasted "123 456" (codeDigits keeps six).
         onPaste={(e) => { e.preventDefault(); change(e.clipboardData.getData("text")); }}
       />
     </label>

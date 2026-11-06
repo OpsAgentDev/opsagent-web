@@ -80,6 +80,11 @@ jobs:
       - run: scripts/e2e.sh
         env:
           BRAIN_DIR: brain
+      # The Turnstile widget is inlined at build time, so its spec needs its own build with a (stub) site key.
+      - run: scripts/e2e.sh auth-turnstile.spec.ts
+        env:
+          BRAIN_DIR: brain
+          E2E_TURNSTILE_SITE_KEY: ci-stub-site-key
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
