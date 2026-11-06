@@ -17,9 +17,19 @@ const DAY_NIGHT = [
   { Icon: I.SunIcon, title: "Every morning", body: "One short briefing, skipped when nothing changed." },
 ];
 
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "OpsAgent",
+  url: "https://opsagent.dev",
+  logo: "https://opsagent.dev/icon.svg",
+  description: "A read-only ops agent for your cloud.",
+};
+
 export default function Home() {
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
       <section className="hero" id="waitlist">
         <div className="glow" aria-hidden="true" />
         <div className="hero-text">

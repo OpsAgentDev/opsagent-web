@@ -1,0 +1,14 @@
+# OpsAgent
+
+> A read-only ops agent for your cloud. A full scan every night, a calm morning briefing, and urgent exposures checked every 15 minutes and alerted right away. It never changes anything.
+
+## Pages
+- [Home](https://opsagent.dev/)
+- [How it works](https://opsagent.dev/how-it-works): Connect read-only, checks run, you get a morning briefing.
+- [What it checks](https://opsagent.dev/features/checks): Ten deterministic, read-only checks; every finding cites its evidence.
+- [Alerts](https://opsagent.dev/features/alerts): Urgent exposures in Slack within minutes.
+- [Connect your agent](https://opsagent.dev/features/agents): Claude, Cursor or any MCP client, read-only.
+- [Pricing](https://opsagent.dev/pricing): Flat per cloud account, Starter $99, Team $299, Scale $599 a month.
+- [Security](https://opsagent.dev/security): Read-only by design.
+- [Privacy](https://opsagent.dev/privacy)
+- [Terms](https://opsagent.dev/terms)
