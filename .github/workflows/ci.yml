@@ -88,3 +88,41 @@ jobs:
             brain-e2e.log
             web-e2e.log
             test-results/
+
+  e2e-turnstile:
+    if: github.event_name == 'pull_request'
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: OpsAgentDev/opsagent-brain
+          path: brain
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: brain
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # The widget is inlined at build time, so this spec needs its own build with a (stub) site key,
+      # and its own runner: a second run in one job meets the first run's web server still on port 3001.
+      - run: scripts/e2e.sh auth-turnstile.spec.ts
+        env:
+          BRAIN_DIR: brain
+          E2E_TURNSTILE_SITE_KEY: ci-stub-site-key
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-turnstile-logs
+          path: |
+            brain-e2e.log
+            web-e2e.log
+            test-results/

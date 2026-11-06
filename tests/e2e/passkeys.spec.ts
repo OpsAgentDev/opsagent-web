@@ -72,6 +72,7 @@ test("a cancelled passkey sign-in says so and email still works", async ({ page,
   await expect(page.getByText("Passkey sign-in was cancelled.")).toBeVisible();
 
   const email = `e2e-cancel-${Date.now()}@example.com`;
+  await page.getByRole("link", { name: "Continue with email" }).click();
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));

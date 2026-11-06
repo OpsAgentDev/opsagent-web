@@ -30,8 +30,8 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Always 202, so the response never reveals whether an address is valid or known, or whether
-         *     it was rate limited (5 per address and 30 per client IP per hour).
+         * 202 whether the address is valid or known or was rate limited (5 per address and 30 per
+         *     client IP per hour), so the response never reveals which. The security check runs first.
          */
         post: operations["auth_request_link"];
         delete?: never;
@@ -1294,6 +1294,8 @@ export interface components {
             name: string;
             /** @description One of `general`, `sales`, `support`, `security`, `partnership`. */
             topic: string;
+            /** @description The Cloudflare Turnstile token; required when the deployment checks it. */
+            turnstile_token?: string | null;
             /** @description Honeypot: real visitors leave it empty; a filled value is answered 202 and dropped. */
             website?: string | null;
         };
@@ -1529,10 +1531,17 @@ export interface components {
         MagicLinkRequest: {
             email: string;
             /**
+             * @description Sign-up only: 1 to 80 characters without control characters, saved when the account is
+             *     created or still has no name. An unusable name is ignored, never an error.
+             */
+            name?: string | null;
+            /**
              * @description Where sign-in lands afterwards: only `/oauth/consent?request_id=<uuid>` is kept, anything
              *     else is dropped and the user lands on the dashboard.
              */
             return_to?: string | null;
+            /** @description The Cloudflare Turnstile token; required when the deployment checks it. */
+            turnstile_token?: string | null;
         };
         Me: {
             email: string;
@@ -1896,6 +1905,8 @@ export interface components {
             email: string;
             /** @description Where the form sat, at most 64 characters (`landing-hero`, `landing-footer`). */
             source?: string | null;
+            /** @description The Cloudflare Turnstile token; required when the deployment checks it. */
+            turnstile_token?: string | null;
         };
     };
     responses: never;
@@ -1952,6 +1963,24 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Security check failed (`challenge_failed`) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description Security check unavailable (`challenge_unavailable`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
         };
     };
@@ -2438,6 +2467,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Security check failed (`challenge_failed`) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description Invalid name, email, topic or message */
             422: {
                 headers: {
@@ -2451,6 +2489,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Security check unavailable (`challenge_unavailable`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
         };
     };
@@ -5369,6 +5416,15 @@ export interface operations {
                 };
                 content?: never;
             };
+            /** @description Security check failed (`challenge_failed`) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description Invalid email or source */
             422: {
                 headers: {
@@ -5382,6 +5438,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Security check unavailable (`challenge_unavailable`) */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
         };
     };

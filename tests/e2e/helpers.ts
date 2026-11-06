@@ -57,7 +57,7 @@ export function brainTask(...args: string[]): void {
 /** Signs a new user in with the emailed code (no organisation yet); returns the email. */
 export async function signIn(page: Page, request: APIRequestContext): Promise<string> {
   const email = `e2e-${Date.now()}@example.com`;
-  await page.goto("/sign-in");
+  await page.goto("/sign-in/email");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));

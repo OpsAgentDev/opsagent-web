@@ -84,7 +84,7 @@ test("mobile menu closes after tapping a same-page anchor", async ({ page }) => 
 });
 
 test("no email address on marketing pages", async ({ page }) => {
-  for (const path of ["/", "/how-it-works", ...FEATURE_PAGES.map((p) => p.path), "/security", "/pricing", "/contact", "/docs/connect-your-agent", "/privacy", "/terms", "/sign-in", "/sign-up"]) {
+  for (const path of ["/", "/how-it-works", ...FEATURE_PAGES.map((p) => p.path), "/security", "/pricing", "/contact", "/docs/connect-your-agent", "/privacy", "/terms", "/sign-in", "/sign-up", "/sign-in/email", "/sign-up/email"]) {
     await page.goto(path);
     const html = await page.content();
     expect(html, path).not.toContain("info@opsagent.dev");

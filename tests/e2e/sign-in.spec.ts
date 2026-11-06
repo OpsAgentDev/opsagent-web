@@ -5,9 +5,10 @@ test("sign-up page shows three options", async ({ page }) => {
   await page.goto("/sign-up");
   const main = page.getByRole("main");
   await expect(main.getByRole("heading", { name: "Create your account" })).toBeVisible();
-  for (const name of ["Continue with Google", "Continue with GitHub", "Send link and code"]) {
+  for (const name of ["Continue with Google", "Continue with GitHub"]) {
     await expect(main.getByRole("button", { name })).toBeVisible();
   }
+  await expect(main.getByRole("link", { name: "Continue with email" })).toHaveAttribute("href", "/sign-up/email");
   await expect(main.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/sign-in");
   await expect(main.getByText("After you sign in we'll suggest adding a passkey, so next time is one tap.")).toBeVisible();
   // Bare page: no site header or footer, only a way home.
@@ -21,18 +22,25 @@ test("sign-in signs in with the emailed code", async ({ page, request }) => {
   await page.goto("/sign-in");
   await expect(page.getByRole("heading", { name: "Sign in", exact: true })).toBeVisible();
   await expect(page.getByRole("main").getByRole("link", { name: "Create an account" })).toHaveAttribute("href", "/sign-up");
+  await page.getByRole("link", { name: "Continue with email" }).click();
+  await expect(page).toHaveURL(/\/sign-in\/email$/);
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await expect(page.getByText("Or open the link in the email.")).toBeVisible();
 
   const code = await codeInMail(request, email);
-  await page.getByLabel("Code").fill(`${code.slice(0, 3)} ${code.slice(3)}`);
+  // A formatted "123 456" pasted from the mail (maxlength is 6, so this goes through the paste handler).
+  await page.getByLabel("Code").evaluate((el, text) => {
+    const data = new DataTransfer();
+    data.setData("text", text);
+    el.dispatchEvent(new ClipboardEvent("paste", { clipboardData: data, bubbles: true, cancelable: true }));
+  }, `${code.slice(0, 3)} ${code.slice(3)}`);
   await expect(page).toHaveURL(/\/dashboard$/);
 });
 
 test("a wrong code shows the error, a new code signs in", async ({ page, request }) => {
   const email = `e2e-wrong-${Date.now()}@example.com`;
-  await page.goto("/sign-in");
+  await page.goto("/sign-in/email");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   const first = await codeInMail(request, email);
@@ -47,7 +55,7 @@ test("a wrong code shows the error, a new code signs in", async ({ page, request
 });
 
 test("use a different email returns to the form", async ({ page }) => {
-  await page.goto("/sign-in");
+  await page.goto("/sign-in/email");
   await page.getByLabel("Email").fill(`e2e-other-${Date.now()}@example.com`);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByRole("button", { name: "Use a different email" }).click();
@@ -76,7 +84,7 @@ test("privacy and terms pages render and are in the footer", async ({ page }) =>
 
 test("a signed-in visitor on sign-in and sign-up goes to the dashboard", async ({ page, request }) => {
   const email = `e2e-again-${Date.now()}@example.com`;
-  await page.goto("/sign-in");
+  await page.goto("/sign-in/email");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));
