@@ -45,6 +45,8 @@ test("signed_out_returns_to_consent_after_sign_in", async ({ page, request, brow
   const fresh = await ctx.newPage();
   await startConsent(fresh, request);
   await expect(fresh).toHaveURL(/\/sign-in\?return_to=/);
+  await fresh.getByRole("link", { name: "Continue with email" }).click(); // return_to survives the hop
+  await expect(fresh).toHaveURL(/\/sign-in\/email\?return_to=/);
   await fresh.getByLabel("Email").fill(email);
   await fresh.getByRole("button", { name: "Send link and code" }).click();
   await expect(fresh.getByText("Or open the link in the email.")).toBeVisible();

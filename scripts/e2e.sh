@@ -46,6 +46,8 @@ export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:$BRAIN_PORT W
 pids+=($!)
 
 export NEXT_PUBLIC_API_BASE_URL=http://localhost:$BRAIN_PORT NEXT_PUBLIC_OPSAGENT_FAKE=1
+# Unset by default (no widget). E2E_TURNSTILE_SITE_KEY=any-value builds the widget in; only auth-turnstile.spec.ts is meant for that run.
+export NEXT_PUBLIC_TURNSTILE_SITE_KEY="${E2E_TURNSTILE_SITE_KEY:-}"
 npm run build
 npm run start > web-e2e.log 2>&1 &
 pids+=($!)
