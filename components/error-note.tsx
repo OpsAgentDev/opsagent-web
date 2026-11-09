@@ -8,7 +8,7 @@ const BILLING_MESSAGES = new Map<string, string>([
   ["plan_limit", "You're at your plan's member or integration limit. Remove some or change plan."],
 ]);
 
-export function ErrorNote({ error }: { error?: Error | null }) {
+export function ErrorNote({ error, showCode = true }: { error?: Error | null; showCode?: boolean }) {
   if (!error) return null;
   const code = error instanceof ApiError ? error.code : undefined;
   const billing = code ? BILLING_MESSAGES.get(code) : undefined;
@@ -22,7 +22,7 @@ export function ErrorNote({ error }: { error?: Error | null }) {
   return (
     <p role="alert" className="error">
       {billing ?? error.message}
-      {code && !billing ? ` (${code})` : ""}
+      {showCode && code && !billing ? ` (${code})` : ""}
     </p>
   );
 }

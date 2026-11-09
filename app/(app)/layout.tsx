@@ -7,6 +7,7 @@ import { ErrorNote } from "@/components/error-note";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { Welcome } from "@/components/welcome";
 import { api, ApiError, unwrap } from "@/lib/api/client";
+import { preferredOrg, takePendingInvite } from "@/lib/members";
 import { showPasskeyPrompt } from "@/lib/passkey-scope";
 import { OrgContext, SessionReloadContext, SetupContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
@@ -28,10 +29,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     if (signedOut) router.replace("/sign-in");
   }, [signedOut, router]);
 
+  // Signed in after opening an invite link: go back to it (brain's return_to cannot carry it).
+  useEffect(() => {
+    if (!data) return;
+    const token = takePendingInvite();
+    if (token) router.replace(`/invites/${token}`);
+  }, [data, router]);
+
   if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
   if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
-  // shortcut: first organisation only; add a switcher when a user belongs to several.
-  const org = data.orgs[0];
+  // shortcut: no switcher; open the organisation last joined through an invite, else the first. Add a switcher when a user belongs to several.
+  const org = data.orgs.find((o) => o.slug === preferredOrg()) ?? data.orgs[0];
   if (!org) return <div className="app"><Welcome email={data.me.email} onCreated={reload} /></div>;
   // The card shows on the dashboard (once the checklist has said it is closed) and on Settings → Security only.
   const showPrompt = showPasskeyPrompt({ hasPasskey: data.me.has_passkey, pathname, checklistOpen });

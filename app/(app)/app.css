@@ -33,6 +33,7 @@
 .app .app-bar .more-label { display: none; }
 .app .app-bar .account { display: flex; align-items: center; gap: 10px; margin: 0 0 0 auto; min-width: 0; font-size: 13px; line-height: 1.3; }
 .app .app-bar .avatar { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--accent-bg); color: var(--accent); font-weight: 600; font-size: 13px; }
+.app .app-bar .sign-out { margin-left: 10px; }
 .app .app-bar .account-text { display: grid; min-width: 0; }
 .app .app-bar .account-org { color: var(--ink); font-weight: 600; }
 .app .app-bar .account-email { color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -49,6 +50,7 @@
   .app .app-bar .more-panel::before { content: none; }
   .app .app-bar .more-panel a { padding: 11px 12px; }
   .app .app-bar .more-label { display: block; margin: 0; padding: 14px 12px 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--soft); }
+  .app .app-bar .sign-out { margin: 8px 0 0 12px; justify-self: start; }
   .app .app-bar .account { margin: 12px 0 0; padding: 14px 12px 0; border-top: 1px solid var(--line); }
 }
 
