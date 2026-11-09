@@ -21,7 +21,7 @@ const FINDINGS = [
     severity: "warn",
     label: "Needs attention",
     title: <>Certificate for <code>api.example.com</code> expires in 12 days</>,
-    cites: "Cites the days left and the endpoints that use it.",
+    cites: "Cites the days left before it expires.",
   },
 ];
 

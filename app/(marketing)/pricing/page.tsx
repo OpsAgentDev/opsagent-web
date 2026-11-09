@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckIcon } from "@/components/marketing/landing-icons";
-import { joinCta } from "@/lib/signups";
+import { joinCta, SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Pricing · OpsAgent",
@@ -48,7 +48,7 @@ export default function Pricing() {
               ))}
             </dl>
             <Link className="btn" href={joinCta().href}>
-              {joinCta().label}
+              {SIGNUPS_OPEN && !p.trial ? "Get started" : joinCta().label}
             </Link>
           </li>
         ))}

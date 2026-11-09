@@ -56,9 +56,9 @@ export default function Privacy() {
         <h2>Who else processes it</h2>
         <ul className="legal-list">
           <li>Railway: hosting and the database.</li>
-          <li>Cloudflare: DNS and traffic proxy for opsagent.dev, and Turnstile, the security check on the sign-up and sign-in forms.</li>
+          <li>Cloudflare: DNS and traffic proxy for opsagent.dev, and Turnstile, the security check on the sign-up, sign-in, waitlist and contact forms.</li>
           <li>Amazon Web Services: encrypted nightly backups, in a storage bucket Binary Labs controls.</li>
-          <li>Stripe: payments, subscriptions and tax, as merchant of record. It receives your email and name, and collects your card details.</li>
+          <li>Stripe: payments, subscriptions and tax, as merchant of record. It receives your email and your organisation&apos;s name, and collects your card details.</li>
           <li>Resend: sending sign-in and briefing email.</li>
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
