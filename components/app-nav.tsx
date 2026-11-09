@@ -20,6 +20,7 @@ export const SETTINGS_LINKS: NavLink[] = [
   { href: "/settings/delivery", label: "Delivery settings", icon: <BellIcon size={18} /> },
   { href: "/settings/agents", label: "Connected agents", icon: <UserKeyIcon size={18} /> },
   { href: "/settings/security", label: "Security", icon: <ShieldIcon size={18} /> },
+  { href: "/settings/members", label: "Members", icon: <UserKeyIcon size={18} /> },
   { href: "/settings/billing", label: "Billing", icon: <CostIcon size={18} /> },
   { href: "/settings/ai", label: "AI", icon: <ChatSquareIcon size={18} /> },
   { href: "/settings/human-review", label: "Human review", icon: <FlagIcon size={18} /> },
