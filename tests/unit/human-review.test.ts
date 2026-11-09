@@ -34,7 +34,8 @@ describe("human review", () => {
     const html = view(true);
     expect(html).toContain("$99");
     expect(html).toContain("$499");
-    expect(html).toContain("Pay securely with Stripe. Harun replies within 1 business day.");
+    // The payment sentence comes with brain's description; the card does not repeat it.
+    expect(html).not.toContain("Pay securely");
   });
   it("owner sees the form, member does not", () => {
     expect(view(true)).toContain("Request an account review");

@@ -18,16 +18,16 @@ test("streamed answer with a finding citation link", async ({ page, request }) =
   await expect(page).toHaveURL(/\/chat$/);
   await page.getByLabel("Message").fill("what's newest?");
   await page.getByRole("button", { name: "Send" }).click();
-  await expect(page.getByText("Looking at list_findings…")).toBeVisible();
-  const cite = page.getByRole("link", { name: new RegExp(`^finding:${UUID}$`) });
+  await expect(page.getByText("Looking at list findings…")).toBeVisible();
+  const cite = page.getByRole("link", { name: /^finding [0-9a-f]{8}$/ });
   await expect(cite).toBeVisible();
   await expect(cite).toHaveAttribute("href", new RegExp(`^/findings/${UUID}$`));
-  await expect(page.locator("main")).toContainText("Your newest finding is finding:");
+  await expect(page.locator("main")).toContainText("Your newest finding is finding ");
 
   // The session is listed and its history reloads.
   await page.reload();
   await page.getByRole("button", { name: "what's newest?" }).click();
-  await expect(page.getByRole("link", { name: new RegExp(`^finding:${UUID}$`) })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^finding [0-9a-f]{8}$/ })).toBeVisible();
   await cite.click();
   await expect(page).toHaveURL(new RegExp(`/findings/${UUID}$`));
 });

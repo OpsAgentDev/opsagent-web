@@ -217,3 +217,9 @@
 .app button.link:hover { color: var(--accent-hover); }
 .app button.link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .app .checklist-card .skip { margin: 12px 0 0; font-size: 14px; }
+
+/* Chat: on a phone the chat list sits above the conversation instead of squeezing it. */
+@media (max-width: 640px) {
+  .app .chat-layout { flex-direction: column; align-items: stretch !important; }
+  .app .chat-layout > nav { flex-direction: row; flex-wrap: wrap; }
+}

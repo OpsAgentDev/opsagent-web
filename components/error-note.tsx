@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ApiError } from "@/lib/api/client";
 
 // Sentences for brain's billing refusals (402 on writes); other errors show brain's own text.
@@ -11,6 +12,13 @@ export function ErrorNote({ error }: { error?: Error | null }) {
   if (!error) return null;
   const code = error instanceof ApiError ? error.code : undefined;
   const billing = code ? BILLING_MESSAGES.get(code) : undefined;
+  if (code === "not_found") {
+    return (
+      <p role="alert" className="error">
+        We couldn&apos;t find that. It may have been removed. <Link href="/dashboard">Back to the dashboard</Link>
+      </p>
+    );
+  }
   return (
     <p role="alert" className="error">
       {billing ?? error.message}

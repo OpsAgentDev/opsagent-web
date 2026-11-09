@@ -95,7 +95,6 @@ export function HumanReviewView(p: {
             <h3>{o.title}</h3>
             <p className="price">{price(o.price_cents)}</p>
             <p>{o.description}</p>
-            <p className="muted">{CONFIRM}</p>
           </article>
         ))}
       </div>

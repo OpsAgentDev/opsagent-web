@@ -94,7 +94,7 @@ export default function Findings() {
           ))}
         </tbody>
       </table>
-      {page?.items.length === 0 && <p className="muted empty">Nothing here.</p>}
+      {page?.items.length === 0 && <p className="muted empty">No findings match. New ones appear after each scan; connect a cloud account from the dashboard if you have not yet.</p>}
       <Pager pager={pager} next={page?.next_cursor} />
       {acting && (
         <FindingActionDialog
