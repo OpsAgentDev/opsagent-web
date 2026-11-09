@@ -28,6 +28,7 @@ export function UrgentAlerts({ owner, org, connections, onChanged }: Props) {
     }
   }
 
+  if (connections.length === 0) return null;
   return (
     <section>
       <h2>Urgent alerts</h2>

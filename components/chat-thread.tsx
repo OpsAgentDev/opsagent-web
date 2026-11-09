@@ -11,7 +11,7 @@ function Linked({ text }: { text: string }) {
     <p style={{ whiteSpace: "pre-wrap" }}>
       {linkify(text).map((p, i) =>
         "finding" in p ? (
-          <Link key={i} href={`/findings/${p.finding}`}>finding:{p.finding}</Link>
+          <Link key={i} href={`/findings/${p.finding}`}>finding {p.finding.slice(0, 8)}</Link>
         ) : (
           <Fragment key={i}>{p.text}</Fragment>
         ),
@@ -27,7 +27,7 @@ export function ChatThread({ messages }: { messages: ThreadMessage[] }) {
       {messages.map((m, i) => (
         <article key={i} className="stack">
           <strong>{m.role === "user" ? "You" : "OpsAgent"}</strong>
-          {m.tools?.map((t, j) => <p key={j} role="status" className="muted">Looking at {t}…</p>)}
+          {m.tools?.map((t, j) => <p key={j} role="status" className="muted">Looking at {t.replaceAll("_", " ")}…</p>)}
           {m.text && <Linked text={m.text} />}
           {m.partial && <p role="status" className="muted">Partial answer</p>}
         </article>

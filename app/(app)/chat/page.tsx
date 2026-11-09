@@ -106,7 +106,7 @@ function Chat() {
     <main>
       <h1>Ask OpsAgent</h1>
       <ErrorNote error={sessions.error ?? ai.error} />
-      <div className="row" style={{ alignItems: "flex-start" }}>
+      <div className="row chat-layout" style={{ alignItems: "flex-start" }}>
         <ChatSessions
           sessions={sessions.data?.items ?? []}
           active={active}
@@ -120,7 +120,7 @@ function Chat() {
           <form className="stack" onSubmit={send}>
             <label>
               Message
-              <textarea value={draft} maxLength={4000} onChange={(e) => setDraft(e.target.value)} />
+              <textarea value={draft} maxLength={4000} disabled={blocked} onChange={(e) => setDraft(e.target.value)} />
             </label>
             <p className="muted">{AI_LABEL}</p>
             <button type="submit" className="primary fit" disabled={busy || blocked || !draft.trim()}>
