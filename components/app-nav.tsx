@@ -86,6 +86,8 @@ export function AppNav({ org, email }: { org?: string; email: string }) {
 
   return (
     <header className="app-bar bar">
+      {/* Outside `root`, so the document click handler closes the menu; it also stops that tap reaching the page. */}
+      {open && <div className="menu-backdrop" aria-hidden="true" />}
       <div className="app-bar-inner" ref={root}>
         <Link href="/dashboard" className="brand" aria-label="OpsAgent">
           <Logo size={22} />
