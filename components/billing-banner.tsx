@@ -3,7 +3,7 @@ import Link from "next/link";
 import { loadBilling } from "@/lib/billing";
 import { useApi } from "@/lib/use-api";
 
-const READ_ONLY = new Set(["none", "paused", "canceled", "trial_ended"]);
+const READ_ONLY = new Set(["paused", "canceled", "trial_ended"]);
 
 /** Billing notices above every app page. Silent when billing isn't set up or can't be read. */
 export function BillingBanner({ org }: { org: string }) {
@@ -15,6 +15,11 @@ export function BillingBanner({ org }: { org: string }) {
         <p role="status" className="banner warn">
           Your last payment failed. Update your card to keep OpsAgent running.{" "}
           <Link href="/settings/billing">Manage billing</Link>
+        </p>
+      )}
+      {data.enforced && data.status === "none" && (
+        <p role="status" className="banner">
+          Start your free trial to turn on checks. <Link href="/settings/billing">Start free trial</Link>
         </p>
       )}
       {data.enforced && READ_ONLY.has(data.status) && (

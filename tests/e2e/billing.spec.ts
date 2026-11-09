@@ -67,3 +67,17 @@ test("connect AWS redirects to billing when enforced and none", async ({ page, r
   await page.goto("/onboarding/connect-aws");
   await expect(page).toHaveURL(/\/settings\/billing$/);
 });
+
+test("a new organisation is invited to start a trial, not told it is paused", async ({ page, request }) => {
+  await signUp(page, request);
+  let status = "none";
+  await page.route("**/v1/orgs/*/billing", (r) =>
+    r.fulfill({ json: { status, enforced: true, over_limit: false, quantity: 0 } }));
+  await page.goto("/dashboard");
+  await expect(page.getByText("Start your free trial to turn on checks.")).toBeVisible();
+  await expect(page.getByText("OpsAgent is paused.")).toHaveCount(0);
+
+  status = "trial_ended";
+  await page.reload();
+  await expect(page.getByText("OpsAgent is paused.")).toBeVisible();
+});
