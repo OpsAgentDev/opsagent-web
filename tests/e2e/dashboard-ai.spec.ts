@@ -153,7 +153,7 @@ test("member sees ask-an-owner", async ({ page, request }) => {
 test("pricing shows AI credits", async ({ page }) => {
   await page.goto("/pricing");
   const main = page.locator("main");
-  await expect(main.getByText("AI credits per month")).toHaveCount(3);
+  await expect(main.getByText("AI credits per cloud account per month")).toHaveCount(3);
   for (const n of ["1,000", "5,000", "15,000"]) await expect(main.getByText(n, { exact: true })).toBeVisible();
   await expect(main).not.toContainText("Investigations");
 });

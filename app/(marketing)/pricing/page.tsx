@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckIcon } from "@/components/marketing/landing-icons";
+import { joinCta } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Pricing · OpsAgent",
@@ -15,8 +16,8 @@ const PLANS = [
 
 const FEATURES = [
   ["Members", "members"],
-  ["Integrations", "integrations"],
-  ["AI credits per month", "aiCredits"],
+  ["Cloud accounts", "integrations"],
+  ["AI credits per cloud account per month", "aiCredits"],
 ] as const;
 
 export default function Pricing() {
@@ -24,9 +25,9 @@ export default function Pricing() {
     <main className="page">
       <h1>Pricing</h1>
       <p className="lead">
-        14-day free trial on Team. Card required. Prices are flat per cloud account, whatever its size.
+        Prices are flat per cloud account, whatever its size. 14-day free trial on Team: card required, one cloud account. AWS is the first supported provider.
       </p>
-      <p className="trial-note">Trial: 1,000 AI credits.</p>
+      <p className="trial-note">Trial: 1,000 AI credits, for one cloud account.</p>
       <ul className="plans">
         {PLANS.map((p) => (
           <li key={p.name} className={p.trial ? "plan-featured" : undefined}>
@@ -46,8 +47,8 @@ export default function Pricing() {
                 </div>
               ))}
             </dl>
-            <Link className="btn" href="/#waitlist">
-              Join the waitlist
+            <Link className="btn" href={joinCta().href}>
+              {joinCta().label}
             </Link>
           </li>
         ))}
@@ -58,6 +59,10 @@ export default function Pricing() {
           <div>
             <h3>What counts as a cloud account?</h3>
             <p>One connected account.</p>
+          </div>
+          <div>
+            <h3>Do I have to connect a cloud account to sign up?</h3>
+            <p>No. You can sign up and connect later. The trial covers one account.</p>
           </div>
           <div>
             <h3>What is an AI credit?</h3>

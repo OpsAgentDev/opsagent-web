@@ -10,7 +10,7 @@ const STEPS = [
   {
     Icon: I.KeyIcon,
     title: "Connect read-only",
-    body: "Create a role in one click. It can read how your cloud is set up and what it costs, and it cannot read your stored data or change anything, except what you opt into (see Security).",
+    body: "Create a role in one click. It can read how your cloud is set up and what it costs, and it cannot read your stored data or change anything, except what you opt into (see Security). Today that means AWS.",
   },
   {
     Icon: I.CheckIcon,
@@ -32,9 +32,9 @@ const CHECKS: [string, string, typeof I.CostIcon][] = [
   ["Certificate expiry", "Certificates close to expiring, flagged before your users see the error.", I.CertIcon],
   ["Logging and detection gaps", "Audit logs and threat detection that are switched off or incomplete.", I.LogIcon],
   ["Idle GPUs and stuck training jobs", "GPU machines doing nothing, and training jobs that stopped making progress.", I.GpuIcon],
-  ["Leaked secrets that are still active", "Secrets flagged by GitHub secret scanning whose keys are still active in your cloud.", I.SecretIcon],
-  ["Infrastructure-as-code drift", "Resources that no longer match the code that is supposed to define them.", I.DriftIcon],
-  ["Deploy and pipeline health", "Pipelines that keep failing and deploys that stalled halfway.", I.PipelineIcon],
+  ["Encryption at rest", "Database storage, disks and snapshots that are not encrypted.", I.SecretIcon],
+  ["Instance hardening", "Servers that still accept the older metadata service (IMDSv1).", I.ShieldIcon],
+  ["Credential depth", "Access keys never used, users with two active keys, and stale console passwords.", I.KeyIcon],
 ];
 
 const NEVER: [string, string, typeof I.CostIcon][] = [

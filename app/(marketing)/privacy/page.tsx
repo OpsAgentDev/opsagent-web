@@ -10,7 +10,7 @@ export default function Privacy() {
   return (
     <main className="page">
       <h1>Privacy policy</h1>
-      <p className="lead">Last updated 30 October 2026</p>
+      <p className="lead">Last updated 9 November 2026</p>
       <p>
         OpsAgent is run by Binary Labs LLC. This page says what we store when you use it, why, and what you can ask
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
@@ -23,6 +23,7 @@ export default function Privacy() {
           <li>Your organisation: its name, members and their roles.</li>
           <li>Cloud inventory metadata: what resources exist in the accounts you connect and how they are configured.</li>
           <li>Findings, and the evidence behind them.</li>
+          <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
           <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries, which you can view.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
@@ -55,8 +56,9 @@ export default function Privacy() {
         <h2>Who else processes it</h2>
         <ul className="legal-list">
           <li>Railway: hosting and the database.</li>
-          <li>Cloudflare: DNS and traffic proxy for opsagent.dev.</li>
+          <li>Cloudflare: DNS and traffic proxy for opsagent.dev, and Turnstile, the security check on the sign-up and sign-in forms.</li>
           <li>Amazon Web Services: encrypted nightly backups, in a storage bucket Binary Labs controls.</li>
+          <li>Stripe: payments, subscriptions and tax, as merchant of record. It receives your email and name, and collects your card details.</li>
           <li>Resend: sending sign-in and briefing email.</li>
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
@@ -64,6 +66,9 @@ export default function Privacy() {
             Anthropic: Dashboard AI explanations and chat, only after an owner of your organisation turns Dashboard AI
             on. OpsAgent sends the details of the findings and resources you ask about. Anthropic does not train on this
             data.
+          </li>
+          <li>
+            OpenAI: the backup model provider for Dashboard AI on OpsAgent&apos;s key, used the same way as Anthropic.
           </li>
           <li>
             The AI provider you choose, or the endpoint you configure, if you add your own key: OpsAgent sends that

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Terms of service · OpsAgent",
@@ -10,16 +11,16 @@ export default function Terms() {
   return (
     <main className="page">
       <h1>Terms of service</h1>
-      <p className="lead">Last updated 28 October 2026</p>
+      <p className="lead">Last updated 9 November 2026</p>
       <p>
         These terms are between you and Binary Labs LLC, which runs OpsAgent. By using OpsAgent you agree to them. If
         you use it for a company, you agree for that company. Our <Link href="/privacy">privacy policy</Link> says how
         we handle your data.
       </p>
       <section>
-        <h2>An alpha service</h2>
+        <h2>{SIGNUPS_OPEN ? "Early-stage software" : "An alpha service"}</h2>
         <p>
-          OpsAgent is in alpha. It is provided as is and as available, without warranties of any kind. Features may
+          {SIGNUPS_OPEN ? "OpsAgent is early-stage software." : "OpsAgent is in alpha."} It is provided as is and as available, without warranties of any kind. Features may
           change or stop, checks may miss problems or report ones that aren&apos;t there, and the service may be
           interrupted.
         </p>
@@ -51,11 +52,22 @@ export default function Terms() {
         </ul>
       </section>
       <section>
+        <h2>Billing</h2>
+        <ul className="legal-list">
+          <li>Paid plans are priced per cloud account per month. The price is on the <Link href="/pricing">pricing page</Link>.</li>
+          <li>The free trial lasts 14 days and needs a card. On day 14 it converts to a paid plan and your card is charged, unless you cancel before then.</li>
+          <li>Plans renew every month until you cancel.</li>
+          <li>You can cancel at any time. The plan stays active until the end of the period you have paid for.</li>
+          <li>We do not give partial refunds for a period that has started.</li>
+          <li>Stripe is the merchant of record and handles payments and tax. Card details stay with Stripe.</li>
+        </ul>
+      </section>
+      <section>
         <h2>Ending</h2>
         <p>
           You can stop at any time: disconnect your cloud accounts, delete the role, and ask for deletion through the{" "}
           <Link href="/contact">contact form</Link>. We may suspend or close an account that breaks these terms or puts
-          the service or other customers at risk, and we may end the alpha. When an account closes, its data is deleted
+          the service or other customers at risk, and we may end {SIGNUPS_OPEN ? "the service" : "the alpha"}. When an account closes, its data is deleted
           as the privacy policy describes.
         </p>
       </section>

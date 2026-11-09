@@ -18,10 +18,10 @@ const FINDINGS = [
     cites: "Cites the bucket policy statement that grants public read.",
   },
   {
-    severity: "ok",
-    label: "OK",
-    title: <>Spend on track: $1,240 of $1,300 budget</>,
-    cites: "Cites month-to-date spend and your monthly budget.",
+    severity: "warn",
+    label: "Needs attention",
+    title: <>Certificate for <code>api.example.com</code> expires in 12 days</>,
+    cites: "Cites the days left and the endpoints that use it.",
   },
 ];
 
