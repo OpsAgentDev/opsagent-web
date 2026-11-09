@@ -4,7 +4,7 @@ import { CheckIcon } from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
   title: "Pricing · OpsAgent",
-  description: "Flat pricing per cloud account: Starter $99, Team $299, Scale $599 a month.",
+  description: "Flat pricing per cloud account, whatever its size: Starter $99, Team $299, Scale $599 a month. 14-day free trial on Team.",
 };
 
 const PLANS = [
