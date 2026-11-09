@@ -81,3 +81,13 @@ test("a new organisation is invited to start a trial, not told it is paused", as
   await page.reload();
   await expect(page.getByText("OpsAgent is paused.")).toBeVisible();
 });
+
+test("a cancelled trial says when it ends and that nothing more is charged", async ({ page, request }) => {
+  await signUp(page, request);
+  const ends = new Date(Date.now() + 5 * 864e5).toISOString();
+  await page.route("**/v1/orgs/*/billing", (r) =>
+    r.fulfill({ json: { status: "trialing", enforced: true, over_limit: false, quantity: 1, trial_ends_at: ends, cancel_at_period_end: true } }));
+  await page.goto("/settings/billing");
+  await expect(page.getByText(/Cancelled\. Your trial ends .* won't be charged again\./)).toBeVisible();
+  await expect(page.getByText(/days left/)).toHaveCount(0);
+});
