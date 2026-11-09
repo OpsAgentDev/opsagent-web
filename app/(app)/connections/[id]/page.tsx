@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ConnectionActions, ConnectionFacts, ConnectionHeader } from "@/components/connection-status";
 import { ErrorNote } from "@/components/error-note";
+import { RemoveConnection } from "@/components/remove-connection";
 import { api, unwrap, type Connection } from "@/lib/api/client";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
@@ -31,6 +32,7 @@ export default function ConnectionPage() {
     [org.slug, id],
   );
   const [scan, setScan] = useState<{ started?: boolean; error?: Error }>({});
+  const [removedStep, setRemovedStep] = useState<string | null>(null);
 
   const settling = !!c && SETTLING.has(c.status);
   useEffect(() => {
@@ -55,6 +57,18 @@ export default function ConnectionPage() {
       <ConnectionFacts c={c} />
       {c.last_verification && <LastVerification v={c.last_verification} />}
       <ConnectionActions c={c} canScan={SCANNABLE.has(c.status)} onScan={scanNow} started={!!scan.started} />
+      {org.role === "owner" && c.status !== "disconnected" && (
+        <RemoveConnection
+          org={org.slug}
+          id={c.id}
+          name={c.display_name ?? "this connection"}
+          onRemoved={(step) => {
+            setRemovedStep(step);
+            reload();
+          }}
+        />
+      )}
+      {removedStep && <p role="status">{removedStep}</p>}
       <ErrorNote error={scan.error ?? error} />
     </main>
   );

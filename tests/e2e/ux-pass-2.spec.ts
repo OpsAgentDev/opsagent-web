@@ -19,3 +19,28 @@ test("remaining screens: friendly not-found, chat box off with AI off, no empty 
   await expect(page.getByRole("heading", { name: "Finding review" })).toBeVisible();
   await expect(page.getByText("Pay securely with Stripe.")).toHaveCount(2); // once per card
 });
+
+test("a blocked connection explains itself in words and an owner can remove it", async ({ page, request }) => {
+  await signUp(page, request);
+  let status = "blocked";
+  const id = "11111111-1111-4111-8111-111111111111";
+  await page.route(`**/v1/orgs/*/connections/${id}`, (r) => {
+    if (r.request().method() === "DELETE") {
+      status = "disconnected";
+      return r.fulfill({ json: { status, next_step: "Delete the CloudFormation stack OpsAgent-Read-x in your account to revoke access." } });
+    }
+    return r.fulfill({
+      json: { id, display_name: "prod", provider: "aws", status, status_reason: status === "blocked" ? "account_already_connected" : "customer_disconnected" },
+    });
+  });
+
+  await page.goto(`/connections/${id}`);
+  await expect(page.getByText("already connected to another OpsAgent organisation")).toBeVisible();
+  await expect(page.getByText("account_already_connected")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Remove connection" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
+  await expect(page.getByText("Delete the CloudFormation stack OpsAgent-Read-x")).toBeVisible();
+  await expect(page.getByText("This connection is turned off.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove connection" })).toHaveCount(0);
+});
