@@ -51,7 +51,7 @@ export function Members({ org, owner, selfId }: Props) {
 
   return (
     <section className="stack">
-      <ErrorNote error={error} />
+      <ErrorNote error={error} showCode={false} />
       {data && (
         <table className="scroll">
           <thead>
@@ -96,7 +96,7 @@ export function Members({ org, owner, selfId }: Props) {
           <button type="submit" disabled={busy}>Send invite</button>
         </form>
       )}
-      {!target && <ErrorNote error={actionError} />}
+      {!target && <ErrorNote error={actionError} showCode={false} />}
       <dialog ref={dialog} aria-label="Remove member" onClose={() => setTarget(null)}>
         <div className="stack">
           <strong>Remove {target?.email}?</strong>
@@ -105,7 +105,7 @@ export function Members({ org, owner, selfId }: Props) {
             <button type="button" className="danger" disabled={busy} onClick={remove}>Remove</button>
             <button type="button" onClick={() => dialog.current?.close()}>Cancel</button>
           </div>
-          <ErrorNote error={actionError} />
+          <ErrorNote error={actionError} showCode={false} />
         </div>
       </dialog>
     </section>

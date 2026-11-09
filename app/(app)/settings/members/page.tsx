@@ -14,7 +14,7 @@ export default function MembersPage() {
     <main className="stack wide">
       <h1>Members</h1>
       {note && <p className="muted">{note}</p>}
-      <ErrorNote error={error} />
+      <ErrorNote error={error} showCode={false} />
       {me && <Members org={org.slug} owner={org.role === "owner"} selfId={me.id} />}
     </main>
   );

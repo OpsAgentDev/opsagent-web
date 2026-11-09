@@ -25,12 +25,66 @@ test("a signed-out person is sent through sign-in and back", async ({ page }) =>
   await expect(page.getByRole("link", { name: "Sign in to accept" })).toHaveAttribute("href", "/sign-in?return_to=%2Finvites%2Ftok123");
 });
 
+test("a signed-out visit is remembered and the app returns to the invite after sign-in", async ({ page }) => {
+  await mockSession(page, false);
+  await page.goto("/invites/tok12345");
+  await expect(page.getByText("only approved addresses can create a new account")).toBeVisible();
+  await page.unroute("**/v1/auth/me");
+  await mockSession(page); // now signed in
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [] }));
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/invites\/tok12345$/);
+});
+
+test("a full team gives the invitee no owner-only advice", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/invites/full/accept", (r) => r.fulfill(problem(402, "plan_limit", "limit")));
+  await page.goto("/invites/full");
+  await page.getByRole("button", { name: "Accept invite" }).click();
+  await expect(page.locator("main").getByRole("alert")).toHaveText(/Ask the owner/);
+  await expect(page.getByText("Open Billing")).toHaveCount(0);
+});
+
+test("the wrong account can sign out from the invite page and from the header, and lands on the home page", async ({ page }) => {
+  await mockSession(page);
+  let outs = 0;
+  await page.route("**/v1/auth/sign-out", (r) => { outs++; return r.fulfill({ status: 204 }); });
+  await page.route("**/v1/invites/mine/accept", (r) => r.fulfill(problem(403, "invite_email_mismatch", "different")));
+  await page.goto("/invites/mine");
+  await page.getByRole("button", { name: "Accept invite" }).click();
+  await expect(page.locator("main").getByRole("alert")).toContainText("different email address");
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL(/\/$/);
+  expect(outs).toBe(1);
+});
+
+test("the header has Sign out on a phone", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine] }));
+  await page.goto("/settings/members");
+  await page.getByRole("button", { name: "Menu" }).click();
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+});
+
+test("after joining, the app opens the joined organisation", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/invites/join1234/accept", (r) => r.fulfill({ json: { id: "e", name: "Team B", slug: "team-b", role: "member" } }));
+  const org = (name: string, slug: string) => ({ id: slug, name, slug, timezone: "UTC", role: "member", created_at: "2026-01-01T00:00:00Z" });
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [org("Mine", "mine"), org("Team B", "team-b")] }));
+  await page.goto("/invites/join1234");
+  await page.getByRole("button", { name: "Accept invite" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page.locator(".account-org")).toHaveText("Team B");
+});
+
 test("an expired or used invite says so in plain words", async ({ page }) => {
   await mockSession(page);
   await page.route("**/v1/invites/old/accept", (r) => r.fulfill(problem(410, "invite_invalid", "gone")));
   await page.goto("/invites/old");
   await page.getByRole("button", { name: "Accept invite" }).click();
-  await expect(page.getByRole("alert")).toContainText("expired, was already used, or isn't valid");
+  await expect(page.locator("main").getByRole("alert")).toContainText("expired, was already used, or isn't valid");
 });
 
 test("an owner invites from Settings > Members on a phone", async ({ page }) => {
@@ -61,10 +115,21 @@ test("an owner confirms before removing a member; a plan limit reads in words", 
   await expect(page.getByRole("button", { name: `Remove ${mine.email}` })).toHaveCount(0);
   await page.getByLabel("Email").fill("x@example.com");
   await page.getByRole("button", { name: "Send invite" }).click();
-  await expect(page.getByRole("alert")).toContainText("plan's member or integration limit");
+  await expect(page.locator("main").getByRole("alert")).toContainText("plan's member or integration limit");
   await page.getByRole("button", { name: `Remove ${other.email}` }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Remove", exact: true }).click();
   await expect(page.getByText(other.email)).toHaveCount(0);
+});
+
+test("a rate-limit refusal shows no raw code", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine] }));
+  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill(problem(429, "rate_limited", "Too many invites today. Try again tomorrow.")));
+  await page.goto("/settings/members");
+  await page.getByLabel("Email").fill("x@example.com");
+  await page.getByRole("button", { name: "Send invite" }).click();
+  await expect(page.locator("main").getByRole("alert")).toHaveText("Too many invites today. Try again tomorrow.");
 });
 
 test("a non-owner sees the list and no controls", async ({ page }) => {

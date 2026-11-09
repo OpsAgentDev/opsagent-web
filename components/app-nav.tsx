@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { SignOut } from "@/components/sign-out";
 import { Logo } from "@/components/brand/Logo";
 import { BellIcon, ChatSquareIcon, CostIcon, FlagIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
 
@@ -114,6 +115,7 @@ export function AppNav({ org, email }: { org?: string; email: string }) {
               <span className="account-email">{email}</span>
             </span>
           </p>
+          <SignOut className="sign-out" />
         </nav>
       </div>
     </header>
