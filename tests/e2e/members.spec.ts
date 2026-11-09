@@ -142,3 +142,12 @@ test("a non-owner sees the list and no controls", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Send invite" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
 });
+
+test("sign-out stays on the page and says so when the session was not ended", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.route("**/v1/auth/sign-out", (r) => r.fulfill({ status: 500, json: { title: "x", status: 500 } }));
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Sign out" }).first().click();
+  await expect(page.getByText("Sign-out failed. Try again.").first()).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard$/);
+});
