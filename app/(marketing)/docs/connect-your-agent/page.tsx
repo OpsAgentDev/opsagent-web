@@ -1,7 +1,10 @@
 import { CopyButton } from "@/components/marketing/CopyButton";
 import { CLAUDE_COMMAND, cursorDeeplink, MCP_URL } from "@/lib/agents";
 
-export const metadata = { title: "Connect your agent · OpsAgent" };
+export const metadata = {
+  title: "Connect your agent · OpsAgent",
+  description: "Connect Claude, Cursor or another MCP client to OpsAgent. You approve it in your browser; the agent gets read-only access to one organisation.",
+};
 
 export default function ConnectYourAgent() {
   return (

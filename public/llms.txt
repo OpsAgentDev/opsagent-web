@@ -8,6 +8,8 @@
 - [What it checks](https://opsagent.dev/features/checks): Ten deterministic, read-only checks; every finding cites its evidence.
 - [Alerts](https://opsagent.dev/features/alerts): Urgent exposures in Slack within minutes.
 - [Connect your agent](https://opsagent.dev/features/agents): Claude, Cursor or any MCP client, read-only.
+- [Dashboard AI and human review](https://opsagent.dev/features/ai-and-review): AI explains findings once an owner turns it on; a person can review a finding or an account.
+- [Connect docs](https://opsagent.dev/docs/connect-your-agent): How to connect an MCP client, read-only.
 - [Pricing](https://opsagent.dev/pricing): Flat per cloud account, Starter $99, Team $299, Scale $599 a month.
 - [Security](https://opsagent.dev/security): Read-only by design.
 - [Privacy](https://opsagent.dev/privacy)
