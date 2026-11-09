@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accountText, connectionSentence, scheduleText } from "@/lib/connection-status";
+import { accountText, connectionSentence, reasonText, scheduleText } from "@/lib/connection-status";
 import { deliveryStatusText } from "@/lib/delivery";
 import { findingsSummary } from "@/lib/findings";
 import { showPasskeyPrompt } from "@/lib/passkey-scope";
@@ -82,5 +82,22 @@ describe("showPasskeyPrompt", () => {
     for (const p of ["/findings", "/onboarding/connect-aws", "/connections/1", "/settings/billing", "/deliveries"]) {
       expect(showPasskeyPrompt({ ...base, checklistOpen: false, pathname: p })).toBe(false);
     }
+  });
+});
+
+describe("connection reasons", () => {
+  it("turns brain's codes into sentences", () => {
+    expect(connectionSentence("blocked", "account_already_connected")).toMatch(/already connected to another/);
+    expect(connectionSentence("blocked")).toMatch(/couldn't use this role/);
+    expect(connectionSentence("revoked", "access_denied")).toBe("The role no longer works. Reconnect to resume checks. AWS refused access to the role.");
+    expect(connectionSentence("disconnected", "customer_disconnected")).toBe("This connection is turned off.");
+    expect(reasonText("verify_error:timeout")).toMatch(/couldn't finish/);
+  });
+
+  it("hides unknown codes and keeps real sentences", () => {
+    expect(reasonText("some_new_code")).toBe("");
+    expect(reasonText("constructor")).toBe("");
+    expect(reasonText("Missing ec2:Describe")).toBe("Missing ec2:Describe");
+    expect(reasonText(null)).toBe("");
   });
 });

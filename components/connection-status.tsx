@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Status } from "@/components/badges";
 import type { Connection } from "@/lib/api/client";
-import { accountText, connectionSentence, scheduleText } from "@/lib/connection-status";
+import { accountText, connectionSentence, reasonText, scheduleText } from "@/lib/connection-status";
 
 /** Name, status chip and one sentence about what the status means. */
 export function ConnectionHeader({ c }: { c: Connection }) {
@@ -9,7 +9,7 @@ export function ConnectionHeader({ c }: { c: Connection }) {
     <header className="conn-title">
       <h1>{c.display_name ?? c.id}</h1>
       <span data-testid="connection-status"><Status value={c.status} /></span>
-      <p className="conn-sentence" role="status">{connectionSentence(c.status, c.status_reason) ?? c.status_reason}</p>
+      <p className="conn-sentence" role="status">{connectionSentence(c.status, c.status_reason) ?? reasonText(c.status_reason)}</p>
     </header>
   );
 }
