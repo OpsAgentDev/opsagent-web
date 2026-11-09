@@ -36,9 +36,11 @@
 .app .app-bar .account-text { display: grid; min-width: 0; }
 .app .app-bar .account-org { color: var(--ink); font-weight: 600; }
 .app .app-bar .account-email { color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app .app-bar .menu-backdrop { display: none; }
 .app .app-bar .menu-button { display: none; margin-left: auto; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; }
 @media (max-width: 860px) {
   .app .app-bar .menu-button { display: block; }
+  .app .app-bar .menu-backdrop { display: block; position: absolute; top: 100%; left: 0; right: 0; height: calc(100dvh - 100%); background: rgba(3, 6, 15, 0.72); }
   .app .app-bar nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 16px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 15px; }
   .app .app-bar nav.open { display: flex; }
   .app .app-bar nav a { padding: 11px 12px; }

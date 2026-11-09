@@ -33,4 +33,9 @@ test("dashboard nav: four links, a Settings dropdown, current page marked, phone
   await page.setViewportSize({ width: 390, height: 800 });
   await page.getByRole("button", { name: "Menu" }).click();
   for (const [name] of [...TOP, ...SETTINGS]) await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
+
+  // A tap below the menu closes it and stays on the page.
+  await page.mouse.click(195, 790);
+  await expect(page.getByRole("button", { name: "Menu", exact: true })).toHaveAttribute("aria-expanded", "false");
+  await expect(page).toHaveURL(/\/settings\/billing$/);
 });
