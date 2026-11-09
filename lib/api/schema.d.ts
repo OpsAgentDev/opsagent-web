@@ -1153,6 +1153,8 @@ export interface components {
             url: string;
         };
         BillingOut: {
+            /** @description Cancelled: runs to the period or trial end, then stops. */
+            cancel_at_period_end: boolean;
             /** Format: date-time */
             current_period_end?: string | null;
             /** @description Billing state gates the organisation (`BILLING_ENFORCED`). */

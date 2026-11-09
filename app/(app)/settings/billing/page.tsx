@@ -50,6 +50,8 @@ function BillingPage() {
   const noPlan = status === "none" || status === "trial_ended" || status === "canceled";
   const days = data?.trial_ends_at ? Math.max(0, Math.ceil((Date.parse(data.trial_ends_at) - Date.now()) / 864e5)) : 0;
   const tier = data?.tier ? TIERS[data.tier] : undefined;
+  const cancelled = !!data?.cancel_at_period_end;
+  const lastDay = status === "trialing" ? data?.trial_ends_at : data?.current_period_end;
   const n = data?.quantity ?? 0;
 
   return (
@@ -61,7 +63,13 @@ function BillingPage() {
       {waiting && <p className="muted">Confirming your plan…</p>}
       {data && (
         <section className="stack">
-          {status === "trialing" && <p>Trial: {days} days left</p>}
+          {status === "trialing" && !cancelled && <p>Trial: {days} days left</p>}
+          {cancelled && lastDay && (
+            <p>
+              Cancelled. Your {status === "trialing" ? "trial" : "plan"} ends {new Date(lastDay).toLocaleDateString()} and you
+              won&apos;t be charged again.
+            </p>
+          )}
           {tier && n > 0 && (
             <p>
               {n} cloud {n === 1 ? "account" : "accounts"} billed on {tier}
@@ -71,7 +79,7 @@ function BillingPage() {
             <p className="muted">{/* The trial gets 1,000 whatever the tier. */}
               {(status === "trialing" ? 1000 : data.limits.ai_credits).toLocaleString("en-US")} AI credits per cloud account each period</p>
           )}
-          {data.current_period_end && subscribed && status !== "trialing" && (
+          {data.current_period_end && subscribed && status !== "trialing" && !cancelled && (
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
           {!owner && <p className="muted">{noPlan ? "Only an owner can start a plan." : "Only an owner can change the plan."}</p>}
