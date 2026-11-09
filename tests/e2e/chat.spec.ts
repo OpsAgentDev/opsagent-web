@@ -44,7 +44,7 @@ test("chat shows ask-an-owner when AI is off", async ({ page, request }) => {
   sql(`UPDATE members SET role = 'member' WHERE organisation_id = ${NEWEST_ORG}`);
   await page.goto("/chat");
   await expect(page.getByText("Ask an owner to turn on Dashboard AI")).toBeVisible();
-  await page.getByLabel("Message").fill("hello");
+  await expect(page.getByLabel("Message")).toBeDisabled();
   await expect(page.getByRole("button", { name: "Send" })).toBeDisabled();
 });
 

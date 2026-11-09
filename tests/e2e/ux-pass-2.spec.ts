@@ -5,7 +5,7 @@ test("remaining screens: friendly not-found, chat box off with AI off, no empty 
   await signUp(page, request);
 
   await page.goto("/connections/00000000-0000-0000-0000-000000000000");
-  await expect(page.getByRole("alert")).toContainText("We couldn't find that");
+  await expect(page.locator("main").getByRole("alert")).toContainText("We couldn't find that");
   await expect(page.getByRole("link", { name: "Back to the dashboard" })).toBeVisible();
 
   await page.goto("/chat");
