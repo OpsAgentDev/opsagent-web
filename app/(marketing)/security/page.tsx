@@ -40,7 +40,7 @@ export default function Security() {
               Log events, only from log groups you tag <code>opsagent:logs=allow</code>.
             </li>
             <li>
-              Terraform state files, only if you turn on drift checks and name the bucket and prefix. State files can
+              Terraform state files, only when the drift check ships and you turn it on and name the bucket and prefix. State files can
               contain secrets, so name only the prefix you want checked.
             </li>
           </ul>

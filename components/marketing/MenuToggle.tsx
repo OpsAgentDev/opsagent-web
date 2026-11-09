@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { joinCta } from "@/lib/signups";
 
 // Holds the nav links too: aria-current needs the pathname, and the panel needs the open state.
 type NavLink = { href: string; label: string };
@@ -79,7 +80,7 @@ export function MenuToggle({ features, links }: { features: NavLink[]; links: Na
         </div>
         {links.map(link)}
         <Link href="/sign-in" className="sign-in" onClick={close}>Sign in</Link>
-        <Link href="/#waitlist" className="join" onClick={close}>Join the waitlist</Link>
+        <Link href={joinCta().href} className="join" onClick={close}>{joinCta().label}</Link>
       </nav>
     </div>
   );

@@ -13,7 +13,7 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Idle resources and cost anomalies",
     Icon: I.CostIcon,
-    looks: "Unattached volumes, unused addresses, idle load balancers, machines under 5% CPU for a week, stopped machines still paying for storage, old snapshots, and days when spend jumps above its 7 and 30-day baselines.",
+    looks: "Unattached volumes, unused addresses, idle load balancers, running machines under 5% CPU for a week, and days when spend jumps above its 7 and 30-day baselines.",
     evidence: "Billing data, the resource and its usage metrics, with dollar amounts.",
     runs: NIGHTLY,
   },

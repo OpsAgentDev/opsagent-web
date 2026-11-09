@@ -530,3 +530,11 @@ body:has(.mkt) { background: var(--bg); }
   .mkt .reviewer { grid-template-columns: minmax(0, 1fr); padding: 20px 18px; }
   .mkt .reviewer-photo { width: 72px; height: 72px; }
 }
+.mkt a.trial-cta, .mkt .page a.trial-cta {
+  display: inline-block; margin-top: 8px; padding: 13px 20px; font-size: 16px; font-weight: 600; text-decoration: none;
+  color: var(--accent-ink); background: var(--accent); border-radius: 8px;
+}
+.mkt a.trial-cta:hover, .mkt .page a.trial-cta:hover { color: var(--accent-ink); background: var(--accent-hover); }
+.mkt .trial-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mkt .hero .trial-cta { margin-top: 36px; }
+.mkt .closing .trial-cta { margin-top: 32px; }

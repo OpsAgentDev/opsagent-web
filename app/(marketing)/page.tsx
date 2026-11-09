@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { WaitlistForm } from "@/components/marketing/WaitlistForm";
+import { SignupCta } from "@/components/marketing/SignupCta";
 import { AlertDemo } from "@/components/marketing/AlertDemo";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { PhoneMockup } from "@/components/marketing/PhoneMockup";
@@ -9,6 +9,7 @@ import { Reveal } from "@/components/marketing/Reveal";
 import { Checks, HowItWorks, Never } from "@/components/marketing/LandingSections";
 import * as I from "@/components/marketing/landing-icons";
 import { MCP_URL } from "@/lib/agents";
+import { closingLine } from "@/lib/signups";
 import "./landing.css";
 
 const DAY_NIGHT = [
@@ -36,16 +37,16 @@ export default function Home() {
           <h1>Your ops teammate that never sleeps.</h1>
           <p className="lead">
             OpsAgent watches your cloud day and night, read-only. Urgent problems reach you the moment they matter.
-            Everything else waits for a calm morning briefing. It never changes anything.
+            Everything else waits for a calm morning briefing. It never changes anything. Today it connects to AWS.
           </p>
           <p className="hero-note">
             Checks for urgent exposures every 15 minutes, day and night, and alerts you right away. Everything else waits for the morning briefing.
           </p>
-          <WaitlistForm source="landing-hero" />
+          <SignupCta source="landing-hero" />
           <ul className="trust">
             <li style={{ "--i": 0 } as React.CSSProperties}><I.ShieldIcon size={18} />Read-only</li>
             <li style={{ "--i": 1 } as React.CSSProperties}><I.ClockIcon size={18} />Every 15 minutes</li>
-            <li style={{ "--i": 2 } as React.CSSProperties}><I.CloudIcon size={18} />No data leaves your account</li>
+            <li style={{ "--i": 2 } as React.CSSProperties}><I.CloudIcon size={18} />Never reads your stored data</li>
           </ul>
           <p className="hero-who">
             Built for the founding engineer who owns the cloud bill, and for the developer who inherited the
@@ -112,9 +113,9 @@ export default function Home() {
         <div className="glow" aria-hidden="true" />
         <h2 id="closing-h">Get your ops teammate.</h2>
         <p className="section-lead">
-          The alpha opens to a few teams at a time. Join the waitlist and we will email you when your spot is ready.
+          {closingLine()}
         </p>
-        <WaitlistForm source="landing-footer" />
+        <SignupCta source="landing-footer" />
       </section>
     </main>
   );
