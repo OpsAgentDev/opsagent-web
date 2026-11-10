@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FooterBadges } from "@/components/marketing/FooterBadges";
 import { NAV } from "@/components/marketing/SiteHeader";
 
 export function SiteFooter() {
@@ -10,6 +11,7 @@ export function SiteFooter() {
           <Link key={l.href} href={l.href}>{l.label}</Link>
         ))}
       </nav>
+      <FooterBadges />
     </footer>
   );
 }
