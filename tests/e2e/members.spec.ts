@@ -94,7 +94,8 @@ test("an owner invites from Settings > Members on a phone", async ({ page }) => 
   await mockSession(page);
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
   await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine, other] }));
-  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill({ status: 201, json: { id: "i", email: "new@example.com", role: "member", expires_at: "2026-12-01T00:00:00Z" } }));
+  await page.route("**/v1/orgs/acme/invites", (r) =>
+    r.fulfill(r.request().method() === "POST" ? { status: 201, json: { id: "i", email: "new@example.com", role: "member", expires_at: "2026-12-01T00:00:00Z" } } : { json: [] }));
   await page.goto("/settings/members");
   await expect(page.getByRole("heading", { name: "Members" })).toBeVisible();
   await page.getByLabel("Email").fill("new@example.com");
@@ -139,7 +140,7 @@ test("a non-owner sees the list and no controls", async ({ page }) => {
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "member", created_at: "2026-01-01T00:00:00Z" }] }));
   await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine, other] }));
   await page.goto("/settings/members");
-  await expect(page.getByText("Only an owner can invite or remove people.")).toBeVisible();
+  await expect(page.getByText("Only an owner can invite people, change roles or remove anyone.")).toBeVisible();
   await expect(page.getByText(other.email)).toBeVisible();
   await expect(page.getByRole("button", { name: "Send invite" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);

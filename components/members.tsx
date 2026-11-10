@@ -16,6 +16,7 @@ export function Members({ org, owner, selfId }: Props) {
   const cancelDialog = useRef<HTMLDialogElement>(null);
   const [target, setTarget] = useState<Member | null>(null);
   const [cancelling, setCancelling] = useState<{ id: string; email: string } | null>(null);
+  const [sentTo, setSentTo] = useState<{ email: string; role: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<Error | null>(null);
 
@@ -38,6 +39,7 @@ export function Members({ org, owner, selfId }: Props) {
     return act(async () => {
       const body = { email: String(f.get("email") ?? "").trim(), role: String(f.get("role") ?? "member") };
       await unwrap(api.POST("/orgs/{org}/invites", { ...path, body }));
+      setSentTo(body);
       form.reset();
       invites.reload();
     });
@@ -104,6 +106,7 @@ export function Members({ org, owner, selfId }: Props) {
           </tbody>
         </table>
       )}
+      {sentTo && <p role="status">Invite sent to {sentTo.email} as {sentTo.role}.</p>}
       {owner && invites.data && invites.data.length > 0 && (
         <>
           <h2>Pending invites</h2>
@@ -155,7 +158,7 @@ export function Members({ org, owner, selfId }: Props) {
             <button type="button" className="danger" disabled={busy} onClick={cancelInvite}>Cancel invite</button>
             <button type="button" onClick={() => cancelDialog.current?.close()}>Keep it</button>
           </div>
-          <ErrorNote error={actionError} showCode={false} />
+          {cancelling && <ErrorNote error={actionError} showCode={false} />}
         </div>
       </dialog>
       <dialog ref={dialog} aria-label="Remove member" onClose={() => setTarget(null)}>
@@ -166,7 +169,7 @@ export function Members({ org, owner, selfId }: Props) {
             <button type="button" className="danger" disabled={busy} onClick={remove}>Remove</button>
             <button type="button" onClick={() => dialog.current?.close()}>Cancel</button>
           </div>
-          <ErrorNote error={actionError} showCode={false} />
+          {target && <ErrorNote error={actionError} showCode={false} />}
         </div>
       </dialog>
     </section>
