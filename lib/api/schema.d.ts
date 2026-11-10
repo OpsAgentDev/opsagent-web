@@ -1074,6 +1074,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/waitlist/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["waitlist_verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/webhooks/stripe": {
         parameters: {
             query?: never;
@@ -1941,8 +1957,12 @@ export interface components {
             email: string;
             /** @description Where the form sat, at most 64 characters (`landing-hero`, `landing-footer`). */
             source?: string | null;
-            /** @description The Cloudflare Turnstile token; required when the deployment checks it. */
+            /** @description Ignored: the waitlist no longer uses Turnstile. Accepted so older pages keep working. */
             turnstile_token?: string | null;
+        };
+        WaitlistVerifyRequest: {
+            /** @description The token from the confirmation email's link. */
+            token: string;
         };
     };
     responses: never;
@@ -5644,21 +5664,12 @@ export interface operations {
             };
         };
         responses: {
-            /** @description On the waitlist */
+            /** @description Listed, unverified until the emailed link is used */
             202: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            /** @description Security check failed (`challenge_failed`) */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
             };
             /** @description Invalid email or source */
             422: {
@@ -5674,8 +5685,30 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Security check unavailable (`challenge_unavailable`) */
-            503: {
+        };
+    };
+    waitlist_verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WaitlistVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description Email confirmed */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description `waitlist_link_invalid`: unknown, replaced or already used */
+            410: {
                 headers: {
                     [name: string]: unknown;
                 };

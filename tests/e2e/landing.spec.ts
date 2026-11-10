@@ -157,11 +157,11 @@ test("joining the waitlist shows success and sends one mail", async ({ page, req
   await hero(page).getByLabel("Email address").fill(email);
   const button = hero(page).getByRole("button", { name: "Join the waitlist" });
   await button.click();
-  await expect(page.locator('[aria-live="polite"]').filter({ hasText: "You're on the list. We'll email you when your spot opens." })).toBeVisible();
+  await expect(page.locator('[aria-live="polite"]').filter({ hasText: "Check your email to confirm your spot." })).toBeVisible();
   await expect(async () => {
     const res = await request.get(`${MAILPIT}/api/v1/search`, { params: { query: `to:"${email}"` } });
     const { messages } = (await res.json()) as { messages: { Subject: string }[] };
-    expect(messages.map((m) => m.Subject)).toEqual(["You're on the OpsAgent waitlist"]);
+    expect(messages.map((m) => m.Subject)).toEqual(["Confirm your email for the OpsAgent waitlist"]);
   }).toPass({ timeout: 30_000 });
 });
 
@@ -177,7 +177,7 @@ test("button stays focusable and aria-disabled while pending, success takes focu
   await button.click();
   await expect(button).toHaveAttribute("aria-disabled", "true");
   await expect(button).not.toHaveAttribute("disabled", /.*/);
-  const ok = hero(page).getByText("You're on the list.");
+  const ok = hero(page).getByText("Check your email to confirm your spot.");
   await expect(ok).toBeVisible();
   await expect(ok).toBeFocused();
 });
@@ -190,7 +190,7 @@ test("invalid email shows a validation message", async ({ page }) => {
   await hero(page).getByRole("button", { name: "Join the waitlist" }).click();
   await expect(hero(page).getByRole("alert")).toContainText("valid email");
   await expect(hero(page).getByLabel("Email address")).toHaveAttribute("aria-invalid", "true");
-  await expect(hero(page).getByLabel("Email address")).toHaveAccessibleDescription(/valid email.*Alpha opens/);
+  await expect(hero(page).getByLabel("Email address")).toHaveAccessibleDescription(/valid email.*one email to confirm/);
   expect(calls).toEqual([]);
 });
 
@@ -208,4 +208,26 @@ test("server error shows the fallback", async ({ page }) => {
   await hero(page).getByLabel("Email address").fill("a@example.com");
   await hero(page).getByRole("button", { name: "Join the waitlist" }).click();
   await expect(page.getByText("Something went wrong. Please try again later.")).toBeVisible();
+});
+
+test("the emailed link confirms on a click, not on load", async ({ page }) => {
+  let body: unknown = null;
+  await page.route("**/v1/waitlist/verify", (r) => {
+    body = r.request().postDataJSON();
+    return r.fulfill({ status: 204 });
+  });
+  await page.goto("/waitlist/verify#tok-123");
+  await expect(page).toHaveURL(/\/waitlist\/verify$/);
+  expect(body).toBeNull();
+  await page.getByRole("button", { name: "Confirm my email" }).click();
+  await expect(page.getByRole("status")).toHaveText("You're on the list. We'll email you once when sign-ups open.");
+  expect(body).toEqual({ token: "tok-123" });
+});
+
+test("a used confirmation link says so in plain words", async ({ page }) => {
+  await page.route("**/v1/waitlist/verify", (r) =>
+    r.fulfill({ status: 410, json: { type: "about:blank", title: "Gone", status: 410, code: "waitlist_link_invalid" } }));
+  await page.goto("/waitlist/verify#old");
+  await page.getByRole("button", { name: "Confirm my email" }).click();
+  await expect(page.locator("main").getByText("This link was already used or isn't valid.")).toBeVisible();
 });
