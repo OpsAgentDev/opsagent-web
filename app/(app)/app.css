@@ -36,6 +36,7 @@
 .app .app-bar .sign-out { margin-left: 10px; }
 .app .app-bar .account-text { display: grid; min-width: 0; }
 .app .app-bar .account-org { color: var(--ink); font-weight: 600; }
+.app .app-bar select.account-org { background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; font: inherit; max-width: 14rem; }
 .app .app-bar .account-email { color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .app .app-bar .menu-backdrop { display: none; }
 .app .app-bar .menu-button { display: none; margin-left: auto; font-size: 14px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; }

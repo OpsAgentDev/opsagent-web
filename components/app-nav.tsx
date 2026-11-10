@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SignOut } from "@/components/sign-out";
+import { preferOrg } from "@/lib/members";
 import { Logo } from "@/components/brand/Logo";
 import { BellIcon, ChatSquareIcon, CostIcon, FlagIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
 
@@ -30,7 +31,15 @@ export const SETTINGS_LINKS: NavLink[] = [
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 /** The dashboard's top bar. Same open/close behaviour as the marketing header's MenuToggle. */
-export function AppNav({ org, email }: { org?: string; email: string }) {
+type OrgChoice = { slug: string; name: string };
+
+/** Choosing another organisation makes it the one the app opens, then reloads into it. */
+function switchOrg(slug: string) {
+  preferOrg(slug);
+  window.location.assign("/dashboard");
+}
+
+export function AppNav({ org, email, orgs = [], current }: { org?: string; email: string; orgs?: OrgChoice[]; current?: string }) {
   const [open, setOpen] = useState(false);
   const [more, setMore] = useState(false);
   const pathname = usePathname();
@@ -111,7 +120,13 @@ export function AppNav({ org, email }: { org?: string; email: string }) {
           <p className="account">
             <span className="avatar" aria-hidden="true">{(org ?? email).charAt(0).toUpperCase()}</span>
             <span className="account-text">
-              {org && <span className="account-org">{org}</span>}
+              {orgs.length > 1 ? (
+                <select className="account-org" aria-label="Organisation" value={current} onChange={(e) => switchOrg(e.target.value)}>
+                  {orgs.map((o) => <option key={o.slug} value={o.slug}>{o.name}</option>)}
+                </select>
+              ) : (
+                org && <span className="account-org">{org}</span>
+              )}
               <span className="account-email">{email}</span>
             </span>
           </p>

@@ -64,6 +64,7 @@ test("the header has Sign out on a phone", async ({ page }) => {
   await mockSession(page);
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
   await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine] }));
+  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill({ json: [] }));
   await page.goto("/settings/members");
   await page.getByRole("button", { name: "Menu" }).click();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
@@ -77,7 +78,7 @@ test("after joining, the app opens the joined organisation", async ({ page }) =>
   await page.goto("/invites/join1234");
   await page.getByRole("button", { name: "Accept invite" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.locator(".account-org")).toHaveText("Team B");
+  await expect(page.getByLabel("Organisation")).toHaveValue("team-b");
 });
 
 test("an expired or used invite says so in plain words", async ({ page }) => {
@@ -151,4 +152,57 @@ test("sign-out stays on the page and says so when the session was not ended", as
   await page.getByRole("button", { name: "Sign out" }).first().click();
   await expect(page.getByText("Sign-out failed. Try again.").first()).toBeVisible();
   await expect(page).toHaveURL(/\/dashboard$/);
+});
+
+const acme = { id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" };
+
+test("an owner sees pending invites and can cancel one", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [acme] }));
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine, other] }));
+  let invites = [{ id: "i1", email: "new@example.com", role: "member", expires_at: "2026-12-01T00:00:00Z", created_at: "2026-11-10T00:00:00Z" }];
+  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill({ json: invites }));
+  await page.route("**/v1/orgs/acme/invites/i1", (r) => { invites = []; return r.fulfill({ status: 204 }); });
+  await page.goto("/settings/members");
+  await expect(page.getByRole("heading", { name: "Pending invites" })).toBeVisible();
+  await page.getByRole("button", { name: "Cancel invite to new@example.com" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Cancel invite" }).click();
+  await expect(page.getByRole("heading", { name: "Pending invites" })).toHaveCount(0);
+});
+
+test("demoting the last owner is refused in plain words and the role stays", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [acme] }));
+  const owner2 = { ...other, role: "owner" };
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine, owner2] }));
+  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill({ json: [] }));
+  await page.route("**/v1/orgs/acme/members/*", (r) =>
+    r.fulfill(problem(409, "last_owner", "An organisation must keep at least one owner.")));
+  await page.goto("/settings/members");
+  await page.getByLabel("Role for pat@example.com").selectOption("member");
+  await expect(page.locator("main").getByText("An organisation must keep at least one owner.")).toBeVisible();
+  await expect(page.getByLabel("Role for pat@example.com")).toHaveValue("owner");
+});
+
+test("a member sees no invites and no role controls", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ ...acme, role: "member" }] }));
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [{ ...mine, role: "member" }, other] }));
+  let asked = false;
+  await page.route("**/v1/orgs/acme/invites", (r) => { asked = true; return r.fulfill({ json: [] }); });
+  await page.goto("/settings/members");
+  await expect(page.getByText("pat@example.com")).toBeVisible();
+  await expect(page.getByLabel("Role for pat@example.com")).toHaveCount(0);
+  expect(asked).toBe(false);
+});
+
+test("someone in two organisations can switch between them", async ({ page }) => {
+  await mockSession(page);
+  const org = (name: string, slug: string) => ({ ...acme, id: slug, name, slug });
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [org("Acme", "acme"), org("Team B", "team-b")] }));
+  await page.goto("/dashboard");
+  await expect(page.getByLabel("Organisation")).toHaveValue("acme");
+  await page.getByLabel("Organisation").selectOption("team-b");
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await expect(page.getByLabel("Organisation")).toHaveValue("team-b");
 });
