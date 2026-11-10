@@ -3,7 +3,7 @@ import { ApiError } from "@/lib/api/client";
 
 /** Brain lists members to everyone but only owners may invite or remove; say so. */
 export function membersScopeNote(role?: string | null): string | null {
-  return role === "owner" ? null : "Only an owner can invite or remove people.";
+  return role === "owner" ? null : "Only an owner can invite people, change roles or remove anyone.";
 }
 
 /** Sign-in address that returns to the invite page. Brain's return_to keeps only the OAuth consent path, so the page also remembers the token (see rememberInvite). */

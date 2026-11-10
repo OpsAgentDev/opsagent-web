@@ -38,7 +38,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
   if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
-  // shortcut: no switcher; open the organisation last joined through an invite, else the first. Add a switcher when a user belongs to several.
+  // The preferred organisation (set by the switcher or an accepted invite), else the oldest membership.
   const org = data.orgs.find((o) => o.slug === preferredOrg()) ?? data.orgs[0];
   if (!org) return <div className="app"><Welcome email={data.me.email} onCreated={reload} /></div>;
   // The card shows on the dashboard (once the checklist has said it is closed) and on Settings → Security only.
@@ -46,7 +46,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="app">
-      <AppNav org={org.name} email={data.me.email} />
+      <AppNav org={org.name} email={data.me.email} orgs={data.orgs} current={org.slug} />
       <BillingBanner org={org.slug} />
       {showPrompt && <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
