@@ -26,6 +26,7 @@ export const SETTINGS_LINKS: NavLink[] = [
   { href: "/settings/billing", label: "Billing", icon: <CostIcon size={18} /> },
   { href: "/settings/ai", label: "AI", icon: <ChatSquareIcon size={18} /> },
   { href: "/settings/human-review", label: "Human review", icon: <FlagIcon size={18} /> },
+  { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={18} /> },
 ];
 
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);

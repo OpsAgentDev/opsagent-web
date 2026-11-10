@@ -86,7 +86,7 @@ export interface paths {
         get: operations["auth_me"];
         put?: never;
         post?: never;
-        delete?: never;
+        delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1336,6 +1336,10 @@ export interface components {
             /** @description Send as `X-CSRF-Token` on every mutating request. */
             token: string;
         };
+        DeleteAccountRequest: {
+            /** @description The account's email address, typed to confirm. */
+            confirm: string;
+        };
         Delivery: {
             /** Format: int32 */
             attempts: number;
@@ -2122,6 +2126,53 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_delete_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAccountRequest"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `last_owner`: the only owner of an organisation */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `confirm_mismatch`: the email was not typed exactly */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
