@@ -19,7 +19,8 @@ export function BillingBanner({ org }: { org: string }) {
       )}
       {data.enforced && data.status === "none" && (
         <p role="status" className="banner">
-          Start your free trial to turn on checks. <Link href="/settings/billing">Start free trial</Link>
+          {data.trial_available === false ? "Start a plan to turn on checks. " : "Start your free trial to turn on checks. "}
+          <Link href="/settings/billing">{data.trial_available === false ? "Start plan" : "Start free trial"}</Link>
         </p>
       )}
       {data.enforced && READ_ONLY.has(data.status) && (

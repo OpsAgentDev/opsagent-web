@@ -91,3 +91,14 @@ test("a cancelled trial says when it ends and that nothing more is charged", asy
   await expect(page.getByText(/Cancelled\. Your trial ends .* won't be charged again\./)).toBeVisible();
   await expect(page.getByText(/days left/)).toHaveCount(0);
 });
+
+test("someone whose trial is used is offered a plan, not another free trial", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.route("**/v1/orgs/*/billing", (r) =>
+    r.fulfill({ json: { status: "none", enforced: true, over_limit: false, quantity: 0, trial_available: false } }));
+  await page.goto("/settings/billing");
+  await expect(page.getByText("Your free trial has been used.")).toBeVisible();
+  await expect(page.locator("main").getByRole("button", { name: "Start plan" })).toBeVisible();
+  await expect(page.locator("main").getByRole("button", { name: "Start free trial" })).toHaveCount(0);
+  await expect(page.getByText("Start a plan to turn on checks.")).toBeVisible();
+});

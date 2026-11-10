@@ -1171,6 +1171,11 @@ export interface components {
             status: string;
             /** @description `starter`, `team` or `scale`. */
             tier?: string | null;
+            /**
+             * @description A first checkout on `team` would start the 14-day trial; false once this
+             *     organisation's creator really started one on another (deleted ones included).
+             */
+            trial_available: boolean;
             /** Format: date-time */
             trial_ends_at?: string | null;
         };
@@ -1210,7 +1215,10 @@ export interface components {
             title: string;
         };
         CheckoutIn: {
-            /** @description `starter`, `team` (default) or `scale`. Only a first subscription on `team` gets the trial. */
+            /**
+             * @description `starter`, `team` (default) or `scale`. Only a first subscription on `team` gets the
+             *     trial, and only while `trial_available`.
+             */
             tier?: string | null;
         };
         ConfirmBody: {

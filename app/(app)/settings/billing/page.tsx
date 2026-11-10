@@ -83,13 +83,13 @@ function BillingPage() {
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
           {!owner && <p className="muted">{noPlan ? "Only an owner can start a plan." : "Only an owner can change the plan."}</p>}
-          {owner && noPlan && <TrialPanel />}
+          {owner && noPlan && <TrialPanel available={data.trial_available !== false} />}
           {owner && subscribed && (
             <button type="button" className="fit" disabled={busy} onClick={portal}>Manage billing</button>
           )}
           {owner && !subscribed && (
             <button type="button" className="primary fit" disabled={busy} onClick={checkout}>
-              {status === "none" ? "Start free trial" : "Start plan"}
+              {status === "none" && data.trial_available !== false ? "Start free trial" : "Start plan"}
             </button>
           )}
         </section>

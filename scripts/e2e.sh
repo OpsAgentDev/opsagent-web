@@ -12,8 +12,13 @@ export PG_PORT REDIS_PORT
 compose() { docker compose -f "$BRAIN_DIR/docker-compose.yml" "$@"; }
 compose up -d --wait postgres redis mailpit
 # A fresh database per run: the fake account can be connected by only one live connection.
-compose exec -T postgres psql -qU loco -d postgres \
-  -c "DROP DATABASE IF EXISTS opsagent_brain_e2e WITH (FORCE)" -c "CREATE DATABASE opsagent_brain_e2e"
+# On a first start Postgres reports healthy during its init run, then restarts once; retry over that gap.
+for attempt in $(seq 1 30); do
+  compose exec -T postgres psql -qU loco -d postgres \
+    -c "DROP DATABASE IF EXISTS opsagent_brain_e2e WITH (FORCE)" -c "CREATE DATABASE opsagent_brain_e2e" && break
+  [ "$attempt" = 30 ] && { echo "postgres never accepted connections" >&2; exit 1; }
+  sleep 1
+done
 
 pids=()
 cleanup() { for p in "${pids[@]}"; do kill "$p" 2>/dev/null || true; done; }

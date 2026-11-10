@@ -5,7 +5,7 @@ export type Step = { id: StepId; state: StepState; optional: boolean };
 
 /** `null` means the read failed or has not loaded: that step stays open. */
 export type SetupInputs = {
-  billing: { enforced: boolean; status: string } | null;
+  billing: { enforced: boolean; status: string; trial_available?: boolean } | null;
   connections: number | null;
   scanned: boolean | null;
   delivery: boolean | null;

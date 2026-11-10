@@ -60,6 +60,8 @@ function Mark({ state }: { state: string }) {
   );
 }
 
+const PLAN_COPY = { title: "Start a plan", why: "Connecting a cloud account needs a plan." };
+
 /** The dashboard's setup checklist; renders nothing until every read settles and again once required steps are done. */
 export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded, skipped, onSkip }: {
   org: string;
@@ -82,10 +84,12 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded, skipped,
   if (!steps || !open) return null;
 
   const owner = isOwner(role);
+  const noTrialLeft = data?.billing?.trial_available === false;
+  const copy = (id: StepId) => (id === "trial" && noTrialLeft ? PLAN_COPY : COPY[id]);
   function action(id: StepId) {
     const ask = (what: string) => <span className="muted">Ask an owner to {what}.</span>;
     switch (id) {
-      case "trial": return owner ? <Link href="/settings/billing">Start free trial</Link> : ask("start the trial");
+      case "trial": return owner ? <Link href="/settings/billing">{noTrialLeft ? "Start plan" : "Start free trial"}</Link> : ask(noTrialLeft ? "start a plan" : "start the trial");
       case "aws": return owner ? <Link href="/onboarding/connect-aws">Connect an AWS account</Link> : ask("connect a cloud account");
       case "scan": return <span className="muted">Scanning, this takes a few minutes</span>;
       case "delivery": return owner ? <Link href="/settings/delivery">Set up delivery</Link> : ask("choose where briefings go");
@@ -102,9 +106,9 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded, skipped,
           <li key={s.id} data-state={s.state} aria-current={s.state === "current" ? "step" : undefined}>
             <Mark state={s.state} />
             <div>
-              <strong>{COPY[s.id].title}</strong>
+              <strong>{copy(s.id).title}</strong>
               <span className="sr-only">{s.state === "done" ? " (done)" : ""}</span>
-              <p>{COPY[s.id].why}</p>
+              <p>{copy(s.id).why}</p>
             </div>
             {/* The passkey nudge stays actionable while required steps are open: the layout's card is hidden meanwhile. */}
             {(s.state === "current" || s.id === "passkey") && <div className="act">{action(s.id)}</div>}
