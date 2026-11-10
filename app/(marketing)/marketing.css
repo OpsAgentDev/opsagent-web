@@ -274,6 +274,8 @@ body:has(.mkt) { background: var(--bg); }
 }
 .mkt .site-footer-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .mkt .site-footer a { color: var(--body); }
+.mkt .site-footer-badges { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+.mkt .site-footer-badges img { display: block; height: 40px; width: auto; }
 
 @media (max-width: 800px) {
   .mkt .hero { grid-template-columns: minmax(0, 1fr); gap: 56px; padding: 40px 0 72px; }
