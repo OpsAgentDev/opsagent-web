@@ -26,6 +26,8 @@ button { cursor: pointer; border-color: var(--line); background: var(--surface-2
 button:hover:not(:disabled) { border-color: var(--line-strong); }
 button[type="submit"], button.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
 button[type="submit"]:hover:not(:disabled), button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+button[type="submit"].secondary, button[type="submit"].secondary:hover:not(:disabled) { color: var(--ink); background: var(--surface-2); border-color: var(--line); }
+button[type="submit"].secondary:hover:not(:disabled) { border-color: var(--line-strong); }
 button:disabled { opacity: 0.6; cursor: default; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }

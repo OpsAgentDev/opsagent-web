@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { consentWarnings, defaultOrg, LOOPBACK_WARNING, safeClientRedirect, signInUrl } from "@/lib/consent";
+import { consentWarnings, defaultOrg, LOOPBACK_WARNING, publisherNote, safeClientRedirect, signInUrl, UNVERIFIED_WARNING } from "@/lib/consent";
 
 describe("consent", () => {
   it("renders_loopback_warning", () => {
-    expect(consentWarnings({ verified: false, loopback: true })).toEqual(["Unverified client", LOOPBACK_WARNING]);
+    expect(consentWarnings({ verified: false, loopback: true })).toEqual([UNVERIFIED_WARNING, LOOPBACK_WARNING]);
     expect(LOOPBACK_WARNING).toBe("Only approve if you started this on your own computer.");
-    expect(consentWarnings({ verified: false, loopback: false })).toEqual(["Unverified client"]);
+    expect(consentWarnings({ verified: false, loopback: false, publisher: null })).toEqual([UNVERIFIED_WARNING]);
+  });
+  it("names a published client's host instead of calling it unverified", () => {
+    const codex = { verified: false, loopback: true, publisher: "chatgpt.com" };
+    expect(publisherNote(codex)).toBe("Published by chatgpt.com");
+    expect(consentWarnings(codex)).toEqual([LOOPBACK_WARNING]);
+    expect(publisherNote({ publisher: null })).toBeNull();
   });
   it("single_org_preselected", () => {
     expect(defaultOrg([{ slug: "a", name: "A" }])).toBe("a");
