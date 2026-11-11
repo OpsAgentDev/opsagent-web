@@ -540,3 +540,14 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .trial-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .hero .trial-cta { margin-top: 36px; }
 .mkt .closing .trial-cta { margin-top: 32px; }
+
+/* Status page */
+.mkt .status-list { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.mkt .status-list li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.mkt .status-detail { display: block; margin-top: 2px; font-size: 14px; color: var(--body); }
+.mkt .status-pill { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.mkt .status-ok { color: var(--ok); background: var(--ok-bg); }
+.mkt .status-warn { color: var(--warn); background: var(--warn-bg); }
+.mkt .status-bad { color: var(--bad); background: var(--bad-bg); }
+.mkt .status-unknown { color: var(--body); background: var(--line); }
+.mkt .status-checked { margin-top: 24px; font-size: 14px; }

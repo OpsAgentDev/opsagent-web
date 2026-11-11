@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 // Public marketing pages only; app and auth routes are noindex.
 const PATHS = [
-  "", "/pricing", "/how-it-works", "/security", "/contact", "/privacy", "/terms",
+  "", "/pricing", "/how-it-works", "/security", "/contact", "/privacy", "/terms", "/status",
   "/features/checks", "/features/alerts", "/features/agents", "/features/ai-and-review",
   "/docs/connect-your-agent",
 ];

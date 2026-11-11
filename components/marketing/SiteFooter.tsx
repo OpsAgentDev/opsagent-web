@@ -7,7 +7,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <p>OpsAgent is a product of Binary Labs LLC.</p>
       <nav aria-label="Footer" className="site-footer-links">
-        {[...NAV, { href: "/privacy", label: "Privacy" }, { href: "/terms", label: "Terms" }].map((l) => (
+        {[...NAV, { href: "/privacy", label: "Privacy" }, { href: "/terms", label: "Terms" }, { href: "/status", label: "Status" }].map((l) => (
           <Link key={l.href} href={l.href}>{l.label}</Link>
         ))}
       </nav>

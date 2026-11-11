@@ -216,9 +216,18 @@ test("Features dropdown opens on hover and closes when the pointer leaves", asyn
 test("footer links to every public page", async ({ page }) => {
   await page.goto("/");
   const footer = page.getByRole("contentinfo");
-  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"]] as [string, string][]) {
+  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"], ["Status", "/status"]] as [string, string][]) {
     await expect(footer.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
+});
+
+test("status page lists the API, MCP, scans and deliveries", async ({ page }) => {
+  await page.goto("/status");
+  await expect(page.getByRole("heading", { level: 1, name: "Status" })).toBeVisible();
+  for (const name of ["API", "MCP", "Scans", "Deliveries"]) {
+    await expect(page.locator(".status-list strong", { hasText: name })).toHaveCount(1);
+  }
+  await expect(page).toHaveTitle("Status · OpsAgent");
 });
 
 for (const p of FEATURE_PAGES) {
