@@ -80,7 +80,7 @@ function Consent() {
       {view.organisations.length === 0 && <p className="muted">You have no organisation yet. Create one first.</p>}
       <div className="row">
         <button type="submit" value="approve" disabled={busy || !org}>Approve</button>
-        <button type="submit" value="deny" formNoValidate disabled={busy}>Deny</button>
+        <button type="submit" className="secondary" value="deny" formNoValidate disabled={busy}>Deny</button>
       </div>
       <ErrorNote error={actionError} />
     </form>

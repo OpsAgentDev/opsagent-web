@@ -1340,6 +1340,11 @@ export interface components {
             /** @description The redirect goes to this computer: warn the member. */
             loopback: boolean;
             organisations: components["schemas"]["ConsentOrganisation"][];
+            /**
+             * @description The host that publishes a metadata-document client (`chatgpt.com`); absent for clients
+             *     that registered themselves.
+             */
+            publisher?: string | null;
             redirect_uri: string;
             /** @description Always false: dynamic and metadata-document clients are unverified. */
             verified: boolean;
