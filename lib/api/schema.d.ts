@@ -1040,6 +1040,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["status_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unsubscribe/{token}": {
         parameters: {
             query?: never;
@@ -1378,6 +1394,12 @@ export interface components {
             sent_at?: string | null;
             /** @description `pending`, `sent`, `failed`, `skipped`, `fallback_email` or `suppressed`. */
             status: string;
+        };
+        DeliveryStatus: {
+            /** Format: int64 */
+            failed_24h: number;
+            /** Format: int64 */
+            sent_24h: number;
         };
         Disconnected: {
             next_step: string;
@@ -1913,6 +1935,18 @@ export interface components {
             /** @description `queued`, `running`, `done`, `partial`, `failed` or `skipped`. */
             status: string;
         };
+        ScanStatus: {
+            /**
+             * Format: int64
+             * @description Age of the oldest waiting scan; 0 when none wait.
+             */
+            oldest_wait_seconds: number;
+            /**
+             * Format: int64
+             * @description Scans due now and not yet started.
+             */
+            waiting: number;
+        };
         SessionUrl: {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/billing?status=…`. */
             url: string;
@@ -1926,6 +1960,12 @@ export interface components {
              * @description At most 30 days ahead.
              */
             until: string;
+        };
+        StatusOut: {
+            /** Format: date-time */
+            checked_at: string;
+            deliveries: components["schemas"]["DeliveryStatus"];
+            scans: components["schemas"]["ScanStatus"];
         };
         TopupUrl: {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
@@ -5619,6 +5659,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    status_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Global counts, no organisation data */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusOut"];
                 };
             };
         };
