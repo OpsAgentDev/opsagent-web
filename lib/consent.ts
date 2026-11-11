@@ -9,15 +9,15 @@ export const WRONG_BROWSER_MESSAGE = "Start the connection again from your AI to
 
 export const UNVERIFIED_WARNING = "Unverified client: this app registered itself, so OpsAgent can't confirm its name.";
 
-/** Who stands behind the client: the host that publishes its metadata document, when there is one. */
-export function publisherNote(view: Pick<View, "publisher">): string | null {
-  return view.publisher ? `Published by ${view.publisher}` : null;
-}
-
-/** The warnings shown above the buttons, in order. A published client is identified by its host instead. */
+/**
+ * The warnings shown above the buttons, in order. A published client's name is still self-asserted
+ * (anyone can host a document calling itself "Codex"), so it stays warned, naming the host instead.
+ */
 export function consentWarnings(view: Pick<View, "verified" | "loopback" | "publisher">): string[] {
   const out: string[] = [];
-  if (!view.verified && !view.publisher) out.push(UNVERIFIED_WARNING);
+  if (!view.verified) {
+    out.push(view.publisher ? `Published by ${view.publisher}. Only approve if you trust this site.` : UNVERIFIED_WARNING);
+  }
   if (view.loopback) out.push(LOOPBACK_WARNING);
   return out;
 }

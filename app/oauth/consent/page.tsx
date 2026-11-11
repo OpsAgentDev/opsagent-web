@@ -5,7 +5,6 @@ import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import {
   consentWarnings,
-  publisherNote,
   defaultOrg,
   EXPIRED_MESSAGE,
   safeClientRedirect,
@@ -66,7 +65,6 @@ function Consent() {
       <p>
         It will be sent to <code data-testid="redirect-uri">{view.redirect_uri}</code>
       </p>
-      {publisherNote(view) && <p className="muted" data-testid="publisher">{publisherNote(view)}</p>}
       {consentWarnings(view).map((w) => (
         <p key={w} className="error" role="note">{w}</p>
       ))}
