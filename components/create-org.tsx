@@ -5,9 +5,12 @@ import { api, unwrap } from "@/lib/api/client";
 
 export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?: ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
+  const [busy, setBusy] = useState(false);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
     const name = String(new FormData(e.currentTarget).get("name"));
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
@@ -15,6 +18,7 @@ export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?:
       onCreated();
     } catch (err) {
       setError(err as Error);
+      setBusy(false);
     }
   }
 
@@ -26,7 +30,7 @@ export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?:
         Organisation name
         <input name="name" required autoFocus />
       </label>
-      <button type="submit">Create organisation</button>
+      <button type="submit" disabled={busy}>Create organisation</button>
       <ErrorNote error={error} />
     </form>
   );

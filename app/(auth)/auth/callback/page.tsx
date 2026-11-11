@@ -10,25 +10,29 @@ function Confirm() {
   // Held in state: the effect below removes it from the address bar and history.
   const [token] = useState(useSearchParams().get("token") ?? "");
   const [error, setError] = useState<Error | null>(null);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     window.history.replaceState(null, "", window.location.pathname);
   }, []);
 
   async function redeem() {
+    if (busy) return;
+    setBusy(true);
     try {
       const { redirect } = await unwrap(api.POST("/auth/magic-link/redeem", { body: { token } }));
       if (!isSameOrigin(redirect, window.location.origin)) throw new Error("Unexpected sign-in redirect.");
-      window.location.assign(redirect);
+      window.location.assign(redirect); // stays busy while navigating
     } catch (err) {
       setError(err as Error);
+      setBusy(false);
     }
   }
 
   if (!token) return <p className="error">This sign-in link is incomplete.</p>;
   return (
     <div className="auth-options">
-      <button type="button" className="auth-btn primary" onClick={redeem}>
+      <button type="button" className="auth-btn primary" disabled={busy} onClick={redeem}>
         Sign in
       </button>
       <ErrorNote error={error} />

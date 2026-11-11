@@ -16,10 +16,13 @@ export default function ConnectedAgents() {
     [org.slug],
   );
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<Error | null>(null);
   const note = agentsScopeNote(org.role);
 
   async function revoke(id: string) {
+    if (busy) return;
+    setBusy(true);
     try {
       await unwrap(api.DELETE("/orgs/{org}/agents/{id}", { params: { path: { org: org.slug, id } } }));
       setActionError(null);
@@ -28,6 +31,7 @@ export default function ConnectedAgents() {
     } catch (err) {
       setActionError(err as Error);
     }
+    setBusy(false);
   }
 
   return (
@@ -64,7 +68,7 @@ export default function ConnectedAgents() {
                   {confirming === a.grant_id ? (
                     <span className="row">
                       Revoke {a.client_name}?
-                      <button type="button" onClick={() => revoke(a.grant_id)}>Confirm revoke</button>
+                      <button type="button" disabled={busy} onClick={() => revoke(a.grant_id)}>Confirm revoke</button>
                       <button type="button" onClick={() => setConfirming(null)}>Cancel</button>
                     </span>
                   ) : (

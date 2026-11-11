@@ -84,7 +84,7 @@ export default function Dashboard() {
       <div className="cards">
         {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
       </div>
-      {!!connections?.length && (
+      {!!connections?.length && org.role === "owner" && (
         <p className="add-more">
           <Link href="/onboarding/connect-aws">Connect another account</Link>
         </p>

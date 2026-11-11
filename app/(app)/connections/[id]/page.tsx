@@ -32,6 +32,7 @@ export default function ConnectionPage() {
     [org.slug, id],
   );
   const [scan, setScan] = useState<{ started?: boolean; error?: Error }>({});
+  const [scanning, setScanning] = useState(false);
   const [removedStep, setRemovedStep] = useState<string | null>(null);
 
   const settling = !!c && SETTLING.has(c.status);
@@ -42,12 +43,15 @@ export default function ConnectionPage() {
   }, [settling, reload]);
 
   async function scanNow() {
+    if (scanning) return;
+    setScanning(true);
     try {
       await unwrap(api.POST("/orgs/{org}/connections/{id}/scan", { params: { path: { org: org.slug, id } } }));
       setScan({ started: true });
     } catch (err) {
       setScan({ error: err as Error });
     }
+    setScanning(false);
   }
 
   if (!c) return <main>{error ? <ErrorNote error={error} /> : <p className="muted">Loading…</p>}</main>;
@@ -56,7 +60,7 @@ export default function ConnectionPage() {
       <ConnectionHeader c={c} />
       <ConnectionFacts c={c} />
       {c.last_verification && <LastVerification v={c.last_verification} />}
-      <ConnectionActions c={c} canScan={SCANNABLE.has(c.status)} onScan={scanNow} started={!!scan.started} />
+      <ConnectionActions c={c} canScan={SCANNABLE.has(c.status) && !scanning} onScan={scanNow} started={!!scan.started} />
       {org.role === "owner" && c.status !== "disconnected" && (
         <RemoveConnection
           org={org.slug}

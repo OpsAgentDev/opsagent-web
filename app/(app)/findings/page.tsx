@@ -20,6 +20,7 @@ export default function Findings() {
   const pager = useCursors();
   const [acting, setActing] = useState<{ finding: FindingSummary; action: FindingAction } | null>(null);
   const [actionError, setActionError] = useState<Error | null>(null);
+  const [reopening, setReopening] = useState(false);
   const { cursor } = pager;
 
   const { data: page, error, loading, reload } = useApi(() => {
@@ -28,6 +29,8 @@ export default function Findings() {
   }, [org.slug, status, severity, cursor]);
 
   async function reopen(f: FindingSummary) {
+    if (reopening) return;
+    setReopening(true);
     try {
       await unwrap(api.POST("/orgs/{org}/findings/{id}/reopen", { params: { path: { org: org.slug, id: f.id } } }));
       setActionError(null);
@@ -35,6 +38,7 @@ export default function Findings() {
     } catch (err) {
       setActionError(err as Error);
     }
+    setReopening(false);
   }
 
   // Only for the rows that match the filter on screen: while the next page loads (or failed) the old rows would give a wrong line.
@@ -87,7 +91,7 @@ export default function Findings() {
                     <button type="button" className="quiet" title="Mark as an accepted risk" onClick={() => setActing({ finding: f, action: "accept" })}>Accept</button>
                   </>
                 ) : f.status !== "resolved" ? (
-                  <button type="button" className="quiet" onClick={() => reopen(f)}>Reopen</button>
+                  <button type="button" className="quiet" disabled={reopening} onClick={() => reopen(f)}>Reopen</button>
                 ) : null}
               </td>
             </tr>
