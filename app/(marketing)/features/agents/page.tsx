@@ -7,7 +7,7 @@ import { MCP_URL } from "@/lib/agents";
 
 export const metadata: Metadata = {
   title: "Connect your agent · OpsAgent",
-  description: "Point Claude, Cursor or any MCP client at OpsAgent. Your agent reads findings and evidence, read-only, for one organisation you approve.",
+  description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. Your agent reads findings and evidence, read-only, for one organisation you approve.",
 };
 
 export default function Agents() {
@@ -15,7 +15,7 @@ export default function Agents() {
     <FeaturePage
       slug="agents"
       title="Connect your agent"
-      lead="Ask your own AI tool about your cloud. Claude, Cursor and other MCP clients can read what OpsAgent found, in plain words, where you already work."
+      lead="Ask your own AI tool about your cloud. Claude, ChatGPT, Cursor, VS Code, Codex, Gemini and any other MCP client can read what OpsAgent found, in plain words, where you already work."
     >
       <div className="code-panel">
         <div className="code-panel-head">
@@ -53,7 +53,7 @@ export default function Agents() {
         </p>
       </FeatureSection>
       <p className="feature-more">
-        <Link href="/docs/connect-your-agent">Set it up in Claude Code, Cursor or another client</Link>
+        <Link href="/docs/connect-your-agent">Set it up in Claude, ChatGPT, Cursor, VS Code or any other client</Link>
       </p>
     </FeaturePage>
   );
