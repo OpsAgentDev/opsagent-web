@@ -60,7 +60,7 @@ function BillingPage() {
       <ErrorNote error={error ?? actionError} />
       {data === null && <p className="muted">Billing isn&apos;t set up yet.</p>}
       {returned === "canceled" && <p className="muted">Checkout was cancelled. Nothing was charged.</p>}
-      {waiting && <p className="muted">Confirming your plan…</p>}
+      {waiting && <p className="muted" role="status">Confirming your plan…</p>}
       {data && (
         <section className="stack">
           {status === "trialing" && !cancelled && <p>Trial: {days} days left</p>}

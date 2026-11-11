@@ -13,7 +13,8 @@ import { isSkipped, setSkipped } from "@/lib/setup-skip";
 import { useApi } from "@/lib/use-api";
 
 function ConnectionCard({ org, c, several }: { org: string; c: Connection; several: boolean }) {
-  const { data: stats, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
+  const { data: latest, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
+  const stats = latest?.stats;
   return (
     <div className="card">
       <div className="conn-head">
@@ -26,7 +27,8 @@ function ConnectionCard({ org, c, several }: { org: string; c: Connection; sever
         <Status value={c.status} />
       </div>
       <ErrorNote error={error} />
-      {stats === null && (
+      {latest?.lastFailed && <p role="status" className="error">Last scan failed.</p>}
+      {latest && !stats && !latest.lastFailed && (
         <p className="muted empty">
           {c.status === "connected" ? "Scanning your account. First results appear in a few minutes." : "Waiting for verification."}
         </p>
@@ -84,7 +86,7 @@ export default function Dashboard() {
       <div className="cards">
         {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
       </div>
-      {!!connections?.length && (
+      {!!connections?.length && org.role === "owner" && (
         <p className="add-more">
           <Link href="/onboarding/connect-aws">Connect another account</Link>
         </p>

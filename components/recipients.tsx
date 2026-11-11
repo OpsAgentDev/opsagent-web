@@ -22,6 +22,7 @@ type Props = {
 export function Recipients({ owner, org, connections, members }: Props) {
   const [by, setBy] = useState("email");
   const [actionError, setActionError] = useState<Error | null>(null);
+  const [busy, setBusy] = useState(false);
   // shortcut: first 200 recipients only; page through `next_cursor` when an org has more.
   const { data, error, reload } = useApi(
     () =>
@@ -39,6 +40,8 @@ export function Recipients({ owner, org, connections, members }: Props) {
       : "All connections";
 
   async function act(call: () => Promise<unknown>) {
+    if (busy) return;
+    setBusy(true);
     try {
       await call();
       setActionError(null);
@@ -46,6 +49,7 @@ export function Recipients({ owner, org, connections, members }: Props) {
     } catch (err) {
       setActionError(err as Error);
     }
+    setBusy(false);
   }
 
   function add(e: FormEvent<HTMLFormElement>) {
@@ -90,6 +94,7 @@ export function Recipients({ owner, org, connections, members }: Props) {
                   <button
                     type="button"
                     aria-label={`Remove ${r.email}`}
+                    disabled={busy}
                     onClick={() =>
                       act(() =>
                         unwrap(
@@ -165,7 +170,7 @@ export function Recipients({ owner, org, connections, members }: Props) {
               ))}
             </select>
           </label>
-          <button type="submit">Add recipient</button>
+          <button type="submit" disabled={busy}>Add recipient</button>
         </form>
       )}
     </section>

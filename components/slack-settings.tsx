@@ -24,6 +24,7 @@ export function SlackSettings({
   onChanged,
 }: Props) {
   const [error, setError] = useState<Error | null>(null);
+  const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<ReturnType<typeof slackResult>>(null);
   // Brain's OAuth callback lands here with ?slack=connected or ?slack=error&code=….
   useEffect(() => {
@@ -68,6 +69,8 @@ export function SlackSettings({
   }
 
   async function setChannel(id: string, slack_channel_id: string) {
+    if (saving) return;
+    setSaving(true);
     try {
       await unwrap(
         api.PATCH("/orgs/{org}/connections/{id}", {
@@ -80,6 +83,7 @@ export function SlackSettings({
     } catch (err) {
       setError(err as Error);
     }
+    setSaving(false);
   }
 
   return (
@@ -120,6 +124,7 @@ export function SlackSettings({
                     <select
                       aria-label={`Slack channel for ${c.display_name ?? c.id}`}
                       value={c.slack_channel_id ?? ""}
+                      disabled={saving}
                       onChange={(e) => setChannel(c.id, e.target.value)}
                     >
                       <option value="">Not set (email to owners)</option>

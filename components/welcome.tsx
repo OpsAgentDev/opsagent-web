@@ -1,4 +1,6 @@
 import { Logo } from "@/components/brand/Logo";
+import { DeleteAccount } from "@/components/delete-account";
+import { SignOut } from "@/components/sign-out";
 import { CreateOrg } from "@/components/create-org";
 
 const STEPS = ["Create your organisation", "Connect a cloud account (optional)", "Get your first briefing"];
@@ -11,6 +13,8 @@ export function Welcome({ email, onCreated }: { email: string; onCreated: () => 
         <div className="app-bar-inner welcome-bar">
           <Logo size={22} />
           <span className="account-email">{email}</span>
+          <DeleteAccount email={email} />
+          <SignOut className="link" />
         </div>
       </header>
       <main className="welcome">

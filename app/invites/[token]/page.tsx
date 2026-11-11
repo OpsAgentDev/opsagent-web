@@ -6,6 +6,7 @@ import { ErrorNote } from "@/components/error-note";
 import { SignOut } from "@/components/sign-out";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { inviteProblem, inviteSignInUrl, preferOrg, rememberInvite } from "@/lib/members";
+import { SIGNUPS_OPEN } from "@/lib/signups";
 import { useApi } from "@/lib/use-api";
 
 // An explicit button, not an accept on load: mail scanners prefetch links.
@@ -40,7 +41,7 @@ export default function Invite() {
       {signedOut ? (
         <>
           <p>Sign in with the email address this invite was sent to, then you can accept it.</p>
-          <p className="muted">While sign-ups are closed, only approved addresses can create a new account.</p>
+          {!SIGNUPS_OPEN && <p className="muted">While sign-ups are closed, only approved addresses can create a new account.</p>}
           <p><Link href={inviteSignInUrl(token)}>Sign in to accept</Link></p>
         </>
       ) : meError ? (

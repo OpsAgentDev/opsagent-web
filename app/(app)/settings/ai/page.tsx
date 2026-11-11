@@ -46,14 +46,16 @@ function AiSettings() {
   const [busy, setBusy] = useState(false);
   const owner = org.role === "owner";
 
-  async function act(call: () => Promise<void>) {
+  // `leaving`: the call navigates away (Stripe), so stay busy on success.
+  async function act(call: () => Promise<void>, leaving = false) {
+    if (busy) return;
     setBusy(true);
     setActionError(null);
     try {
       await call();
+      if (!leaving) setBusy(false);
     } catch (e) {
       setActionError(e as Error);
-    } finally {
       setBusy(false);
     }
   }
@@ -62,14 +64,14 @@ function AiSettings() {
       await unwrap(api.PATCH("/orgs/{org}/ai", { ...path, body: { enabled } }));
       reload();
     });
-  const buy = () => act(async () => goToStripe((await unwrap(api.POST("/orgs/{org}/ai/topup", path))).url));
+  const buy = () => act(async () => goToStripe((await unwrap(api.POST("/orgs/{org}/ai/topup", path))).url), true);
 
   return (
     <main>
       <h1>Dashboard AI</h1>
       <ErrorNote error={error ?? actionError} />
       {topup === "success" && <p role="status">Thanks. Your credits appear here once the payment is confirmed.</p>}
-      {topup === "canceled" && <p className="muted">Top-up cancelled. Nothing was charged.</p>}
+      {topup === "canceled" && <p className="muted" role="status">Top-up cancelled. Nothing was charged.</p>}
       {!s && !error && <p className="muted" role="status">Loading…</p>}
       {s && (
         <>

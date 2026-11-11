@@ -40,14 +40,14 @@ function ReviewForm({ org, connections, onSent }: { org: string; connections: Co
     setLimited(false);
     try {
       const body = { kind: "account", connection_id: connection || connections[0]?.id, note: note.trim() || null };
-      if (await sendReview(org, body)) return;
+      if (await sendReview(org, body)) return; // leaving for Stripe: stay busy
       setSent(true);
       setNote("");
       onSent();
+      setBusy(false);
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) setLimited(true);
       else setError(err as Error);
-    } finally {
       setBusy(false);
     }
   }

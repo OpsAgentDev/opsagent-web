@@ -15,11 +15,14 @@ type Props = { org: string; finding: FindingSummary; action: FindingAction; onCl
 export function FindingActionDialog({ org, finding, action, onClose }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [busy, setBusy] = useState(false);
   useEffect(() => ref.current?.showModal(), []);
   const now = Date.now();
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
     const form = new FormData(e.currentTarget);
     const until = String(form.get("until") ?? "");
     const path = { org, id: finding.id };
@@ -33,6 +36,7 @@ export function FindingActionDialog({ org, finding, action, onClose }: Props) {
       onClose(true);
     } catch (err) {
       setError(err as Error);
+      setBusy(false);
     }
   }
 
@@ -58,7 +62,7 @@ export function FindingActionDialog({ org, finding, action, onClose }: Props) {
           />
         </label>
         <div className="row">
-          <button type="submit">{action === "snooze" ? "Snooze" : "Accept"}</button>
+          <button type="submit" disabled={busy}>{action === "snooze" ? "Snooze" : "Accept"}</button>
           <button type="button" onClick={() => ref.current?.close()}>
             Cancel
           </button>

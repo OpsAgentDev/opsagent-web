@@ -12,20 +12,25 @@ function ReviewDialog({ org, findingId, description, onClose }: DialogProps) {
   const [error, setError] = useState<Error | null>(null);
   const [limited, setLimited] = useState(false);
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
   useEffect(() => ref.current?.showModal(), []);
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
     const note = String(new FormData(e.currentTarget).get("note") ?? "").trim();
     setError(null);
     setLimited(false);
     try {
       const body = { kind: "finding", finding_id: findingId, note: note || null };
-      if (await sendReview(org, body)) return;
+      if (await sendReview(org, body)) return; // leaving for Stripe: stay busy
       setSent(true);
+      setBusy(false);
     } catch (err) {
       if (err instanceof ApiError && err.status === 429) setLimited(true);
       else setError(err as Error);
+      setBusy(false);
     }
   }
 
@@ -43,7 +48,7 @@ function ReviewDialog({ org, findingId, description, onClose }: DialogProps) {
           </label>
         )}
         <div className="row">
-          {!sent && <button type="submit">Submit</button>}
+          {!sent && <button type="submit" disabled={busy}>Submit</button>}
           <button type="button" onClick={() => ref.current?.close()}>{sent ? "Close" : "Cancel"}</button>
         </div>
         <ErrorNote error={error} />
