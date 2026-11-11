@@ -76,8 +76,9 @@ jobs:
           workspaces: brain
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: npm ci
-      # Runner DNS to the Ubuntu mirrors fails now and then: retry before giving up.
-      - run: for i in 1 2 3 4 5; do npx playwright install --with-deps chromium && break || { [ $i = 5 ] && exit 1; sleep 30; }; done
+      # The system libraries come from the Ubuntu mirrors, which runners sometimes cannot reach.
+      # The image already carries Chrome's libraries, so fall back to the browser alone.
+      - run: timeout 180 npx playwright install --with-deps chromium || npx playwright install chromium
       - run: scripts/e2e.sh
         env:
           BRAIN_DIR: brain
@@ -112,8 +113,9 @@ jobs:
           workspaces: brain
           save-if: ${{ github.ref == 'refs/heads/main' }}
       - run: npm ci
-      # Runner DNS to the Ubuntu mirrors fails now and then: retry before giving up.
-      - run: for i in 1 2 3 4 5; do npx playwright install --with-deps chromium && break || { [ $i = 5 ] && exit 1; sleep 30; }; done
+      # The system libraries come from the Ubuntu mirrors, which runners sometimes cannot reach.
+      # The image already carries Chrome's libraries, so fall back to the browser alone.
+      - run: timeout 180 npx playwright install --with-deps chromium || npx playwright install chromium
       # The widget is inlined at build time, so this spec needs its own build with a (stub) site key,
       # and its own runner: a second run in one job meets the first run's web server still on port 3001.
       - run: scripts/e2e.sh auth-turnstile.spec.ts
