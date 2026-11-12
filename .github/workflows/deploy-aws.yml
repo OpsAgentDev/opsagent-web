@@ -1,0 +1,70 @@
+name: deploy-aws
+
+# Manual until the AWS cutover; then this follows a green CI run on main.
+# Builds the image, pushes it to ECR and rolls the web service (hub: aws-hosting.md).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # GitHub OIDC: the deploy role is assumed with a short-lived token, no AWS keys
+
+concurrency:
+  group: deploy-aws
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-west-2
+
+jobs:
+  deploy:
+    # The role trusts refs/heads/main only.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Assume the deploy role
+        env:
+          ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+        run: |
+          test -n "$ROLE_ARN" || { echo "repo variable AWS_DEPLOY_ROLE_ARN is not set" >&2; exit 1; }
+          token="$(curl -sf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r .value)"
+          creds="$(aws sts assume-role-with-web-identity --role-arn "$ROLE_ARN" \
+            --role-session-name "deploy-$GITHUB_RUN_ID" --web-identity-token "$token" \
+            --duration-seconds 3600 --query Credentials --output json)"
+          for pair in AWS_ACCESS_KEY_ID:AccessKeyId AWS_SECRET_ACCESS_KEY:SecretAccessKey AWS_SESSION_TOKEN:SessionToken; do
+            value="$(jq -r ".${pair#*:}" <<<"$creds")"
+            echo "::add-mask::$value"
+            echo "${pair%%:*}=$value" >>"$GITHUB_ENV"
+          done
+      - name: Build and push
+        env:
+          # NEXT_PUBLIC_* values are inlined into the bundle, so they are public by nature.
+          API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          SIGNUPS_OPEN: ${{ vars.NEXT_PUBLIC_SIGNUPS_OPEN }}
+        run: |
+          registry="$(aws sts get-caller-identity --query Account --output text).dkr.ecr.$AWS_REGION.amazonaws.com"
+          aws ecr get-login-password | docker login --username AWS --password-stdin "$registry"
+          image="$registry/opsagent-web:$GITHUB_SHA"
+          # Tags are immutable: a re-run of the same commit reuses the image it already pushed.
+          if ! aws ecr describe-images --repository-name opsagent-web --image-ids "imageTag=$GITHUB_SHA" >/dev/null 2>&1; then
+            docker build -t "$image" --build-arg NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" \
+              --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY="$TURNSTILE_SITE_KEY" \
+              --build-arg NEXT_PUBLIC_SIGNUPS_OPEN="$SIGNUPS_OPEN" .
+            docker push "$image"
+          fi
+          echo "IMAGE=$image" >>"$GITHUB_ENV"
+      - name: Roll web
+        run: |
+          # The deploy contract in opsagent-infra's README: latest revision, replace only `image`.
+          aws ecs describe-task-definition --task-definition opsagent-web --query taskDefinition |
+            jq --arg image "$IMAGE" '{family, taskRoleArn, executionRoleArn, networkMode, containerDefinitions,
+              requiresCompatibilities, cpu, memory, runtimePlatform} | .containerDefinitions[0].image = $image' >taskdef.json
+          arn="$(aws ecs register-task-definition --cli-input-json file://taskdef.json \
+            --query taskDefinition.taskDefinitionArn --output text)"
+          aws ecs update-service --cluster opsagent --service web --task-definition "$arn" \
+            --query 'service.deployments[0].rolloutState' --output text
+          aws ecs wait services-stable --cluster opsagent --services web
