@@ -38,7 +38,7 @@ test("sections link to their inner pages", async ({ page }) => {
     ["See pricing", "/pricing"],
     ["About human review", "/features/ai-and-review"],
     ["Read the Security page", "/security"],
-  ]) {
+  ] as [string, string][]) {
     await expect(main.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 });
