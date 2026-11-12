@@ -7,6 +7,7 @@ import { TopIssues } from "@/components/top-issues";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { api, unwrap, type Connection } from "@/lib/api/client";
 import { SEVERITIES } from "@/lib/api/enums";
+import { connectionSentence } from "@/lib/connection-status";
 import { useOrg, useSetup } from "@/lib/org";
 import { latestScanStats, openTotal } from "@/lib/scan";
 import { isSkipped, setSkipped } from "@/lib/setup-skip";
@@ -30,7 +31,7 @@ function ConnectionCard({ org, c, several }: { org: string; c: Connection; sever
       {latest?.lastFailed && <p role="status" className="error">Last scan failed.</p>}
       {latest && !stats && !latest.lastFailed && (
         <p className="muted empty">
-          {c.status === "connected" ? "Scanning your account. First results appear in a few minutes." : "Waiting for verification."}
+          {c.status === "connected" ? "Scanning your account. First results appear in a few minutes." : (connectionSentence(c.status, c.status_reason) ?? "Waiting for verification.")}
         </p>
       )}
       {stats && (

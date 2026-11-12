@@ -7,7 +7,7 @@ import { loadBilling } from "@/lib/billing";
 import { isOwner, liveRecipients } from "@/lib/delivery";
 import { log } from "@/lib/log";
 import { useSetup } from "@/lib/org";
-import { hasScanRun } from "@/lib/scan";
+import { hasFinishedScan } from "@/lib/scan";
 import { requiredOpen, setupSteps, type SetupInputs, type StepId } from "@/lib/setup-steps";
 import { useApi } from "@/lib/use-api";
 import { usePasskeyAdd } from "@/lib/use-passkey-add";
@@ -30,13 +30,14 @@ async function loadReads(org: string): Promise<Reads> {
     soft("integrations", unwrap(api.GET("/orgs/{org}/integrations", path))),
     soft("recipients", unwrap(api.GET("/orgs/{org}/recipients", path))),
   ]);
-  const first = conns?.[0];
-  const ran = first ? await soft("scan", hasScanRun(org, first.id)) : undefined;
+  const ran = conns?.length ? await soft("scan", hasFinishedScan(org)) : undefined;
+  // Only disconnected accounts left: no scan is coming, so the step does not wait for one.
+  const idle = conns?.every((c) => c.status === "disconnected");
   const delivered = !!integrations?.some((i) => i.status === "active") || !!(recipients && liveRecipients(recipients.items).length);
   return {
     billing: billing ?? null,
     connections: conns ? conns.length : null,
-    scanned: ran ?? null,
+    scanned: idle || (ran ?? null),
     delivery: delivered ? true : integrations && recipients ? false : null,
   };
 }
