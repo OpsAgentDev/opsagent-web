@@ -22,10 +22,13 @@ export async function latestScanStats(org: string, connection: string): Promise<
   return { stats: null, lastFailed };
 }
 
-/** True when the connection has any full scan, finished or not; one small read. */
-export async function hasScanRun(org: string, connection: string): Promise<boolean> {
-  const query = { connection, type: "full_scan", limit: 1 };
-  return (await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }))).items.length > 0;
+/**
+ * True when any connection of the organisation has a finished full scan; one read.
+ * shortcut: looks at the newest 200 runs only, page through `next_cursor` if an org can have more unfinished runs than that.
+ */
+export async function hasFinishedScan(org: string): Promise<boolean> {
+  const query = { type: "full_scan", limit: 200 };
+  return (await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }))).items.some((i) => FINISHED.has(i.status));
 }
 
 /** Open findings in the run's counts, or null when the run reported none. */

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/lib/api/client";
-import { latestScanStats } from "@/lib/scan";
+import { hasFinishedScan, latestScanStats } from "@/lib/scan";
 
 const ok = (data: unknown) => ({ data, response: new Response() });
 const stats = { score: 80, counts_by_severity: { high: 1 } };
@@ -34,5 +34,25 @@ describe("latestScanStats", () => {
     expect(await latestScanStats("o", "x")).toEqual({ stats: null, lastFailed: false });
     mockRuns([], {});
     expect(await latestScanStats("o", "x")).toEqual({ stats: null, lastFailed: false });
+  });
+});
+
+describe("hasFinishedScan", () => {
+  it("is true when any run of the organisation finished, whatever the newest ones did", async () => {
+    mockRuns([{ id: "c", status: "running" }, { id: "b", status: "failed" }, { id: "a", status: "partial" }], {});
+    expect(await hasFinishedScan("o")).toBe(true);
+  });
+
+  it("asks for the whole organisation, not one connection", async () => {
+    mockRuns([{ id: "a", status: "done" }], {});
+    await hasFinishedScan("o");
+    expect(vi.mocked(api.GET).mock.calls[0]?.[1]).toEqual({ params: { path: { org: "o" }, query: { type: "full_scan", limit: 200 } } });
+  });
+
+  it("is false while nothing finished", async () => {
+    mockRuns([{ id: "b", status: "queued" }, { id: "a", status: "failed" }], {});
+    expect(await hasFinishedScan("o")).toBe(false);
+    mockRuns([], {});
+    expect(await hasFinishedScan("o")).toBe(false);
   });
 });

@@ -11,7 +11,7 @@ function Linked({ text }: { text: string }) {
     <p style={{ whiteSpace: "pre-wrap" }}>
       {linkify(text).map((p, i) =>
         "finding" in p ? (
-          <Link key={i} href={`/findings/${p.finding}`}>finding {p.finding.slice(0, 8)}</Link>
+          <Link key={i} href={`/findings/${p.finding}`}>view finding</Link>
         ) : (
           <Fragment key={i}>{p.text}</Fragment>
         ),

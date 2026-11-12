@@ -73,6 +73,9 @@ export function Recipients({ owner, org, connections, members }: Props) {
   return (
     <section>
       <h2>Recipients</h2>
+      <p className="muted">
+        Recipients get the weekly report by email. Morning briefings and urgent alerts go to Slack, or to owners by email when Slack is not connected.
+      </p>
       <ErrorNote error={error ?? actionError} />
       <table>
         <thead>
