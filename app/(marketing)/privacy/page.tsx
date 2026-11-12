@@ -10,7 +10,7 @@ export default function Privacy() {
   return (
     <main className="page">
       <h1>Privacy policy</h1>
-      <p className="lead">Last updated 9 November 2026</p>
+      <p className="lead">Last updated 12 November 2026</p>
       <p>
         OpsAgent is run by Binary Labs LLC. This page says what we store when you use it, why, and what you can ask
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
@@ -44,8 +44,8 @@ export default function Privacy() {
       <section>
         <h2>Where it lives and how long</h2>
         <p>
-          Data is stored on Railway, in the United States. Encrypted nightly database backups are kept on Amazon Web
-          Services, in a storage bucket Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
+          Data is stored on Amazon Web Services, in the United States (Oregon). Encrypted nightly database backups are
+          kept there too, in a storage bucket Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
         </p>
         <p>
           Evidence excerpts are stripped of secret-shaped strings and common personal data before they are stored.
@@ -55,9 +55,8 @@ export default function Privacy() {
       <section>
         <h2>Who else processes it</h2>
         <ul className="legal-list">
-          <li>Railway: hosting and the database.</li>
           <li>Cloudflare: DNS and traffic proxy for opsagent.dev, and Turnstile, the security check on the sign-up, sign-in, waitlist and contact forms.</li>
-          <li>Amazon Web Services: encrypted nightly backups, in a storage bucket Binary Labs controls.</li>
+          <li>Amazon Web Services: hosting, the database and encrypted nightly backups.</li>
           <li>Stripe: payments, subscriptions and tax, as merchant of record. It receives your email and your organisation&apos;s name, and collects your card details.</li>
           <li>Resend: sending sign-in and briefing email.</li>
           <li>Slack: delivering briefings, when you connect it.</li>

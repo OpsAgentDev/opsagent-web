@@ -51,10 +51,14 @@ export default function Security() {
         <div>
           <h2>Your data</h2>
           <p>
-            OpsAgent stores inventory metadata, findings and the evidence behind them. It is stored on Railway, in the
-            United States.
+            OpsAgent stores inventory metadata, findings and the evidence behind them. It is stored on Amazon Web
+            Services, in the United States (Oregon).
           </p>
-          <p>OpsAgent&apos;s outbound IP addresses are not fixed yet; we will publish them here once they are.</p>
+          <p>
+            OpsAgent&apos;s outbound requests, such as calls to your own AI endpoint, come from one fixed address,{" "}
+            <code>32.185.67.24</code>, in case you allowlist by IP. Requests to Amazon S3 in the Oregon region travel
+            inside AWS and do not use it.
+          </p>
           <p>
             Secrets such as Slack tokens are encrypted with a per-organisation key, which is itself wrapped by a master
             key.
