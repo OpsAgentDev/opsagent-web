@@ -6,7 +6,7 @@ import { useApi } from "@/lib/use-api";
 
 type Props = { org: string; owner: boolean; selfId: string };
 
-/** People in the organisation. Owners invite by email and remove others; brain enforces both. */
+/** People in the organisation. Owners invite by email and remove others; anyone may leave. Brain enforces all. */
 export function Members({ org, owner, selfId }: Props) {
   const path = { params: { path: { org } } };
   const { data, error, reload } = useApi(() => unwrap(api.GET("/orgs/{org}/members", path)), [org]);
@@ -45,10 +45,15 @@ export function Members({ org, owner, selfId }: Props) {
     });
   }
 
+  const leaving = target?.user_id === selfId;
+
   const remove = () =>
     act(async () => {
       if (!target) return;
       await unwrap(api.DELETE("/orgs/{org}/members/{id}", { params: { path: { org, id: target.id } } }));
+      // Leaving: this page is no longer ours; a full load lets the app pick another organisation.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- the org list must reload
+      if (target.user_id === selfId) return window.location.assign("/");
       dialog.current?.close();
       reload();
     });
@@ -94,10 +99,11 @@ export function Members({ org, owner, selfId }: Props) {
                   )}
                 </td>
                 <td className="actions">
-                  {owner && m.user_id !== selfId && (
-                    <button type="button" className="danger" aria-label={`Remove ${m.email}`}
+                  {(owner || m.user_id === selfId) && (
+                    <button type="button" className="danger"
+                      aria-label={m.user_id === selfId ? "Leave organisation" : `Remove ${m.email}`}
                       onClick={() => { setTarget(m); setActionError(null); dialog.current?.showModal(); }}>
-                      Remove
+                      {m.user_id === selfId ? "Leave" : "Remove"}
                     </button>
                   )}
                 </td>
@@ -163,10 +169,19 @@ export function Members({ org, owner, selfId }: Props) {
       </dialog>
       <dialog ref={dialog} aria-label="Remove member" onClose={() => setTarget(null)}>
         <div className="stack">
-          <strong>Remove {target?.email}?</strong>
-          <p>They lose access to this organisation straight away. They can rejoin only if invited again.</p>
+          {leaving ? (
+            <>
+              <strong>Leave this organisation?</strong>
+              <p>You lose access straight away. You can rejoin only if an owner invites you again.</p>
+            </>
+          ) : (
+            <>
+              <strong>Remove {target?.email}?</strong>
+              <p>They lose access to this organisation straight away. They can rejoin only if invited again.</p>
+            </>
+          )}
           <div className="row">
-            <button type="button" className="danger" disabled={busy} onClick={remove}>Remove</button>
+            <button type="button" className="danger" disabled={busy} onClick={remove}>{leaving ? "Leave" : "Remove"}</button>
             <button type="button" onClick={() => dialog.current?.close()}>Cancel</button>
           </div>
           {target && <ErrorNote error={actionError} showCode={false} />}

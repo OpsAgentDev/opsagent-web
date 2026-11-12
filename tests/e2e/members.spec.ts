@@ -146,6 +146,23 @@ test("a non-owner sees the list and no controls", async ({ page }) => {
   await expect(page.getByRole("button", { name: /^Remove/ })).toHaveCount(0);
 });
 
+test("a member confirms and leaves the organisation, then lands on the home of the app", async ({ page }) => {
+  await mockSession(page);
+  await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "member", created_at: "2026-01-01T00:00:00Z" }] }));
+  await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [{ ...mine, role: "member" }, { ...other, role: "owner" }] }));
+  let left = false;
+  await page.route(`**/v1/orgs/acme/members/${mine.id}`, (r) => {
+    left = r.request().method() === "DELETE";
+    return r.fulfill({ status: 204 });
+  });
+  await page.goto("/settings/members");
+  await page.getByRole("button", { name: "Leave organisation" }).click();
+  await expect(page.getByRole("dialog")).toContainText("Leave this organisation?");
+  await page.getByRole("dialog").getByRole("button", { name: "Leave", exact: true }).click();
+  await expect(page).not.toHaveURL(/settings\/members/);
+  expect(left).toBe(true);
+});
+
 test("sign-out stays on the page and says so when the session was not ended", async ({ page, request }) => {
   await signUp(page, request);
   await page.route("**/v1/auth/sign-out", (r) => r.fulfill({ status: 500, json: { title: "x", status: 500 } }));
