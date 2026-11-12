@@ -49,10 +49,13 @@ jobs:
           registry="$(aws sts get-caller-identity --query Account --output text).dkr.ecr.$AWS_REGION.amazonaws.com"
           aws ecr get-login-password | docker login --username AWS --password-stdin "$registry"
           image="$registry/opsagent-web:$GITHUB_SHA"
-          docker build -t "$image" --build-arg NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" \
-            --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY="$TURNSTILE_SITE_KEY" \
-            --build-arg NEXT_PUBLIC_SIGNUPS_OPEN="$SIGNUPS_OPEN" .
-          docker push "$image"
+          # Tags are immutable: a re-run of the same commit reuses the image it already pushed.
+          if ! aws ecr describe-images --repository-name opsagent-web --image-ids "imageTag=$GITHUB_SHA" >/dev/null 2>&1; then
+            docker build -t "$image" --build-arg NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" \
+              --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY="$TURNSTILE_SITE_KEY" \
+              --build-arg NEXT_PUBLIC_SIGNUPS_OPEN="$SIGNUPS_OPEN" .
+            docker push "$image"
+          fi
           echo "IMAGE=$image" >>"$GITHUB_ENV"
       - name: Roll web
         run: |
