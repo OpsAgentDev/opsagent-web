@@ -3,97 +3,99 @@ import { signUp } from "./helpers";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://localhost:8025";
 
-test("landing renders every section", async ({ page }) => {
+const H1 = "Your ops teammate that never sleeps.";
+
+test("landing renders every section in story order", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Your ops teammate that never sleeps." })).toBeVisible();
-  await expect(page.getByText("Sample night")).toBeVisible();
-  await expect(page.getByText("While you slept")).toBeVisible();
-  for (const label of ["Overnight", "Night watch", "Morning briefing", "Urgent", "Everything"]) {
-    await expect(page.getByRole("tab", { name: label })).toBeVisible();
-  }
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1, name: H1 })).toBeVisible();
   await expect(page.locator("section#waitlist")).toHaveClass(/hero/);
+  await expect(page.locator("main h2")).toHaveText([
+    "It finds what is wrong, and shows you why.",
+    "Read-only, through a role you create.",
+    "One briefing a morning. An alert only when it cannot wait.",
+    "Your own AI agent can read the same findings.",
+    "A flat price per cloud account.",
+    "What happens to your data.",
+    "Get your ops teammate.",
+  ]);
+  await expect(page.locator("#what-it-checks .lp-checks li")).toHaveCount(10);
+  await expect(page.locator("#read-only .lp-steps li")).toHaveCount(3);
   await expect(page.locator(".soon")).toHaveCount(1); // the mobile app only
   await expect(page.getByText("page you at 3am", { exact: false })).toHaveCount(0);
-  for (const name of [
-    /while you sleep/i,
-    /how it works/i,
-    /what it checks/i,
-    /what it will never do/i,
-    /ios and android/i,
-    /bring your own ai/i,
-    /get your ops teammate/i,
-  ]) {
-    await expect(page.getByRole("heading", { level: 2, name })).toBeVisible();
-  }
-  await expect(page.locator("#how-it-works .soon")).toHaveCount(0);
-  await expect(page.locator("#what-it-checks li")).toHaveCount(10);
   await expect(page.getByRole("banner").getByRole("link", { name: "Sign in" })).toBeVisible();
 });
 
-test("landing fits a 320px phone", async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 740 });
+test("sections link to their inner pages", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Your ops teammate that never sleeps." })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
-});
-
-test("landing has no horizontal overflow at 390px", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await page.locator(".numbers").scrollIntoViewIfNeeded();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
-});
-
-test("number strip counts up to its final values", async ({ page }) => {
-  await page.goto("/");
-  const strip = page.locator(".numbers");
-  await strip.scrollIntoViewIfNeeded();
-  await expect(strip.locator("strong")).toHaveText(["15 min", "10", "0", "1"]);
-  await expect(strip).toContainText("checks run every night");
-});
-
-test("with reduced motion every section shows without scrolling", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  for (const sel of [".trust li", ".numbers li", "#how-it-works li", "#what-it-checks li", "#never li", ".phone-note", ".mcp-url code"]) {
-    const items = page.locator(sel);
-    for (let i = 0; i < (await items.count()); i++) {
-      // Effective opacity: an ancestor at 0 hides the item too.
-      const opacity = await items.nth(i).evaluate((e) => {
-        let o = 1;
-        for (let n: Element | null = e; n; n = n.parentElement) o *= Number(getComputedStyle(n).opacity);
-        return o;
-      });
-      expect(opacity, `${sel} #${i}`).toBe(1);
-    }
+  const main = page.locator("main");
+  for (const [name, href] of [
+    ["See what each check looks for", "/features/checks"],
+    ["See how it works", "/how-it-works"],
+    ["Security page", "/security"],
+    ["More on alerts and briefings", "/features/alerts"],
+    ["Connect your agent", "/docs/connect-your-agent"],
+    ["See pricing", "/pricing"],
+    ["About human review", "/features/ai-and-review"],
+    ["Read the Security page", "/security"],
+  ] as [string, string][]) {
+    await expect(main.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
-  await expect(page.locator(".numbers strong").first()).toHaveText("15 min");
 });
 
-test("product shots are sized, described and labelled Sample", async ({ page }) => {
+test("product visuals are drawn in HTML, described and labelled Sample", async ({ page }) => {
   await page.goto("/");
-  const shots = page.locator("#product img");
-  await expect(shots).toHaveCount(3);
-  for (let i = 0; i < 3; i++) {
-    const img = shots.nth(i);
-    await expect(img).toHaveAttribute("alt", /.{20,}/);
-    await expect(img).toHaveAttribute("width", /^\d+$/);
-    await expect(img).toHaveAttribute("height", /^\d+$/);
+  const main = page.locator("main");
+  await expect(main.locator("img")).toHaveCount(0);
+  const briefing = main.getByRole("figure", { name: "Sample morning briefing in Slack" });
+  await expect(briefing).toContainText("OpsAgent morning briefing");
+  await expect(briefing).toContainText("New critical and high (3)");
+  await expect(briefing).toContainText("Open now: 1 critical, 2 high, 3 medium, 0 low, 0 info");
+  const findings = main.getByRole("figure", { name: /Sample findings list/ });
+  await expect(findings.locator("ol > li")).toHaveCount(6);
+  await expect(findings).toContainText("snapshot=true public=true");
+  await expect(findings).toContainText("Next step");
+  await expect(main.getByRole("figure", { name: "Sample urgent alert in Slack" })).toContainText("Urgent: Snapshot orders-db-2026-11-03 is public");
+  const agent = main.getByRole("figure", { name: /Sample session/ });
+  await expect(agent).toContainText("list_findings");
+  await expect(main.locator(".lp-mcp code")).toHaveText("https://brain.opsagent.dev/mcp");
+  const ledger = main.getByRole("figure", { name: "What the OpsAgent role can and cannot do" });
+  await expect(ledger.locator("li.is-ok")).toHaveCount(2);
+  await expect(ledger.locator("li.is-no")).toHaveCount(4);
+  await expect(main.locator(".lp-sample")).toHaveCount(4);
+});
+
+test("pricing pointer shows the three plan prices", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#pricing .lp-plans dd")).toHaveText(["$99", "$299", "$599"]);
+});
+
+for (const width of [320, 390]) {
+  test(`landing has no horizontal overflow at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: H1 })).toBeVisible();
+    await page.locator(".lp-closing").scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  });
+}
+
+test("the page reads the same without JavaScript and with reduced motion", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, reducedMotion: "reduce", baseURL });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1, name: H1 })).toBeVisible();
+  for (const sel of [".lp-slack", ".lp-findings", ".lp-ledger", ".lp-term"]) {
+    for (const el of await page.locator(sel).all()) expect(await el.evaluate((e) => getComputedStyle(e).opacity), sel).toBe("1");
   }
-  await expect(page.locator("#product").getByText("Sample data")).toHaveCount(3);
+  await context.close();
 });
 
-test("a section below the fold reveals once scrolled to", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.goto("/");
-  const card = page.locator("#what-it-checks li").first();
-  expect(await card.evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
-  await card.scrollIntoViewIfNeeded();
-  await expect.poll(() => card.evaluate((e) => getComputedStyle(e).opacity)).toBe("1");
-});
+// The tabbed alert demo left the home page with the redesign; it lives on the alerts feature page.
+const DEMO = "/features/alerts";
 
 test("demo tabs show each panel", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(DEMO);
   const panel = page.getByRole("tabpanel");
   const cases: [string, string][] = [
     ["Overnight", "While you slept"],
@@ -110,7 +112,7 @@ test("demo tabs show each panel", async ({ page }) => {
 });
 
 test("demo advances by itself until clicked", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(DEMO);
   await expect(page.getByRole("tab", { name: "Night watch" })).toHaveAttribute("aria-selected", "true", { timeout: 8000 });
   await page.getByRole("tab", { name: "Urgent" }).click();
   await page.waitForTimeout(7000);
@@ -118,7 +120,7 @@ test("demo advances by itself until clicked", async ({ page }) => {
 });
 
 test("demo keyboard", async ({ page }) => {
-  await page.goto("/");
+  await page.goto(DEMO);
   await page.getByRole("tab", { name: "Overnight" }).focus();
   await page.keyboard.press("End");
   await expect(page.getByRole("tab", { name: "Everything" })).toHaveAttribute("aria-selected", "true");
@@ -129,7 +131,7 @@ test("demo keyboard", async ({ page }) => {
 
 test("demo respects reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto(DEMO);
   await page.waitForTimeout(7000);
   await expect(page.getByRole("tab", { name: "Overnight" })).toHaveAttribute("aria-selected", "true");
 });
@@ -137,7 +139,7 @@ test("demo respects reduced motion", async ({ page }) => {
 test("demo without JS", async ({ browser, baseURL }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
   const page = await context.newPage();
-  await page.goto("/");
+  await page.goto(DEMO);
   await expect(page.getByText("While you slept")).toBeVisible();
   await context.close();
 });
