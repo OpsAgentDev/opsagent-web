@@ -26,7 +26,8 @@ export async function scanHistory(org: string, connection: string, cap = HISTORY
   const query = { connection, type: "full_scan", limit: cap + 6 };
   const runs = await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }));
   const lastFailed = runs.items[0]?.status === "failed";
-  const finished = runs.items.filter((i) => FINISHED.has(i.status)).slice(0, cap);
+  // A scan cut short because access was lost counted nothing: it is not a result.
+  const finished = runs.items.filter((i) => FINISHED.has(i.status) && i.partial_reason !== "revoked").slice(0, cap);
   const details = await Promise.all(finished.map((r) => unwrap(api.GET("/orgs/{org}/runs/{id}", { params: { path: { org, id: r.id } } }))));
   const scans = finished.flatMap((r, i) => {
     const stats = details[i]?.stats;

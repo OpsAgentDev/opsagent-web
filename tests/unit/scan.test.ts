@@ -8,7 +8,7 @@ const stats = { score: 80, counts_by_severity: { high: 1 } };
 const at = (id: string) => `2026-11-${id}T02:00:00Z`;
 
 /** Newest first, as brain lists them (the id is the day of the month); details by run id. */
-function mockRuns(items: { id: string; status: string }[], details: Record<string, unknown>) {
+function mockRuns(items: { id: string; status: string; partial_reason?: string }[], details: Record<string, unknown>) {
   const list = items.map((i) => ({ ...i, scheduled_at: at(i.id), finished_at: at(i.id) }));
   vi.spyOn(api, "GET").mockImplementation(((path: string, init?: { params?: { path?: { id?: string } } }) =>
     Promise.resolve(path.endsWith("/runs") ? ok({ items: list }) : ok({ stats: details[init?.params?.path?.id ?? ""] ?? null }))) as never);
@@ -29,6 +29,11 @@ describe("scanHistory", () => {
 
   it("skips a finished run with no stats", async () => {
     mockRuns([{ id: "13", status: "done" }, { id: "12", status: "done" }], { 12: stats });
+    expect((await scanHistory("o", "x")).scans).toEqual([{ at: at("12"), stats }]);
+  });
+
+  it("skips a scan cut short by lost access, whatever it counted", async () => {
+    mockRuns([{ id: "13", status: "partial", partial_reason: "revoked" }, { id: "12", status: "done" }], { 13: { score: null, counts_by_severity: {} }, 12: stats });
     expect((await scanHistory("o", "x")).scans).toEqual([{ at: at("12"), stats }]);
   });
 
