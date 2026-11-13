@@ -28,7 +28,7 @@ test("checkout refuses a redirect to another host", async ({ page, request }) =>
   await page.goto("/settings/billing");
   await stubCheckout(page, "https://evil.example/pay");
   await page.getByRole("button", { name: "Start free trial" }).click();
-  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.locator("main").getByRole("alert")).toBeVisible();
   await expect(page).toHaveURL(/\/settings\/billing$/);
 });
 

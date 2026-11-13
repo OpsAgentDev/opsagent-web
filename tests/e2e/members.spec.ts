@@ -113,7 +113,7 @@ test("an owner confirms before removing a member; a plan limit reads in words", 
     members = [mine];
     return r.fulfill({ status: 204 });
   });
-  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill(problem(402, "plan_limit", "limit")));
+  await page.route("**/v1/orgs/acme/invites", (r) => (r.request().method() === "POST" ? r.fulfill(problem(402, "plan_limit", "limit")) : r.fulfill({ json: [] })));
   await page.goto("/settings/members");
   await expect(page.getByRole("button", { name: `Remove ${mine.email}` })).toHaveCount(0);
   await page.getByLabel("Email").fill("x@example.com");
@@ -128,7 +128,7 @@ test("a rate-limit refusal shows no raw code", async ({ page }) => {
   await mockSession(page);
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
   await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine] }));
-  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill(problem(429, "rate_limited", "Too many invites today. Try again tomorrow.")));
+  await page.route("**/v1/orgs/acme/invites", (r) => (r.request().method() === "POST" ? r.fulfill(problem(429, "rate_limited", "Too many invites today. Try again tomorrow.")) : r.fulfill({ json: [] })));
   await page.goto("/settings/members");
   await page.getByLabel("Email").fill("x@example.com");
   await page.getByRole("button", { name: "Send invite" }).click();
