@@ -10,7 +10,8 @@ import { openTotal, type LatestScan } from "@/lib/scan";
 
 /** One cloud account: status, the latest scan's score and counts, and its top issues. */
 export function ConnectionCard({ org, c, several, latest, error }: { org: string; c: Connection; several: boolean; latest?: LatestScan; error?: Error }) {
-  const stats = latest?.stats;
+  // A removed connection's findings are no longer listed, so its last scan's numbers are not shown either.
+  const stats = c.status === "disconnected" ? undefined : latest?.stats;
   return (
     <div className="card">
       <div className="conn-head">
