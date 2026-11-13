@@ -147,7 +147,7 @@ test("demo without JS", async ({ browser, baseURL }) => {
 test("dashboard keeps its own styles", async ({ page, request }) => {
   await signUp(page, request);
   await page.goto("/dashboard");
-  await expect(page.locator("header.bar").getByLabel("OpsAgent").first()).toBeVisible();
+  await expect(page.locator(".app .sidebar").getByRole("link", { name: "OpsAgent", exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.body.closest(".mkt") === null && !document.querySelector(".mkt"))).toBe(true);
 });
 

@@ -92,6 +92,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/me/terms": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["auth_accept_terms"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/passkeys": {
         parameters: {
             query?: never;
@@ -1625,6 +1641,11 @@ export interface components {
             /** Format: uuid */
             id: string;
             name?: string | null;
+            /**
+             * Format: date-time
+             * @description When the user agreed to the Terms and the Privacy Policy; null until they do.
+             */
+            terms_accepted_at?: string | null;
         };
         Member: {
             email: string;
@@ -2238,6 +2259,32 @@ export interface operations {
             };
             /** @description `confirm_mismatch`: the email was not typed exactly */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_accept_terms: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted; a repeat call keeps the first time */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3100,15 +3147,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
             };
             404: {
                 headers: {
@@ -5180,15 +5218,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -5256,15 +5285,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -5314,15 +5334,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Member"];
-                };
-            };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {

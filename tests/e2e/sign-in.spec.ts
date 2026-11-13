@@ -10,7 +10,7 @@ test("sign-up page shows three options", async ({ page }) => {
   }
   await expect(main.getByRole("link", { name: "Continue with email" })).toHaveAttribute("href", "/sign-up/email");
   await expect(main.getByRole("link", { name: "Sign in" })).toHaveAttribute("href", "/sign-in");
-  await expect(main.getByText("After you sign in we'll suggest adding a passkey, so next time is one tap.")).toBeVisible();
+  await expect(main.getByText("You'll agree to the Terms on the next step. Then we'll suggest adding a passkey, so next time is one tap.")).toBeVisible();
   // Bare page: no site header or footer, only a way home.
   await expect(page.getByRole("banner")).toHaveCount(0);
   await expect(page.getByRole("contentinfo")).toHaveCount(0);

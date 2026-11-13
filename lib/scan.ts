@@ -36,3 +36,22 @@ export function openTotal(stats: ScanStats): number | null {
   const counts = stats.counts_by_severity;
   return counts ? Object.values(counts).reduce<number>((a, n) => a + (n ?? 0), 0) : null;
 }
+
+export type Overview = { score: number | null; open: number | null; urgent: number | null; connected: number };
+
+/**
+ * The dashboard's four tiles from each connection's status and latest scan stats (null: no finished scan yet).
+ * Disconnected accounts are left out. Score is the lowest; open and urgent (critical + high) are sums; all three are
+ * null until one scan has finished.
+ */
+export function overview(rows: { status: string; stats?: ScanStats | null }[]): Overview {
+  const scanned = rows.filter((r) => r.status !== "disconnected").flatMap((r) => (r.stats ? [r.stats] : []));
+  const scores = scanned.flatMap((s) => (typeof s.score === "number" ? [s.score] : []));
+  const sum = (pick: (s: ScanStats) => number) => (scanned.length ? scanned.reduce((a, s) => a + pick(s), 0) : null);
+  return {
+    score: scores.length ? Math.min(...scores) : null,
+    open: sum((s) => openTotal(s) ?? 0),
+    urgent: sum((s) => (s.counts_by_severity?.critical ?? 0) + (s.counts_by_severity?.high ?? 0)),
+    connected: rows.filter((r) => r.status === "connected").length,
+  };
+}

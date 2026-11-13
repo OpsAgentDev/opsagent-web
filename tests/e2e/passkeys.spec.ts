@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { codeInMail, signUp } from "./helpers";
+import { codeInMail, forgetPasskeySkip, signUp } from "./helpers";
 
 const CARD = "Add a passkey (recommended)";
 
@@ -13,7 +13,8 @@ async function authenticator(page: Page) {
 }
 
 test("a user with an organisation sees the recommendation on Settings > Security and can dismiss it", async ({ page, request }) => {
-  await signUp(page, request); // the welcome screen and the dashboard checklist carry no card
+  await signUp(page, request); // the dashboard checklist carries no card
+  await forgetPasskeySkip(page); // onboarding's "Skip for now" hides the card for 30 days
   await page.goto("/settings/security");
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
   await expect(page.getByText("Sign in next time with your fingerprint, face or device PIN. No email to wait for.")).toBeVisible();
@@ -56,6 +57,7 @@ test("remove passkey", async ({ page, request }) => {
 
   await main.getByRole("button", { name: /^Remove/ }).click();
   await expect(main.getByText("No passkeys yet.")).toBeVisible();
+  await forgetPasskeySkip(page);
   await page.reload(); // the card shows on Settings > Security once the layout knows the passkey is gone
   await expect(page.getByRole("heading", { name: CARD })).toBeVisible();
 });

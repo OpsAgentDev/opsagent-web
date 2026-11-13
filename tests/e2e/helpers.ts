@@ -54,18 +54,32 @@ export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }
 
-/** Signs a new user in with the emailed code (no organisation yet); returns the email. */
-export async function signIn(page: Page, request: APIRequestContext): Promise<string> {
+/** Onboarding steps 1 and 2: agrees to the terms and skips the passkey; leaves the user on the organisation step. */
+export async function passTerms(page: Page): Promise<void> {
+  await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByRole("button", { name: "Skip for now" }).click();
+  await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
+}
+
+/** Forgets the onboarding "Skip for now", so the passkey recommendation card can show again. */
+export async function forgetPasskeySkip(page: Page): Promise<void> {
+  await page.evaluate(() => localStorage.removeItem("opsagent.passkeyPromptDismissedAt"));
+}
+
+/** Signs a new user in with the emailed code (no organisation yet); returns the email. `onboard: false` stops at the terms step. */
+export async function signIn(page: Page, request: APIRequestContext, { onboard = true } = {}): Promise<string> {
   const email = `e2e-${Date.now()}@example.com`;
   await page.goto("/sign-in/email");
   await page.getByLabel("Email").fill(email);
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));
   await expect(page).toHaveURL(/\/dashboard$/);
+  if (onboard) await passTerms(page);
   return email;
 }
 
-/** Creates an organisation from the welcome form and waits for it to exist. */
+/** Creates an organisation from the onboarding form and waits for it to exist. */
 export async function createOrg(page: Page): Promise<void> {
   await page.getByLabel("Organisation name").fill(`E2E ${Date.now()}`);
   await page.getByRole("button", { name: "Create organisation" }).click();

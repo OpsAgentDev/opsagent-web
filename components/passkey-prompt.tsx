@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { usePasskeyAdd } from "@/lib/use-passkey-add";
-import { DISMISSED_KEY, isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
+import { dismissPasskeyPrompt, isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
 
 /** The recommendation card, shown by the (app) layout while the user has no passkey. "Not now" hides it for 30 days. */
 export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
@@ -14,11 +14,7 @@ export function PasskeyPrompt({ onAdded }: { onAdded: () => void }) {
   if (hidden) return null;
 
   function notNow() {
-    try {
-      localStorage.setItem(DISMISSED_KEY, String(Date.now()));
-    } catch {
-      // Blocked storage: the card is only hidden for this page view.
-    }
+    dismissPasskeyPrompt();
     setHidden(true);
   }
 
