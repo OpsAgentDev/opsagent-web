@@ -1,36 +1,52 @@
 /* Home page only. Every rule sits under .mkt; the lp- prefix keeps it clear of the inner pages. */
 
-/* The hero bay and the closing band bleed off the right edge; they are clipped here, never scrolled to. */
+/* The hero backdrop, section bands and the closing band bleed off both edges; they are clipped here, never scrolled to. */
 .mkt:has(main.lp) { overflow-x: clip; }
 
-/* Hero: what it is on the left, the briefing it sends on the right */
-.mkt .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 64px;
-  align-items: center;
-  padding: 88px 0 112px;
-  scroll-margin-top: 72px;
+/* Hero: centred words and the waitlist, then the dashboard itself as a running product window */
+.mkt .hero { position: relative; isolation: isolate; padding: 80px 0 0; text-align: center; scroll-margin-top: 72px; border-bottom: 1px solid var(--line); }
+/* Behind it: a faint grid that fades out, and two soft glows that drift very slowly. */
+.mkt .hero::before {
+  content: ""; position: absolute; z-index: -2; inset: 0 -50vw;
+  background: linear-gradient(var(--grid) 1px, transparent 1px) 50% 0 / 56px 56px, linear-gradient(90deg, var(--grid) 1px, transparent 1px) 50% 0 / 56px 56px;
+  mask-image: radial-gradient(ellipse 760px 78% at 50% 30%, #000 25%, transparent 100%);
 }
-.mkt .hero h1 { max-width: 11ch; font-size: clamp(40px, 4.2vw + 14px, 68px); font-weight: 680; line-height: 1.02; letter-spacing: -0.04em; }
-.mkt .hero .lead { max-width: 30em; }
-.mkt .hero .waitlist, .mkt .hero a.trial-cta { margin-top: 32px; }
-.mkt .hero-note { margin-top: 24px; max-width: 36em; font-size: 14.5px; color: var(--soft); }
-.mkt .hero-who { margin-top: 12px; max-width: 36em; font-size: 14.5px; color: var(--soft); }
-.mkt .hero-visual { position: relative; isolation: isolate; min-width: 0; padding: 44px 0 44px 44px; }
-.mkt .hero-visual::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: 0 -50vw 0 0;
-  background: var(--brand);
-  border: 1px solid var(--line);
-  border-radius: 20px 0 0 20px;
+.mkt .hero::after {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: -80px; width: 1100px; height: 760px; margin-left: -550px; pointer-events: none;
+  background: radial-gradient(closest-side at 38% 42%, var(--glow), transparent), radial-gradient(closest-side at 68% 62%, var(--glow-2), transparent);
 }
-@media (prefers-reduced-motion: no-preference) {
-  .mkt .lp-arrive { animation: lp-arrive 700ms cubic-bezier(0.2, 0.7, 0.2, 1) 250ms backwards; }
-}
-@keyframes lp-arrive { from { opacity: 0; transform: translateY(16px); } }
+.mkt .hero-text { display: grid; justify-items: center; }
+.mkt .hero-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px; font-size: 13.5px; font-weight: 550; line-height: 1.4; color: var(--accent); background: var(--accent-bg); border: 1px solid var(--accent-line); border-radius: 999px; }
+.mkt .hero-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.mkt .hero h1 { max-width: 14ch; margin-top: 24px; font-size: clamp(40px, 4.2vw + 14px, 68px); font-weight: 680; line-height: 1.02; letter-spacing: -0.04em; }
+.mkt .hero .lead { max-width: 36em; }
+.mkt .hero .waitlist { width: 100%; margin-top: 32px; }
+.mkt .hero a.trial-cta { margin-top: 32px; }
+.mkt .hero-note, .mkt .hero-who { max-width: 44em; font-size: 14.5px; color: var(--soft); }
+.mkt .hero-note { margin-top: 24px; }
+.mkt .hero-who { margin-top: 8px; }
+
+/* The dashboard in the hero: a window a little wider than the text column, running off the bottom edge. */
+.mkt .lp-dash { position: relative; margin: 64px 0 0; overflow: hidden; text-align: left; font-size: 14px; line-height: 1.5; color: var(--body); background: var(--bg); border: 1px solid var(--line); border-bottom: 0; border-radius: 12px 12px 0 0; box-shadow: var(--shadow-lg); }
+@media (min-width: 1240px) { .mkt .lp-dash { margin-inline: -48px; } }
+.mkt .lp-dash::after { content: ""; position: absolute; inset: auto 0 0; height: 72px; pointer-events: none; background: linear-gradient(transparent, var(--bg)); }
+.mkt .lp-dash-app { display: grid; grid-template-columns: 196px minmax(0, 1fr); }
+.mkt .lp-dash-side { padding: 12px 10px 16px; background: var(--surface); border-right: 1px solid var(--line); }
+.mkt .lp-dash-logo { display: flex; align-items: center; height: 40px; padding: 0 8px; margin-bottom: 4px; color: var(--ink); }
+.mkt .lp-dash-nav { display: flex; align-items: center; gap: 10px; padding: 7px 10px; font-size: 13.5px; color: var(--body); border-radius: 8px; }
+.mkt .lp-dash-nav i { width: 14px; height: 14px; border: 1.5px solid var(--soft); border-radius: 4px; }
+.mkt .lp-dash-nav.on { color: var(--ink); font-weight: 600; background: var(--accent-bg); }
+.mkt .lp-dash-nav.on i { border-color: var(--accent); }
+.mkt .lp-dash-label { margin: 18px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+.mkt .lp-dash-main { min-width: 0; }
+.mkt .lp-dash-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 24px; border-bottom: 1px solid var(--line); }
+.mkt .lp-dash-org { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); }
+.mkt .lp-dash-org span { display: grid; place-items: center; width: 26px; height: 26px; font-size: 13px; color: var(--accent); background: var(--accent-bg); border-radius: 7px; }
+.mkt .lp-dash-who { font-size: 13px; color: var(--soft); }
+.mkt .lp-dash-body { padding: 24px 24px 56px; }
+.mkt .lp-dash .ov-greet { margin-bottom: 20px; }
+.mkt .lp-dash .ov-greet .ov-hello { font-size: 22px; }
+.mkt .lp-dash .ov-two { margin-bottom: 0; }
 
 /* Product visuals share one frame: a title bar, then the content */
 .mkt .lp-frame {
@@ -46,8 +62,12 @@
   box-shadow: var(--shadow);
 }
 .mkt .lp-frame-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
-.mkt .lp-frame-title { font-size: 13.5px; font-weight: 600; color: var(--ink); }
-.mkt .lp-sample { flex: none; padding: 3px 9px; font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--warn); background: var(--warn-bg); border-radius: 999px; }
+.mkt .lp-frame-title { margin-right: auto; font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.mkt .lp-frame-bar { justify-content: flex-start; box-shadow: var(--hl); }
+.mkt .lp-dots { display: flex; gap: 6px; flex: none; }
+.mkt .lp-dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); opacity: 0.55; }
+.mkt .lp-dash > .lp-frame-bar .lp-frame-title { margin: 0 auto; padding: 3px 14px; font: 12.5px/1.5 var(--mono); color: var(--soft); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
+.mkt .lp-sample { flex: none; padding: 3px 9px; font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--warn-ink); background: var(--warn-bg); border-radius: 999px; }
 .mkt .lp-frame code { padding: 0; font-size: 0.9em; line-height: inherit; background: none; }
 .mkt .lp-dot { display: inline-block; flex: none; width: 9px; height: 9px; border-radius: 50%; }
 .mkt .lp-dot.sev-critical { background: var(--bad); }
@@ -70,15 +90,12 @@
 .mkt .lp-bar { display: flex; gap: 3px; height: 6px; }
 .mkt .lp-bar span { flex-basis: 0; border-radius: 3px; }
 .mkt .lp-bar .sev-critical { background: var(--bad); }
-.mkt .lp-bar .sev-high { background: rgba(248, 113, 113, 0.45); }
+.mkt .lp-bar .sev-high { background: var(--high); opacity: 0.6; }
 .mkt .lp-bar .sev-medium { background: var(--warn); }
 .mkt .lp-counts p { margin-top: 10px; font-size: 13.5px; color: var(--soft); }
 .mkt .lp-findings li { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 4px 14px; align-items: baseline; padding: 12px 18px; }
 .mkt .lp-findings li + li { border-top: 1px solid var(--line); }
-.mkt .lp-sev { justify-self: start; padding: 1px 9px; font-size: 12px; font-weight: 600; line-height: 18px; border: 1px solid transparent; border-radius: 999px; }
-.mkt .lp-sev.sev-critical { color: var(--accent-ink); background: var(--bad); }
-.mkt .lp-sev.sev-high { color: var(--bad); background: var(--bad-bg); border-color: rgba(248, 113, 113, 0.4); }
-.mkt .lp-sev.sev-medium { color: var(--warn); background: var(--warn-bg); border-color: rgba(251, 191, 36, 0.35); }
+.mkt .lp-findings .badge { justify-self: start; }
 .mkt .lp-finding-title { color: var(--ink); }
 .mkt .lp-frame .lp-res { font: 12.5px/1.5 var(--mono); color: var(--soft); }
 .mkt .lp-evidence { grid-column: 2 / -1; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; margin: 8px 0 4px; padding: 10px 12px; font-size: 13.5px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
@@ -89,20 +106,21 @@
 .mkt .lp-ledger li { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 14px; align-items: baseline; padding: 12px 18px; color: var(--ink); }
 .mkt .lp-ledger li + li { border-top: 1px solid var(--line); }
 .mkt .lp-verdict { font-size: 13px; font-weight: 650; }
-.mkt .lp-ledger .is-ok .lp-verdict { color: var(--ok); }
-.mkt .lp-ledger .is-no .lp-verdict { color: var(--bad); }
+.mkt .lp-ledger .is-ok .lp-verdict { color: var(--ok-ink); }
+.mkt .lp-ledger .is-no .lp-verdict { color: var(--bad-ink); }
 .mkt .lp-ledger figcaption { padding: 14px 18px; font-size: 13.5px; color: var(--soft); background: var(--surface-2); border-top: 1px solid var(--line); }
 
 /* Agent session */
-.mkt .lp-term { background: #070b16; }
+.mkt .lp-term { background: var(--device); }
+.mkt .lp-term-body { color: var(--device-ink); }
 .mkt .lp-term-body { padding: 18px 18px 22px; font: 13.5px/1.6 var(--mono); }
-.mkt .lp-ask { color: var(--ink); }
-.mkt .lp-ask span { color: var(--accent); }
+.mkt .lp-ask { color: var(--device-ink); }
+.mkt .lp-ask span { color: var(--device-accent); }
 .mkt .lp-call { margin-top: 14px; }
 .mkt .lp-call .lp-dot { margin-right: 8px; }
-.mkt .lp-args, .mkt .lp-result { color: var(--soft); }
+.mkt .lp-args, .mkt .lp-result { color: var(--device-soft); }
 .mkt .lp-result { padding-left: 17px; }
-.mkt .lp-answer { margin-top: 14px; padding-top: 14px; font: 15px/1.55 system-ui, sans-serif; color: var(--ink); border-top: 1px dashed var(--line); }
+.mkt .lp-answer { margin-top: 14px; padding-top: 14px; font: 15px/1.55 var(--font); color: var(--device-ink); border-top: 1px dashed var(--device-line); }
 .mkt .lp-frame .lp-answer code { font-family: var(--mono); }
 
 /* Sections: one idea each, the words beside the thing itself */
@@ -111,10 +129,14 @@
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   gap: 48px 72px;
   align-items: start;
-  padding: 104px 0;
+  position: relative;
+  isolation: isolate;
+  padding: 112px 0;
   border-top: 1px solid var(--line);
   scroll-margin-top: 56px;
 }
+.mkt .lp-sec:nth-of-type(even)::before { content: ""; position: absolute; z-index: -1; inset: 0 -50vw; background: var(--band); }
+.mkt .lp-sec:first-of-type, .mkt .hero + .lp-sec { border-top: 0; }
 .mkt .lp-flip { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); }
 .mkt .lp-flip > .lp-copy { order: 2; }
 .mkt .lp-sec h2, .mkt .lp-closing h2 { font-size: clamp(28px, 1.8vw + 18px, 40px); line-height: 1.1; letter-spacing: -0.03em; }
@@ -151,9 +173,9 @@
 .mkt .lp-stack { display: grid; gap: 24px; min-width: 0; }
 .mkt .mobile-strip { font-size: 15px; color: var(--soft); }
 
-.mkt .lp-copy > .lp-mcp { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 24px; padding: 12px 16px; background: #070b16; border: 1px solid var(--line); border-radius: 10px; }
-.mkt .lp-mcp span { font-size: 13px; color: var(--soft); }
-.mkt .lp-mcp code { padding: 0; font: 14.5px/1.5 var(--mono); color: var(--accent); background: none; overflow-wrap: anywhere; }
+.mkt .lp-copy > .lp-mcp { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 24px; padding: 12px 16px; background: var(--device); border: 1px solid var(--line); border-radius: 10px; }
+.mkt .lp-mcp span { font-size: 13px; color: var(--device-soft); }
+.mkt .lp-mcp code { padding: 0; font: 14.5px/1.5 var(--mono); color: var(--device-accent); background: none; overflow-wrap: anywhere; }
 
 /* Pricing pointer and trust: no visual, the numbers and facts carry it */
 .mkt .lp-plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
@@ -175,15 +197,19 @@
 .mkt:has(main.lp) .site-footer { border-top: 0; }
 
 @media (max-width: 900px) {
-  .mkt .hero, .mkt .lp-sec, .mkt .lp-flip { grid-template-columns: minmax(0, 1fr); }
-  .mkt .hero { gap: 48px; padding: 48px 0 72px; }
-  .mkt .hero-visual { padding: 24px 0 24px 24px; }
+  .mkt .lp-sec, .mkt .lp-flip { grid-template-columns: minmax(0, 1fr); }
+  .mkt .hero { padding: 48px 0 0; }
+  .mkt .lp-dash { margin-top: 44px; }
+  .mkt .lp-dash-app { grid-template-columns: minmax(0, 1fr); }
+  .mkt .lp-dash-side { display: none; }
   .mkt .lp-sec { gap: 40px; padding: 72px 0; }
   .mkt .lp-flip > .lp-copy { order: 0; }
   .mkt .lp-closing { padding: 72px 0 88px; }
 }
 @media (max-width: 520px) {
-  .mkt .hero-visual { padding: 16px 0 16px 16px; }
+  .mkt .lp-dash-top { padding: 0 16px; }
+  .mkt .lp-dash-body { padding: 16px 16px 48px; }
+  .mkt .lp-dash-who { display: none; }
   .mkt .lp-msg { grid-template-columns: 28px minmax(0, 1fr); gap: 10px; padding: 14px 14px 18px; }
   .mkt .lp-msg > svg { width: 28px; height: 28px; }
   .mkt .lp-findings li { grid-template-columns: 68px minmax(0, 1fr); gap: 4px 10px; padding: 12px 14px; }
@@ -194,3 +220,82 @@
   .mkt .lp-rhythm > div { grid-template-columns: minmax(0, 1fr); }
   .mkt .lp-plans > div + div { padding-left: 14px; }
 }
+
+/* ---- Depth: sample windows are raised, with a top highlight; the hero pill and the bands carry the one glow. ---- */
+.mkt .lp-frame { box-shadow: var(--hl), var(--shadow); }
+.mkt .lp-dash > .lp-frame-bar { background: var(--surface); }
+.mkt .lp-closing::after { content: ""; position: absolute; z-index: -1; left: 50%; top: 0; width: 900px; height: 420px; margin-left: -450px; pointer-events: none; background: radial-gradient(closest-side, var(--glow), transparent); }
+
+/* The running window's extras. Static (and mostly hidden) unless motion is welcome. */
+.mkt .lp-scan { color: var(--body); }
+.mkt .lp-scan-names { display: grid; min-width: 11ch; color: var(--soft); }
+.mkt .lp-scan-names::before { content: "·"; grid-area: 1 / 1; justify-self: start; }
+.mkt .lp-scan-names b { grid-area: 1 / 1; padding-left: 12px; font-weight: 500; white-space: nowrap; opacity: 0; }
+.mkt .lp-scan-names b:first-child { opacity: 1; }
+.mkt .lp-arrival { opacity: 0; }
+.mkt .lp-typing { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* One load sequence: the words rise in order, then the window, then its numbers and chart (--d delays them). */
+  .mkt .hero-text > * { animation: lp-up 600ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+  .mkt .hero-text > :nth-child(2) { animation-delay: 70ms; } .mkt .hero-text > :nth-child(3) { animation-delay: 140ms; }
+  .mkt .hero-text > :nth-child(4) { animation-delay: 210ms; } .mkt .hero-text > :nth-child(5) { animation-delay: 280ms; } .mkt .hero-text > :nth-child(6) { animation-delay: 330ms; }
+  .mkt .lp-dash { --d: 1000ms; animation: lp-rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) 380ms backwards; }
+  .mkt .hero-pill::before { animation: lp-breathe 2600ms ease-in-out infinite; }
+  /* The backdrop glow drifts, far too slowly to notice as movement. */
+  .mkt .hero::after { animation: lp-drift 26s ease-in-out infinite alternate; }
+  /* The logo's dot goes once round its ring when the page opens. The artwork itself is untouched. */
+  .mkt .site-header .brand svg circle:last-of-type { transform-box: view-box; transform-origin: 20px 20px; animation: lp-orbit 1500ms cubic-bezier(0.3, 0.7, 0.2, 1) 300ms backwards; }
+
+  /* Ambient loop, 10s: check names take turns; near the end a finding arrives and the two counts tick up; then it resets. */
+  .mkt .lp-scan-names b, .mkt .lp-scan-names b:first-child { opacity: 0; animation: lp-name 10s linear 2s infinite; }
+  .mkt .lp-scan-names b:nth-child(2) { animation-delay: 4.5s; } .mkt .lp-scan-names b:nth-child(3) { animation-delay: 7s; } .mkt .lp-scan-names b:nth-child(4) { animation-delay: 9.5s; }
+  .mkt .lp-arrival { animation: lp-arrival 10s ease-out 2s infinite; }
+  @supports (content: "x" / "") {
+    .mkt .lp-dash .tile:nth-child(2) .ov-count::after, .mkt .lp-dash .tile:nth-child(3) .ov-count::after {
+      animation: ov-count 900ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms) backwards, lp-tick 10s linear 2s infinite;
+    }
+  }
+  /* Nothing loops while the window is off-screen or the tab is hidden (Live sets data-paused). */
+  .mkt .lp-live[data-paused] *, .mkt .lp-live[data-paused] *::before, .mkt .lp-live[data-paused] *::after { animation-play-state: paused; }
+
+  /* Slack: three dots, then the briefing pops in, once, when first seen. The alert's red dot then asks for attention. */
+  .mkt .lp-live[data-armed]:not([data-seen]) .lp-slack .lp-msg-body > :not(.lp-msg-head) { opacity: 0; }
+  .mkt .lp-live[data-armed] .lp-slack:first-child .lp-msg-body { position: relative; }
+  .mkt .lp-live[data-armed] .lp-slack:first-child .lp-typing { position: absolute; left: 0; top: 30px; display: flex; gap: 4px; padding: 8px 10px; background: var(--surface-2); border-radius: 10px; opacity: 0; }
+  .mkt .lp-typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--soft); animation: lp-dot 900ms ease-in-out infinite; }
+  .mkt .lp-typing i:nth-child(2) { animation-delay: 150ms; } .mkt .lp-typing i:nth-child(3) { animation-delay: 300ms; }
+  .mkt .lp-live[data-seen] .lp-slack:first-child .lp-typing { animation: lp-typing 1500ms linear both; }
+  .mkt .lp-live[data-seen] .lp-slack:first-child .lp-msg-body > :not(.lp-msg-head):not(.lp-typing) { animation: lp-pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 1500ms backwards; }
+  .mkt .lp-live[data-seen] .lp-slack:last-child .lp-msg-body > :not(.lp-msg-head):not(.lp-typing) { animation: lp-pop 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 2300ms backwards; }
+  .mkt .lp-urgent .lp-dot { position: relative; }
+  .mkt .lp-live[data-seen] .lp-urgent .lp-dot::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--bad); opacity: 0; animation: ov-ring 1300ms ease-out 2700ms 3; }
+
+  /* Terminal: the question is typed, then the tool call, its result and the answer print, once. */
+  .mkt .lp-live[data-armed]:not([data-seen]) .lp-term-body > * { opacity: 0; }
+  .mkt .lp-live[data-armed] .lp-ask { width: fit-content; max-width: 100%; }
+  .mkt .lp-live[data-seen] .lp-ask { animation: lp-type 1500ms steps(36, end) 200ms backwards; }
+  .mkt .lp-live[data-seen] .lp-call { animation: lp-up 320ms ease-out 2000ms backwards; }
+  .mkt .lp-live[data-seen] .lp-result { animation: lp-up 320ms ease-out 2600ms backwards; }
+  .mkt .lp-live[data-seen] .lp-answer { animation: lp-up 420ms ease-out 3200ms backwards; }
+  .mkt .lp-live[data-seen] .lp-call .lp-dot { animation: lp-breathe 1000ms ease-in-out 2000ms 2; }
+
+  /* Hover: windows and the plan numbers lift by a pixel and their edge brightens. */
+  .mkt .lp-frame, .mkt .lp-plans > div { transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .mkt .lp-frame:hover { transform: translateY(-1px); border-color: var(--line-strong); }
+  .mkt .lp-more a { transition: color 150ms ease; }
+  .mkt .lp-checks li { transition: color 150ms ease, padding-left 150ms ease; }
+  .mkt .lp-checks li:hover { padding-left: 4px; color: var(--accent); }
+}
+@keyframes lp-up { from { opacity: 0; transform: translateY(10px); } }
+@keyframes lp-rise { from { opacity: 0; transform: translateY(28px) scale(0.985); } }
+@keyframes lp-breathe { 50% { opacity: 0.35; } }
+@keyframes lp-drift { from { transform: translate(-36px, 0) scale(1); } to { transform: translate(36px, 18px) scale(1.06); } }
+@keyframes lp-orbit { from { transform: rotate(-360deg); } }
+@keyframes lp-name { 0% { opacity: 0; transform: translateY(5px); } 3%, 22% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; transform: translateY(-5px); } }
+@keyframes lp-arrival { 0%, 58% { opacity: 0; transform: translateY(10px); } 63%, 93% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; transform: none; } }
+@keyframes lp-tick { 0%, 62% { --ov-n: var(--to); } 63%, 95% { --ov-n: var(--next); } 96%, 100% { --ov-n: var(--to); } }
+@keyframes lp-dot { 50% { opacity: 0.3; transform: translateY(-2px); } }
+@keyframes lp-typing { 0% { opacity: 0; } 8%, 88% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes lp-pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
+@keyframes lp-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
 import {
   BellIcon, ChatSquareIcon, CheckIcon, CostIcon, FlagIcon, GpuIcon, GridIcon, KeyIcon, MailIcon, ShieldIcon, UserKeyIcon, UsersIcon,
 } from "@/components/marketing/landing-icons";
 import { OrgSwitcher, type OrgChoice } from "@/components/org-switcher";
 import { SignOut } from "@/components/sign-out";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { useDismiss } from "@/lib/use-dismiss";
 
 type NavLink = { href: string; label: string; icon: ReactNode };
@@ -46,6 +47,14 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
     if (open) drawer.current?.querySelector("a")?.focus();
   }, [open]);
 
+  // One marker behind the current link; it slides when the page changes (the stylesheet animates the move).
+  const nav = useRef<HTMLElement>(null);
+  const [mark, setMark] = useState<{ y: number; h: number } | null>(null);
+  useLayoutEffect(() => {
+    const at = nav.current?.querySelector<HTMLElement>('a[aria-current="page"]');
+    setMark(at ? { y: at.offsetTop, h: at.offsetHeight } : null);
+  }, [pathname, open]);
+
   const link = (l: NavLink) => (
     <Link key={l.href} href={l.href} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined}>
       {l.icon}
@@ -64,12 +73,14 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
           </Link>
           <button type="button" className="quiet drawer-close" onClick={() => { close(); button.current?.focus(); }}>Close menu</button>
         </div>
-        <nav aria-label="Main">
+        <nav ref={nav} aria-label="Main">
+          {mark && <span className="nav-mark" aria-hidden="true" style={{ transform: `translateY(${mark.y}px)`, height: mark.h }} />}
           {APP_LINKS.map(link)}
           <p className="nav-label" id="nav-settings">Settings</p>
           <div role="group" aria-labelledby="nav-settings">{SETTINGS_LINKS.map(link)}</div>
         </nav>
         <div className="sidebar-foot">
+          <ThemeSwitch />
           <span className="account-email" title={email}>{email}</span>
           <SignOut className="quiet" />
         </div>

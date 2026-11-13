@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
+import { ThemeSwitch } from "@/components/theme-switch";
 import "../(marketing)/marketing.css";
 import "@/components/auth/auth.css";
 
@@ -11,6 +12,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <Link href="/" className="auth-back">← Back to home</Link>
       <div className="auth-brand"><Logo size={28} /></div>
       {children}
+      <div className="auth-theme"><ThemeSwitch /></div>
     </div>
   );
 }

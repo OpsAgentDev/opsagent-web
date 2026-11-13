@@ -1,5 +1,10 @@
 import type { ReactNode } from "react";
-import { Mark } from "@/components/brand/Logo";
+import { Severity } from "@/components/badges";
+import { Logo, Mark } from "@/components/brand/Logo";
+import { Live } from "@/components/marketing/Live";
+import { OverviewTiles } from "@/components/overview-tiles";
+import { IssueList } from "@/components/top-issues";
+import { TrendChart } from "@/components/trend-chart";
 
 /**
  * The home page's product visuals, drawn in HTML. Wording follows what brain really sends
@@ -9,13 +14,21 @@ import { Mark } from "@/components/brand/Logo";
 
 const SNAPSHOT = "orders-db-2026-11-03";
 
+/** The window chrome every sample shares: three dots, a title, and the Sample tag where the content is invented. */
+function Chrome({ title, sample = true }: { title: ReactNode; sample?: boolean }) {
+  return (
+    <div className="lp-frame-bar">
+      <span className="lp-dots" aria-hidden="true"><i /><i /><i /></span>
+      <span className="lp-frame-title">{title}</span>
+      {sample && <span className="lp-sample">Sample</span>}
+    </div>
+  );
+}
+
 function Frame({ label, title, className, children }: { label: string; title: ReactNode; className?: string; children: ReactNode }) {
   return (
     <figure className={className ? `lp-frame ${className}` : "lp-frame"} aria-label={label}>
-      <div className="lp-frame-bar">
-        <span className="lp-frame-title">{title}</span>
-        <span className="lp-sample">Sample</span>
-      </div>
+      <Chrome title={title} />
       {children}
     </figure>
   );
@@ -31,6 +44,8 @@ function SlackMessage({ time, children }: { time: string; children: ReactNode })
           <span className="lp-app">App</span>
           <time>{time}</time>
         </p>
+        {/* Shown for a moment before the message arrives; decoration only. */}
+        <span className="lp-typing" aria-hidden="true"><i /><i /><i /></span>
         {children}
       </div>
     </div>
@@ -40,7 +55,7 @@ function SlackMessage({ time, children }: { time: string; children: ReactNode })
 /** The morning briefing as it is posted to Slack. */
 export function SlackBriefing() {
   return (
-    <Frame label="Sample morning briefing in Slack" title="# ops" className="lp-slack lp-arrive">
+    <Frame label="Sample morning briefing in Slack" title="# ops" className="lp-slack">
       <SlackMessage time="08:00">
         <p><strong>OpsAgent morning briefing</strong></p>
         <p><strong>New critical and high</strong> (3)</p>
@@ -98,7 +113,7 @@ export function FindingsPanel() {
       <ol>
         {FINDINGS.map((f, i) => (
           <li key={f.title}>
-            <span className={`lp-sev sev-${f.sev}`}>{f.sev}</span>
+            <Severity value={f.sev} />
             <span className="lp-finding-title">{f.title}</span>
             <code className="lp-res">{f.resource}</code>
             {i === 0 && (
@@ -129,9 +144,7 @@ const ACCESS: { ok: boolean; what: string }[] = [
 export function AccessLedger({ foot }: { foot: ReactNode }) {
   return (
     <figure className="lp-frame lp-ledger" aria-label="What the OpsAgent role can and cannot do">
-      <div className="lp-frame-bar">
-        <span className="lp-frame-title">The OpsAgent role in your account</span>
-      </div>
+      <Chrome title="The OpsAgent role in your account" sample={false} />
       <ul>
         {ACCESS.map((a) => (
           <li key={a.what} className={a.ok ? "is-ok" : "is-no"}>
@@ -162,5 +175,62 @@ export function AgentSession() {
         </p>
       </div>
     </Frame>
+  );
+}
+
+// Real check names, for the status pill.
+const SCANNING = ["Public exposure", "IAM hygiene", "Backup coverage", "Certificate expiry"];
+const NAV = ["Dashboard", "Findings", "Ask OpsAgent", "Deliveries"];
+const SETTINGS = ["Delivery settings", "Members", "Billing"];
+// Fourteen nightly scans ending at the six open findings the other samples show.
+const TREND = [12, 12, 11, 11, 10, 10, 9, 9, 8, 8, 8, 7, 7, 6].map((open, i) => ({
+  at: `2026-11-${String(i + 1).padStart(2, "0")}T12:00:00Z`, open, critical: i === 13 ? 1 : 0,
+}));
+
+/** The hero: the dashboard overview, built from the app's own tiles, chart and issue list with sample numbers. */
+export function DashboardSample() {
+  return (
+    <Live className="lp-dash-live">
+    <figure className="lp-dash" aria-label="Sample dashboard for the account acme-prod">
+      <Chrome title="opsagent.dev/dashboard" />
+      <div className="lp-dash-app">
+      <div className="lp-dash-side" aria-hidden="true">
+        <p className="lp-dash-logo"><Logo size={20} /></p>
+        {NAV.map((n, i) => <p key={n} className={i ? "lp-dash-nav" : "lp-dash-nav on"}><i />{n}</p>)}
+        <p className="lp-dash-label">Settings</p>
+        {SETTINGS.map((n) => <p key={n} className="lp-dash-nav"><i />{n}</p>)}
+      </div>
+      <div className="lp-dash-main">
+        <div className="lp-dash-top">
+          <p className="lp-dash-org"><span aria-hidden="true">A</span>Acme</p>
+          <span className="lp-dash-who">sam@acme.example</span>
+        </div>
+        <div className="lp-dash-body">
+          <div className="ov-greet">
+            <p className="ov-hello">Good morning</p>
+            {/* The window is "running": a status pill that cycles through real check names. Decoration, so hidden from assistive tech. */}
+            <p className="ov-live lp-scan" data-state="scanning" aria-hidden="true">
+              <i />Scanning acme-prod
+              <span className="lp-scan-names">{SCANNING.map((c) => <b key={c}>{c}</b>)}</span>
+            </p>
+            <p className="ov-line">Last scan 14 Nov, 02:00. 1 new critical since the previous scan.</p>
+          </div>
+          <OverviewTiles overview={{ score: 72, open: 6, urgent: 3, connected: 1 }} total={1} since={{ openDelta: -1, newCritical: 1 }} />
+          <div className="ov-two">
+            <TrendChart points={TREND} />
+            <div className="ov-panel">
+              <div className="ov-head"><p className="ov-title">Fix these first</p></div>
+              <IssueList label="Sample findings to fix first" linked={false} items={FINDINGS.slice(0, 3).map((f) => ({ id: f.title, severity: f.sev, title: f.title, resource_identity: f.resource }))} />
+              {/* A finding "arrives" in the loop; its space is always reserved, so nothing moves. */}
+              <div className="lp-arrival" aria-hidden="true">
+                <IssueList label="" linked={false} items={[{ id: "new", severity: "high", title: "Security group sg-web exposes an admin or database port to the world", resource_identity: "sg-web" }]} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </figure>
+    </Live>
   );
 }

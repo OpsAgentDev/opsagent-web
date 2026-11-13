@@ -12,7 +12,7 @@
 .mkt .auth input {
   width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; font-weight: 400; color: var(--ink);
   background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4); cursor: text;
+  box-shadow: var(--inset); cursor: text;
 }
 .mkt .auth input::placeholder { color: var(--soft); opacity: 1; }
 .mkt .auth input:focus { border-color: var(--accent); }
@@ -25,7 +25,7 @@
   width: 100%; padding: 12px 16px; font: inherit; font-size: 16px; font-weight: 600; color: var(--ink);
   background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 8px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-sm);
 }
 .mkt .auth-btn svg { flex: none; }
 .mkt .auth-btn:hover:not(:disabled) { background: var(--line); border-color: var(--soft); }
@@ -43,4 +43,5 @@
 .mkt .auth [role="status"] { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; }
 /* The form's submit: solid and light, so it never reads as another field under the input. */
 .mkt .auth form .auth-btn:not(.primary) { color: var(--bg); background: var(--ink); border-color: var(--ink); }
-.mkt .auth form .auth-btn:not(.primary):hover:not(:disabled) { background: #ffffff; border-color: #ffffff; }
+.mkt .auth form .auth-btn:not(.primary):hover:not(:disabled) { background: var(--ink-hover); border-color: var(--ink-hover); }
+.mkt .auth-theme { margin-top: 40px; }

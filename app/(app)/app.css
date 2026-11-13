@@ -51,7 +51,7 @@
   .app .sidebar.open { visibility: visible; transform: none; box-shadow: var(--shadow); }
   .app .sidebar .drawer-close { display: block; }
   .app .sidebar nav a { padding: 10px; }
-  .app .drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(3, 6, 15, 0.72); }
+  .app .drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: var(--backdrop); }
   .app .menu-button { display: block; }
   .app .top-title, .app .top-bar .account-email { display: none; }
 }
@@ -59,7 +59,7 @@
 
 /* Banners: billing notices and the passkey prompt as slim strips. */
 .app .banner { padding: 10px var(--gutter); font-size: 14px; text-align: center; }
-.app .banner.warn { border-bottom-color: rgba(251, 191, 36, 0.35); }
+.app .banner.warn { border-bottom-color: var(--warn-line); }
 .app .banner a { font-weight: 600; }
 .app .passkey-prompt { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; max-width: var(--page); margin: 20px var(--gutter) 0; padding: 10px 12px 10px 16px; border-color: var(--line); border-left: 3px solid var(--accent); border-radius: 8px; }
 .app .passkey-prompt h2 { margin: 0; font-size: 15px; }
@@ -67,7 +67,7 @@
 .app .passkey-prompt .row { flex: none; }
 
 /* Controls */
-.app input, .app select, .app textarea { padding: 8px 12px; background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35); }
+.app input, .app select, .app textarea { padding: 8px 12px; background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: var(--inset); }
 .app select { padding-right: 28px; }
 .app input:focus-visible, .app select:focus-visible, .app textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .app input[type="checkbox"], .app input[type="radio"] { padding: 0; box-shadow: none; accent-color: var(--accent); width: 16px; height: 16px; }
@@ -81,11 +81,11 @@
 .app .stack > h2, .app .stack > h3 { margin: 16px 0 0; }
 .app .stack > h1 { margin-bottom: 8px; }
 .app p + table { margin-top: 8px; }
-.app button { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 1px 2px rgba(0, 0, 0, 0.4); transition: background-color 0.12s, border-color 0.12s; }
-.app button:hover:not(:disabled) { background: #1f2b45; border-color: var(--soft); }
+.app button { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); transition: background-color 0.12s, border-color 0.12s; }
+.app button:hover:not(:disabled) { background: var(--surface-3); border-color: var(--soft); }
 .app button[type="submit"], .app button.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
 .app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
-.app button.danger { color: var(--bad); background: transparent; border-color: rgba(248, 113, 113, 0.45); box-shadow: none; }
+.app button.danger { color: var(--bad-ink); background: transparent; border-color: var(--bad-line); box-shadow: none; }
 .app button.danger:hover:not(:disabled) { background: var(--bad-bg); border-color: var(--bad); }
 .app button.quiet { padding: 4px 10px; font-size: 13px; background: transparent; border-color: var(--line); box-shadow: none; color: var(--body); }
 .app button.quiet:hover:not(:disabled) { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
@@ -101,20 +101,16 @@
 .app th { padding: 10px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); background: var(--surface-2); border-bottom: 1px solid var(--line); }
 .app td { padding: 11px 14px; vertical-align: middle; border-bottom: 1px solid var(--line); }
 .app tbody tr:last-child td { border-bottom: 0; }
-.app tbody tr:hover td { background: rgba(255, 255, 255, 0.025); }
-.app td a { font-weight: 500; }
+.app tbody tr:hover td { background: var(--row-hover); }
+.app td a { font-weight: 500; color: var(--ink); }
+.app td a:hover { color: var(--accent); }
 .app td.row { display: table-cell; }
 .app td .actions, .app td.actions { white-space: nowrap; text-align: right; }
 .app td .actions button + button, .app td.actions button + button { margin-left: 6px; }
 .app main > table + .row, .app section > table + .row { margin-top: 16px; }
 
 /* Severity badges and status chips (text plus colour). */
-.app .badge, .app .chip-status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; border: 1px solid transparent; }
-.app .sev-critical { color: var(--accent-ink); background: var(--bad); }
-.app .sev-high { color: var(--bad); background: var(--bad-bg); border-color: rgba(248, 113, 113, 0.4); }
-.app .sev-medium { color: var(--warn); background: var(--warn-bg); border-color: rgba(251, 191, 36, 0.35); }
-.app .sev-low { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
-.app .sev-info { color: var(--soft); background: transparent; border-color: var(--line-strong); }
+.app .chip-status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; line-height: 18px; white-space: nowrap; border: 1px solid transparent; }
 .app .chip-status { font-weight: 500; color: var(--body); background: var(--surface-2); border-color: var(--line); }
 .app .chip-status::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 6px 1px 0; border-radius: 50%; background: var(--soft); vertical-align: middle; }
 .app .st-open::before, .app .st-pending::before, .app .st-verifying::before { background: var(--accent); }
@@ -123,32 +119,15 @@
 .app .st-disconnected::before, .app .st-failed::before { background: var(--bad); }
 
 /* Empty and error states */
-.app p[role="alert"].error { padding: 10px 14px; color: var(--ink); background: var(--bad-bg); border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 8px; font-size: 14px; }
+.app p[role="alert"].error { padding: 10px 14px; color: var(--ink); background: var(--bad-bg); border: 1px solid var(--bad-line); border-radius: 8px; font-size: 14px; }
 .app .empty { padding: 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: 10px; }
 
 /* Dashboard home: connection cards */
-.app .conn-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.app .conn-head h3 { margin: 0 0 2px; font-size: 17px; }
-.app .conn-head p { margin: 0; font-size: 13px; }
-.app .conn-body { display: flex; gap: 16px; align-items: stretch; flex-wrap: wrap; }
-.app .score { display: grid; align-content: center; justify-items: center; min-width: 108px; padding: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
-.app .score strong { font-size: 34px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
-.app .score span { margin-top: 6px; font-size: 12px; color: var(--soft); }
-.app .counts { flex: 1 1 160px; display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.app .counts li { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-.app .counts li strong { color: var(--ink); font-variant-numeric: tabular-nums; }
-.app .counts li.zero strong { color: var(--soft); font-weight: 400; }
 .app .cards.accounts { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
 .app .add-more { margin-top: 20px; }
 
 /* UX pass 1: findings summary, dashboard top issues, connection panel, trial panel */
 .app .summary { margin: 0 0 12px; font-size: 14px; color: var(--ink); }
-.app .view-all { margin: 16px 0 8px; font-size: 14px; font-weight: 600; }
-.app .top-issues { display: grid; gap: 8px; margin: 0; padding: 12px 0 0; list-style: none; border-top: 1px solid var(--line); }
-.app .top-issues li { display: flex; align-items: baseline; gap: 10px; font-size: 14px; }
-.app .top-issues li a { min-width: 0; overflow-wrap: anywhere; }
-.app .top-issues-none { margin: 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 14px; }
-.app .score span + span { margin-top: 2px; }
 .app .conn-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 20px; }
 .app .conn-title h1 { margin: 0; }
 .app .conn-sentence { flex: 1 0 100%; margin: 0; color: var(--body); }
@@ -198,22 +177,13 @@
 .app .steps-strip li[aria-current="step"] { color: var(--ink); font-weight: 600; }
 .app .steps-strip .n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-strong); font-size: 12px; font-weight: 600; }
 .app .steps-strip li[aria-current="step"] .n { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
-.app .steps-strip li[data-done] .n { color: var(--ok); border-color: var(--ok); }
+.app .steps-strip li[data-done] .n { color: var(--ok-ink); border-color: var(--ok); }
 .app .onboarding-card { padding: 28px; box-shadow: var(--shadow); }
 .app .onboarding-card .stack { max-width: none; gap: 16px; }
 .app .onboarding-card h1, .app .onboarding-card p { margin: 0; }
 .app .onboarding-card .agree { padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .app .small { font-size: 13px; }
 
-/* Dashboard overview tiles */
-.app .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0 0 24px; }
-.app .tile { padding: 16px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
-.app .tile dt { font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
-.app .tile dd { display: grid; gap: 6px; margin: 10px 0 0; font-size: 13px; color: var(--soft); }
-.app .tile dd strong { font-size: 32px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
-.app .tile[data-tone="bad"] dd strong { color: var(--bad); }
-@media (max-width: 1100px) { .app .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 420px) { .app .tiles { gap: 10px; } .app .tile { padding: 14px; } }
 
 .app .checklist-card { margin-bottom: 24px; }
 .app .checklist-card h2 { margin: 0 0 12px; font-size: 18px; }
@@ -222,7 +192,7 @@
 .app .checklist li p { margin: 2px 0 0; font-size: 13px; }
 .app .checklist li strong { font-weight: 600; }
 .app .checklist li .mark { margin-top: 1px; }
-.app .checklist li[data-state="done"] .mark { color: var(--ok); }
+.app .checklist li[data-state="done"] .mark { color: var(--ok-ink); }
 .app .checklist li[data-state="current"] { color: var(--body); background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
 .app .checklist li[data-state="current"] strong { color: var(--ink); }
 .app .checklist li[data-state="current"] .mark { color: var(--accent); }
@@ -244,3 +214,59 @@
   .app .chat-layout { flex-direction: column; align-items: stretch !important; }
   .app .chat-layout > nav { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ---- Depth and life, inside the existing styling: same radii, borders and colours. Panels get a top highlight,
+   raised things a shadow, the primary action a soft sheen; motion is short, runs once, and is off under reduced motion. ---- */
+.app.shell .content { background: radial-gradient(900px 300px at 28% -120px, var(--glow), transparent 70%) no-repeat; }
+.app .top-bar { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.app .sidebar { box-shadow: 12px 0 32px -26px var(--backdrop); }
+.app .card, .app table, .app .facts { box-shadow: var(--shadow-sm); }
+.app .onboarding-card { position: relative; box-shadow: var(--hl), var(--shadow); }
+.app .onboarding-card::before { content: ""; position: absolute; inset: 0 14% auto; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+.app.onboarding { background: radial-gradient(700px 320px at 50% -60px, var(--glow), transparent 70%) no-repeat; }
+.app button[type="submit"], .app button.primary { background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px var(--glow); }
+.app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled), .app button[type="submit"].secondary { background-image: none; }
+.app .sidebar-foot .theme-switch { margin-bottom: 4px; }
+.app .onboarding-theme { display: flex; justify-content: center; margin-top: 32px; }
+/* Sidebar: icons sit in a chip that lights up on the current page; one marker slides behind the current link. */
+.app .sidebar nav { position: relative; }
+.app .sidebar nav a { position: relative; z-index: 1; }
+.app .sidebar nav a svg { box-sizing: content-box; padding: 3px; margin: -3px; border-radius: 7px; }
+.app .sidebar nav a[aria-current="page"] svg { background: var(--accent-bg); }
+.app .nav-mark { position: absolute; z-index: 0; left: 0; right: 0; top: 0; border-radius: 8px; background: var(--accent-bg); box-shadow: inset 2px 0 0 var(--accent); pointer-events: none; }
+.app .sidebar nav:has(.nav-mark) a[aria-current="page"] { background: transparent; }
+/* A confirmed action: a drawn tick before the message. */
+.app p[role="status"].ok { display: flex; align-items: center; gap: 8px; color: var(--ok-ink); }
+.app p[role="status"].ok::before { content: ""; flex: none; width: 9px; height: 5px; margin: 0 2px 3px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); }
+.app .onboarding-card .agree:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .app .nav-mark { transition: transform 240ms cubic-bezier(0.3, 0.7, 0.2, 1), height 240ms ease; }
+  .app .sidebar nav a, .app .sidebar nav a svg { transition: color 150ms ease, background-color 150ms ease; }
+  .app .org-list { animation: app-pop 160ms ease-out; transform-origin: 16px 0; }
+  .app button { transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 200ms ease; }
+  .app button:hover:not(:disabled):not(.link) { transform: translateY(-1px); }
+  .app button:active:not(:disabled):not(.link) { transform: translateY(1px) scale(0.985); }
+  .app .card { transition: border-color 150ms ease, box-shadow 150ms ease; }
+  .app .cards .card:hover { border-color: var(--line-strong); }
+  .app tbody tr td { transition: background-color 150ms ease; }
+  .app p[role="status"].ok { animation: app-pop 260ms ease-out; }
+  .app p[role="status"].ok::before { animation: app-tick 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4) 80ms backwards; }
+  .app .banner { animation: app-pop 260ms ease-out; }
+  /* Onboarding: the step marker moves on with a small pop; the agreement box and Continue answer the tick. */
+  .app .steps-strip li, .app .steps-strip .n { transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease; }
+  .app .steps-strip li[aria-current="step"] .n { animation: app-step 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4); }
+  .app .steps-strip li[data-done] .n { animation: app-step 320ms ease-out; }
+  .app .onboarding-card { animation: app-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+  .app .onboarding-card .agree { transition: border-color 200ms ease, background-color 200ms ease; }
+  .app .onboarding-card .agree:has(input:checked) ~ button, .app .onboarding-card form:has(input:checked) button[type="submit"]:not(:disabled) { animation: app-ready 500ms ease-out; }
+  .app .checklist li { transition: background-color 200ms ease; }
+  .app .checklist li[data-state="done"] .mark path { stroke-dasharray: 14; animation: app-draw 500ms ease-out backwards; }
+  .app dialog[open] { animation: app-pop 180ms ease-out; }
+}
+@keyframes app-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+@keyframes app-rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes app-tick { from { opacity: 0; transform: rotate(-45deg) scale(0.2); } }
+@keyframes app-step { from { transform: scale(0.6); } 60% { transform: scale(1.15); } }
+@keyframes app-ready { 0% { box-shadow: 0 0 0 0 var(--accent); } 100% { box-shadow: 0 0 0 10px transparent; } }
+@keyframes app-draw { from { stroke-dashoffset: 14; } }

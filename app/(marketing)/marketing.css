@@ -6,7 +6,7 @@
   min-height: 100vh;
   background: var(--bg);
   color: var(--ink);
-  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font: 17px/1.6 var(--font);
   -webkit-font-smoothing: antialiased;
 }
 /* Paint overscroll areas the same colour; matches only while a marketing page is mounted. */
@@ -37,10 +37,10 @@ body:has(.mkt) { background: var(--bg); }
   height: 40px;
   color: var(--accent);
   background: var(--accent-bg);
-  border: 1px solid rgba(34, 211, 238, 0.22);
+  border: 1px solid var(--accent-line);
   border-radius: 10px;
 }
-.mkt .ico-bad { color: var(--bad); background: var(--bad-bg); border-color: rgba(248, 113, 113, 0.24); }
+.mkt .ico-bad { color: var(--bad-ink); background: var(--bad-bg); border-color: var(--bad-line); }
 .mkt .step-badge {
   display: grid;
   place-items: center;
@@ -142,7 +142,7 @@ body:has(.mkt) { background: var(--bg); }
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
-  color: var(--warn);
+  color: var(--warn-ink);
   background: var(--warn-bg);
   border-radius: 999px;
   padding: 6px 10px;
@@ -198,7 +198,7 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .waitlist button:hover:not([aria-disabled="true"]) { background: var(--accent-hover); }
 .mkt .waitlist button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
 .mkt .waitlist-err:not(:empty) { margin-top: 10px; }
-.mkt .waitlist-err { font-size: 14px; color: var(--bad); }
+.mkt .waitlist-err { font-size: 14px; color: var(--bad-ink); }
 .mkt .waitlist-hint { margin-top: 10px; font-size: 14px; color: var(--soft); }
 .mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; }
 @media (max-width: 480px) { .mkt .waitlist-row { flex-direction: column; } }
@@ -292,7 +292,7 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .contact input, .mkt .contact select, .mkt .contact textarea {
   width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--ink);
   background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--inset);
 }
 .mkt .contact textarea { resize: vertical; min-height: 148px; }
 .mkt .contact ::placeholder { color: var(--soft); opacity: 1; }
@@ -314,7 +314,7 @@ body:has(.mkt) { background: var(--bg); }
 }
 
 /* Docs: code panels with a Copy button, and one card per client */
-.mkt .code-panel { margin-top: 28px; overflow: hidden; background: #070b16; border: 1px solid var(--line); border-radius: 12px; }
+.mkt .code-panel { margin-top: 28px; overflow: hidden; background: var(--device); border: 1px solid var(--line); border-radius: 12px; }
 .mkt .code-panel-head {
   display: flex;
   align-items: center;
@@ -330,17 +330,17 @@ body:has(.mkt) { background: var(--bg); }
 }
 .mkt .code-panel-head > span:first-child { margin-right: auto; }
 .mkt .code-panel pre { margin: 0; padding: 16px; background: none; border: 0; border-radius: 0; }
-.mkt .code-panel code { display: block; padding: 0; font: 15px/1.5 var(--mono); color: var(--accent); background: none; overflow-wrap: anywhere; white-space: pre-wrap; }
+.mkt .code-panel code { display: block; padding: 0; font: 15px/1.5 var(--mono); color: var(--device-accent); background: none; overflow-wrap: anywhere; white-space: pre-wrap; }
 .mkt .code-panel > code { padding: 16px; }
-.mkt .copy-status { font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ok); }
+.mkt .copy-status { font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ok-ink); }
 .mkt .copy-btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none;
   color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 7px; cursor: pointer;
 }
 .mkt .copy-btn:hover { background: var(--line); }
 .mkt .copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.mkt .client-cards { display: grid; gap: 16px; margin-top: 40px; }
-.mkt .client-cards > section { margin: 0; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.mkt .client-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 40px; }
+.mkt .client-cards > section { min-width: 0; margin: 0; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .client-cards .code-panel { margin-top: 14px; }
 .mkt .page .client-cards p { margin-top: 10px; }
 .mkt .client-cards ol { margin-top: 14px; padding-left: 1.4em; list-style: decimal; color: var(--body); }
@@ -364,7 +364,7 @@ body:has(.mkt) { background: var(--bg); }
 /* Privacy, Terms */
 .mkt .legal-list, .mkt .page .bullets { margin-top: 12px; padding-left: 1.3em; list-style: disc; max-width: 40em; color: var(--body); }
 .mkt .legal-list li + li, .mkt .page .bullets li + li { margin-top: 6px; }
-.mkt .copy-status.failed { color: var(--bad); }
+.mkt .copy-status.failed { color: var(--bad-ink); }
 
 /* Feature pages (/features/*): the shared frame in FeaturePage.tsx */
 .mkt .feature-kicker { font: 600 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
@@ -414,7 +414,7 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .page .reviewer p { margin-top: 4px; }
 .mkt .reviewer-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .mkt .reviewer-chips li { padding: 4px 10px; font-size: 13px; color: var(--body); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; }
-.mkt .reviewer-chips li.strong { color: var(--accent); background: var(--accent-bg); border-color: rgba(34, 211, 238, 0.22); font-weight: 600; }
+.mkt .reviewer-chips li.strong { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-line); font-weight: 600; }
 .mkt .review-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
 .mkt .review-cards li { padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .page .review-cards h3 { margin-top: 0; }
@@ -440,12 +440,40 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .status-list li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .mkt .status-detail { display: block; margin-top: 2px; font-size: 14px; color: var(--body); }
 .mkt .status-pill { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
-.mkt .status-ok { color: var(--ok); background: var(--ok-bg); }
-.mkt .status-warn { color: var(--warn); background: var(--warn-bg); }
-.mkt .status-bad { color: var(--bad); background: var(--bad-bg); }
+.mkt .status-ok { color: var(--ok-ink); background: var(--ok-bg); }
+.mkt .status-warn { color: var(--warn-ink); background: var(--warn-bg); }
+.mkt .status-bad { color: var(--bad-ink); background: var(--bad-bg); }
 .mkt .status-unknown { color: var(--body); background: var(--line); }
 .mkt .status-checked { margin-top: 24px; font-size: 14px; }
 .mkt .client-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
 .mkt .page .client-jump a { padding: 6px 12px; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 .mkt .page .client-jump a:hover { background: var(--surface-2); }
 .mkt .client-cards > section { scroll-margin-top: 88px; }
+
+/* ---- Depth and life, inside the existing styling: same radii, borders and colours; raised things get a top
+   highlight and a shadow, the primary action a soft sheen, and hover answers with a 1px lift. ---- */
+.mkt .site-header { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.mkt .site-footer .theme-switch { align-self: center; }
+.mkt .plans > li, .mkt .faq > div, .mkt .step-card, .mkt .check-cards > li, .mkt .feature-facts li, .mkt .review-cards li, .mkt .reviewer, .mkt .contact-card, .mkt .client-cards > section, .mkt .credit-table > div { box-shadow: var(--shadow-sm); }
+.mkt .plans > li.plan-featured { box-shadow: 0 0 0 1px var(--accent), 0 0 48px -12px var(--glow), var(--shadow); }
+.mkt .waitlist button, .mkt .contact button, .mkt .site-header nav a.join, .mkt a.trial-cta, .mkt .plans .plan-featured .btn, .mkt .auth-btn.primary {
+  background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 24px -10px var(--glow);
+}
+.mkt .waitlist button:hover:not([aria-disabled="true"]), .mkt .contact button:hover:not([aria-disabled="true"]), .mkt .site-header nav a.join:hover, .mkt a.trial-cta:hover, .mkt .plans .plan-featured .btn:hover, .mkt .auth-btn.primary:hover:not(:disabled) { background-image: none; }
+.mkt .waitlist input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-bg); }
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .plans > li, .mkt .faq > div, .mkt .step-card, .mkt .check-cards > li, .mkt .feature-facts li, .mkt .review-cards li, .mkt .client-cards > section { transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .mkt .plans > li:hover, .mkt .faq > div:hover, .mkt .step-card:hover, .mkt .check-cards > li:hover, .mkt .feature-facts li:hover, .mkt .review-cards li:hover { transform: translateY(-1px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .mkt .plans > li.plan-featured:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 56px -8px var(--glow), var(--shadow); }
+  .mkt .ico { transition: transform 150ms ease; }
+  .mkt li:hover > .ico, .mkt .sec-row:hover > .ico { transform: scale(1.06); }
+  .mkt .site-header nav a, .mkt .site-header .more-button, .mkt .site-footer a { transition: color 150ms ease; }
+  .mkt .waitlist button, .mkt .contact button, .mkt .site-header nav a.join, .mkt a.trial-cta, .mkt .plans .btn, .mkt .auth-btn, .mkt .copy-btn { transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .mkt .waitlist button:hover:not([aria-disabled="true"]), .mkt .contact button:hover, .mkt .site-header nav a.join:hover, .mkt a.trial-cta:hover, .mkt .plans .btn:hover, .mkt .auth-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .mkt .waitlist button:active, .mkt .contact button:active, .mkt .site-header nav a.join:active, .mkt a.trial-cta:active, .mkt .plans .btn:active, .mkt .auth-btn:active:not(:disabled), .mkt .copy-btn:active { transform: translateY(1px) scale(0.985); }
+  .mkt .demo-evidence::after { display: inline-block; transition: transform 150ms ease; }
+  .mkt .demo-findings li:hover .demo-evidence::after { transform: translateX(3px); }
+  .mkt .site-header .more-panel.open { animation: mkt-pop 160ms ease-out; transform-origin: 20px 0; }
+  .mkt .waitlist-ok { animation: mkt-pop 260ms ease-out; }
+}
+@keyframes mkt-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }

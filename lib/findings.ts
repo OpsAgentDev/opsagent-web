@@ -13,8 +13,11 @@ export function findingsSummary(items: { severity: string }[], opts: { more: boo
   return `${items.length} ${noun} · ${n("critical")} critical · ${n("high")} high`;
 }
 
-/** Up to `limit` open critical, then high, findings of one connection. Brain lists oldest first within a severity. */
-export async function topIssues(org: string, connection: string, limit = 3): Promise<FindingSummary[]> {
+/**
+ * Up to `limit` open critical, then high, findings of one connection, or of every connected account when none is named.
+ * Brain lists oldest first within a severity.
+ */
+export async function topIssues(org: string, connection?: string, limit = 3): Promise<FindingSummary[]> {
   const read = (severity: string) =>
     unwrap(api.GET("/orgs/{org}/findings", { params: { path: { org }, query: { connection, status: "open", severity, limit } } }));
   const [critical, high] = await Promise.all([read("critical"), read("high")]);

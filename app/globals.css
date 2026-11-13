@@ -1,18 +1,82 @@
 :root {
+  /* Two themes, one set of names. Dark is the default and is the palette the product launched with. Light applies
+     when Light was chosen, or when System was chosen and the device asks for light. The choice is `data-theme` on
+     <html>, set before first paint (app/layout.tsx). tests/unit/contrast.test.ts checks the text pairs of both sets.
+     Levels: page (--bg), panel (--surface), raised (--surface-2); --band is the alternate page band.
+     Severity: the plain colour is for marks (dots, rings, bars), -ink for text. line-strong: input borders, 3:1.
+     "Device" panels (terminal, code) are dark in both themes. One glow language: the accent, faint. */
   color-scheme: dark;
-  --bg: #0b1020; --surface: #121a2e; --surface-2: #182238;
-  --ink: #e7eaf2; --body: #c3c9d6; --soft: #9aa3b5;
-  --line: #26304a; --line-strong: #66738f; /* line-strong: input borders, 3:1 on surface */
+  --font: var(--font-geist), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --bg: #0B1020; --surface: #121A2E; --surface-2: #182238; --surface-3: #1F2B45; --band: #0E1528;
+  --ink: #E7EAF2; --ink-hover: #FFFFFF; --body: #C3C9D6; --soft: #9AA3B5;
+  --line: #26304A; --line-strong: #66738F;
   --brand: #162036;
-  --accent: #22d3ee; --accent-ink: #0b1020; --accent-hover: #67e8f9;
-  --ok: #34d399; --warn: #fbbf24; --bad: #f87171;
-  --ok-bg: rgba(52, 211, 153, 0.14); --warn-bg: rgba(251, 191, 36, 0.14); --bad-bg: rgba(248, 113, 113, 0.14);
-  --accent-bg: rgba(34, 211, 238, 0.14);
+  --accent: #22D3EE; --accent-2: #60A5FA; --accent-ink: #0B1020; --accent-hover: #67E8F9;
+  --accent-bg: rgba(34, 211, 238, 0.14); --accent-line: rgba(34, 211, 238, 0.22);
+  --ok: #34D399; --ok-ink: #34D399; --ok-bg: rgba(52, 211, 153, 0.14);
+  --warn: #FBBF24; --warn-ink: #FBBF24; --warn-bg: rgba(251, 191, 36, 0.14); --warn-line: rgba(251, 191, 36, 0.35);
+  --high: #F87171; --high-ink: #F87171; --high-bg: rgba(248, 113, 113, 0.14);
+  --bad: #F87171; --bad-ink: #F87171; --bad-bg: rgba(248, 113, 113, 0.14); --bad-line: rgba(248, 113, 113, 0.4); --on-bad: #0B1020;
+  --device: #070B16; --device-ink: #E7EAF2; --device-soft: #9AA3B5; --device-accent: #22D3EE; --device-line: #26304A;
+  --row-hover: rgba(255, 255, 255, 0.025); --backdrop: rgba(3, 6, 15, 0.72);
+  --hl: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --inset: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 24px 48px -24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 2px 4px rgba(0, 0, 0, 0.4), 0 48px 96px -32px rgba(0, 0, 0, 0.85), 0 0 96px -28px rgba(34, 211, 238, 0.3);
+  --glow: rgba(34, 211, 238, 0.14); --glow-2: rgba(96, 165, 250, 0.1); --grid: rgba(255, 255, 255, 0.04);
+  --btn-grad: linear-gradient(180deg, #67E8F9, #22D3EE);
   --muted: var(--soft);
 }
+/* The light set is written twice (CSS cannot share it): keep the two blocks identical; the contrast test checks that. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F5F7FA; --surface: #FFFFFF; --surface-2: #F1F4F8; --surface-3: #E6EBF2; --band: #FFFFFF;
+  --ink: #0E1B33; --ink-hover: #23324F; --body: #3D4B66; --soft: #5B6B85;
+  --line: #E3E8EF; --line-strong: #8590A6;
+  --brand: #EAF0FF;
+  --accent: #2553E6; --accent-2: #6C8CFF; --accent-ink: #FFFFFF; --accent-hover: #1C43C2;
+  --accent-bg: #EAF0FF; --accent-line: #C9D6FF;
+  --ok: #12936A; --ok-ink: #0B6B4D; --ok-bg: #E3F5EE;
+  --warn: #C99700; --warn-ink: #7A5B00; --warn-bg: #FFF4CC; --warn-line: #EBD58A;
+  --high: #E8730C; --high-ink: #A8480A; --high-bg: #FFF0E0;
+  --bad: #D92D20; --bad-ink: #B42318; --bad-bg: #FEECEA; --bad-line: #F3B7B1; --on-bad: #FFFFFF;
+  --device: #0E1B33; --device-ink: #F5F7FA; --device-soft: #9AA7BD; --device-accent: #8FB0FF; --device-line: #2A3856;
+  --row-hover: #FAFBFD; --backdrop: rgba(14, 27, 51, 0.4);
+  --hl: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --inset: inset 0 1px 2px rgba(14, 27, 51, 0.05);
+  --shadow-sm: 0 1px 2px rgba(14, 27, 51, 0.07);
+  --shadow: 0 1px 2px rgba(14, 27, 51, 0.06), 0 16px 36px -14px rgba(14, 27, 51, 0.2);
+  --shadow-lg: 0 1px 2px rgba(14, 27, 51, 0.06), 0 40px 80px -32px rgba(14, 27, 51, 0.4);
+  --glow: rgba(37, 83, 230, 0.12); --glow-2: rgba(108, 140, 255, 0.1); --grid: rgba(14, 27, 51, 0.05);
+  --btn-grad: linear-gradient(180deg, #3D68EE, #2553E6);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+  color-scheme: light;
+  --bg: #F5F7FA; --surface: #FFFFFF; --surface-2: #F1F4F8; --surface-3: #E6EBF2; --band: #FFFFFF;
+  --ink: #0E1B33; --ink-hover: #23324F; --body: #3D4B66; --soft: #5B6B85;
+  --line: #E3E8EF; --line-strong: #8590A6;
+  --brand: #EAF0FF;
+  --accent: #2553E6; --accent-2: #6C8CFF; --accent-ink: #FFFFFF; --accent-hover: #1C43C2;
+  --accent-bg: #EAF0FF; --accent-line: #C9D6FF;
+  --ok: #12936A; --ok-ink: #0B6B4D; --ok-bg: #E3F5EE;
+  --warn: #C99700; --warn-ink: #7A5B00; --warn-bg: #FFF4CC; --warn-line: #EBD58A;
+  --high: #E8730C; --high-ink: #A8480A; --high-bg: #FFF0E0;
+  --bad: #D92D20; --bad-ink: #B42318; --bad-bg: #FEECEA; --bad-line: #F3B7B1; --on-bad: #FFFFFF;
+  --device: #0E1B33; --device-ink: #F5F7FA; --device-soft: #9AA7BD; --device-accent: #8FB0FF; --device-line: #2A3856;
+  --row-hover: #FAFBFD; --backdrop: rgba(14, 27, 51, 0.4);
+  --hl: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --inset: inset 0 1px 2px rgba(14, 27, 51, 0.05);
+  --shadow-sm: 0 1px 2px rgba(14, 27, 51, 0.07);
+  --shadow: 0 1px 2px rgba(14, 27, 51, 0.06), 0 16px 36px -14px rgba(14, 27, 51, 0.2);
+  --shadow-lg: 0 1px 2px rgba(14, 27, 51, 0.06), 0 40px 80px -32px rgba(14, 27, 51, 0.4);
+  --glow: rgba(37, 83, 230, 0.12); --glow-2: rgba(108, 140, 255, 0.1); --grid: rgba(14, 27, 51, 0.05);
+  --btn-grad: linear-gradient(180deg, #3D68EE, #2553E6);
+  }
+}
 * { box-sizing: border-box; }
-body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: var(--bg); color: var(--body); }
+body { margin: 0; font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; background: var(--bg); color: var(--body); }
 h1, h2, h3 { color: var(--ink); }
 a { color: var(--accent); }
 a:hover { color: var(--accent-hover); }
@@ -33,12 +97,12 @@ table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
 pre { background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px; overflow-x: auto; }
 .muted { color: var(--muted); }
-.error { color: var(--bad); }
+.error { color: var(--bad-ink); }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; }
 .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-dialog { color: var(--body); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
-dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+dialog { color: var(--body); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 24px; box-shadow: var(--shadow); }
+dialog::backdrop { background: var(--backdrop); }
 a.brand { display: inline-flex; align-items: center; color: inherit; text-decoration: none; }
 .passkey-prompt { margin: 24px max(24px, calc((100% - 912px) / 2)) 0; } /* lines up with main */
 .passkey-prompt h2 { margin: 0 0 4px; font-size: 18px; }
@@ -60,3 +124,26 @@ button.fit { justify-self: start; }
 .quote { margin: 0; padding: 16px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; }
 .quote blockquote { margin: 0 0 8px; color: var(--ink); }
 .price { margin: 0; font-size: 28px; font-weight: 700; color: var(--ink); }
+
+/* Severity pills: the word is always there, so colour is never the only signal. Shared by the app and the landing samples. */
+.badge { display: inline-block; padding: 2px 9px; border: 1px solid transparent; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 18px; white-space: nowrap; }
+.badge.sev-critical { color: var(--on-bad); background: var(--bad); }
+.badge.sev-high { color: var(--high-ink); background: var(--high-bg); border-color: var(--bad-line); }
+.badge.sev-medium { color: var(--warn-ink); background: var(--warn-bg); border-color: var(--warn-line); }
+.badge.sev-low { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
+.badge.sev-info { color: var(--soft); background: transparent; border-color: var(--line-strong); }
+
+/* Standalone pages opened from an email or an AI tool (confirm, unsubscribe, invite, consent): one centred panel. */
+body > main:not(.status-page) { width: min(480px, calc(100% - 32px)); margin: clamp(24px, 12vh, 112px) auto; padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+body > main:not(.status-page) h1 { margin: 0 0 12px; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
+body > main:not(.status-page) button { padding: 8px 14px; border-radius: 8px; }
+body > main:not(.status-page) button:not(.secondary) { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+body > main:not(.status-page) button:not(.secondary):hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+@media (max-width: 480px) { body > main:not(.status-page) { padding: 22px 18px; } }
+
+/* Theme switch: three buttons, the current one pressed. One component (components/theme-switch.tsx), used everywhere. */
+.theme-switch { display: inline-flex; gap: 2px; padding: 2px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.theme-switch button, .app .theme-switch button { padding: 3px 10px; font-size: 12.5px; font-weight: 500; line-height: 18px; color: var(--soft); background: transparent; border: 0; border-radius: 6px; box-shadow: none; cursor: pointer; }
+.theme-switch button:hover, .app .theme-switch button:hover:not(:disabled) { color: var(--ink); background: transparent; }
+.theme-switch button[aria-pressed="true"], .app .theme-switch button[aria-pressed="true"] { color: var(--ink); background: var(--surface-2); box-shadow: var(--shadow-sm); }
+.theme-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }

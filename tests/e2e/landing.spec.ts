@@ -10,6 +10,7 @@ test("landing renders every section in story order", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1, name: H1 })).toBeVisible();
   await expect(page.locator("section#waitlist")).toHaveClass(/hero/);
+  await expect(page.locator("#waitlist .hero-pill")).toHaveText("Read-only. It never changes anything.");
   await expect(page.locator("main h2")).toHaveText([
     "It finds what is wrong, and shows you why.",
     "Read-only, through a role you create.",
@@ -47,6 +48,14 @@ test("product visuals are drawn in HTML, described and labelled Sample", async (
   await page.goto("/");
   const main = page.locator("main");
   await expect(main.locator("img")).toHaveCount(0);
+  // The hero is the dashboard itself, drawn from the app's own components and marked Sample.
+  const dash = page.locator("#waitlist").getByRole("figure", { name: "Sample dashboard for the account acme-prod" });
+  await expect(dash.locator(".lp-sample")).toHaveText("Sample");
+  await expect(dash.locator(".tile").filter({ hasText: "Posture score" }).locator("strong")).toHaveText("72");
+  await expect(dash.locator(".tile").filter({ hasText: "Open findings" })).toContainText("1 fewer than the previous scan");
+  await expect(dash.getByRole("table")).toContainText("Open findings after each of the last 14 scans");
+  await expect(dash.getByRole("list", { name: "Sample findings to fix first" }).getByRole("listitem")).toHaveCount(3);
+  await expect(dash.getByRole("link")).toHaveCount(0);
   const briefing = main.getByRole("figure", { name: "Sample morning briefing in Slack" });
   await expect(briefing).toContainText("OpsAgent morning briefing");
   await expect(briefing).toContainText("New critical and high (3)");
@@ -62,7 +71,7 @@ test("product visuals are drawn in HTML, described and labelled Sample", async (
   const ledger = main.getByRole("figure", { name: "What the OpsAgent role can and cannot do" });
   await expect(ledger.locator("li.is-ok")).toHaveCount(2);
   await expect(ledger.locator("li.is-no")).toHaveCount(4);
-  await expect(main.locator(".lp-sample")).toHaveCount(4);
+  await expect(main.locator(".lp-sample")).toHaveCount(5);
 });
 
 test("pricing pointer shows the three plan prices", async ({ page }) => {
@@ -85,7 +94,7 @@ test("the page reads the same without JavaScript and with reduced motion", async
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: H1 })).toBeVisible();
-  for (const sel of [".lp-slack", ".lp-findings", ".lp-ledger", ".lp-term"]) {
+  for (const sel of [".lp-dash", ".lp-slack", ".lp-findings", ".lp-ledger", ".lp-term"]) {
     for (const el of await page.locator(sel).all()) expect(await el.evaluate((e) => getComputedStyle(e).opacity), sel).toBe("1");
   }
   await context.close();

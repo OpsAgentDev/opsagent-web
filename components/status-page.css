@@ -1,4 +1,4 @@
-/* 404 and error screens; the dark Midnight tokens come from globals.css. */
+/* 404 and error screens; the theme tokens come from globals.css. */
 .status-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 48px 16px; text-align: center; }
 .status-page h1 { margin: 16px 0 0; font-size: clamp(26px, 4vw + 12px, 36px); line-height: 1.15; letter-spacing: -0.02em; }
 .status-page p { margin: 0; max-width: 42ch; font-size: 16px; color: var(--body); }

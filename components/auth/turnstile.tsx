@@ -44,7 +44,7 @@ export function Turnstile({ onToken, resetKey = 0 }: { onToken: (token: string |
       if (gone || !box.current) return;
       const id = api.render(box.current, {
         sitekey: TURNSTILE_SITE_KEY,
-        theme: "dark",
+        theme: "auto",
         size: "flexible",
         callback: (t: string) => { setFailed(false); report.current(t); },
         "expired-callback": () => report.current(null),

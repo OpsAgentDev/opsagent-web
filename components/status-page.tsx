@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
 import "./status-page.css";
 
-/** The dark full-page notice behind the 404 and the error screen: logo, a title, a line, and the ways out. */
+/** The full-page notice behind the 404 and the error screen: logo, a title, a line, and the ways out. */
 export function StatusPage({ title, children, extra }: { title: string; children: ReactNode; extra?: ReactNode }) {
   return (
     <main className="status-page">

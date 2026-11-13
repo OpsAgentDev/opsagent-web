@@ -40,7 +40,7 @@ function ReviewDialog({ org, findingId, description, onClose }: DialogProps) {
         <p>{description}</p>
         <p className="muted">{CONFIRM}</p>
         {sent ? (
-          <p role="status">Request sent.</p>
+          <p role="status" className="ok">Request sent.</p>
         ) : (
           <label>
             Note
