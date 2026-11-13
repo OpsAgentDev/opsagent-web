@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { connectNoisy, signUp } from "./helpers";
+import { connectNoisy, forgetPasskeySkip, signUp } from "./helpers";
 
 test("findings are critical first with a summary; dashboard and connection page point the way", async ({ page, request }) => {
   await signUp(page, request);
@@ -29,7 +29,7 @@ test("findings are critical first with a summary; dashboard and connection page 
   // Dashboard: a link to all findings and the top issues.
   await page.goto("/dashboard");
   await expect(page.getByRole("link", { name: /^View all \d+ findings$/ })).toBeVisible();
-  await expect(page.getByText("out of 100")).toBeVisible();
+  await expect(page.getByText("out of 100", { exact: true })).toBeVisible();
   const issues = page.getByRole("list", { name: "Top open issues" }).getByRole("listitem");
   await expect(issues.first()).toBeVisible();
   expect(await issues.count()).toBeLessThanOrEqual(3);
@@ -49,6 +49,7 @@ test("billing with no plan explains the trial before the button", async ({ page,
 
 test("the passkey card shows on Settings > Security and not on other pages", async ({ page, request }) => {
   await signUp(page, request);
+  await forgetPasskeySkip(page); // onboarding's "Skip for now" hides the card for 30 days
   const card = page.getByRole("heading", { name: "Add a passkey (recommended)" });
   await page.goto("/findings");
   await expect(page.getByRole("heading", { name: "Findings" })).toBeVisible();

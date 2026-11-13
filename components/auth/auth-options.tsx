@@ -41,7 +41,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}><GoogleIcon />Continue with Google</button>
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}><GitHubIcon />Continue with GitHub</button>
       <Link href={`/${mode}/email${keep}`} className="auth-btn"><MailIcon />Continue with email</Link>
-      {signIn ? null : <p className="auth-note">After you sign in we&apos;ll suggest adding a passkey, so next time is one tap.</p>}
+      {signIn ? null : <p className="auth-note">You&apos;ll agree to the Terms on the next step. Then we&apos;ll suggest adding a passkey, so next time is one tap.</p>}
       <p className="auth-foot">
         {signIn ? <>New here? <Link href={`/sign-up${keep}`}>Create an account</Link></> : <>Already have an account? <Link href={`/sign-in${keep}`}>Sign in</Link></>}
       </p>

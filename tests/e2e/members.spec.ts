@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { signUp } from "./helpers";
 
-const me = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "boss@example.com", has_passkey: true, name: null };
+const me = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "boss@example.com", has_passkey: true, name: null, terms_accepted_at: "2026-01-01T00:00:00Z" };
 const other = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", user_id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", email: "pat@example.com", name: null, role: "member" };
 const mine = { id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", user_id: me.id, email: me.email, name: null, role: "owner" };
 const problem = (status: number, code: string, detail: string) => ({ status, json: { type: "about:blank", title: code, status, detail, instance: "x", code } });
@@ -59,7 +59,7 @@ test("the wrong account can sign out from the invite page and from the header, a
   expect(outs).toBe(1);
 });
 
-test("the header has Sign out on a phone", async ({ page }) => {
+test("the menu has Sign out on a phone", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockSession(page);
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
@@ -78,7 +78,7 @@ test("after joining, the app opens the joined organisation", async ({ page }) =>
   await page.goto("/invites/join1234");
   await page.getByRole("button", { name: "Accept invite" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.getByLabel("Organisation")).toHaveValue("team-b");
+  await expect(page.getByRole("button", { name: "Organisation: Team B" })).toBeVisible();
 });
 
 test("an expired or used invite says so in plain words", async ({ page }) => {
@@ -113,7 +113,7 @@ test("an owner confirms before removing a member; a plan limit reads in words", 
     members = [mine];
     return r.fulfill({ status: 204 });
   });
-  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill(problem(402, "plan_limit", "limit")));
+  await page.route("**/v1/orgs/acme/invites", (r) => (r.request().method() === "POST" ? r.fulfill(problem(402, "plan_limit", "limit")) : r.fulfill({ json: [] })));
   await page.goto("/settings/members");
   await expect(page.getByRole("button", { name: `Remove ${mine.email}` })).toHaveCount(0);
   await page.getByLabel("Email").fill("x@example.com");
@@ -128,7 +128,7 @@ test("a rate-limit refusal shows no raw code", async ({ page }) => {
   await mockSession(page);
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [{ id: "o", name: "Acme", slug: "acme", timezone: "UTC", role: "owner", created_at: "2026-01-01T00:00:00Z" }] }));
   await page.route("**/v1/orgs/acme/members", (r) => r.fulfill({ json: [mine] }));
-  await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill(problem(429, "rate_limited", "Too many invites today. Try again tomorrow.")));
+  await page.route("**/v1/orgs/acme/invites", (r) => (r.request().method() === "POST" ? r.fulfill(problem(429, "rate_limited", "Too many invites today. Try again tomorrow.")) : r.fulfill({ json: [] })));
   await page.goto("/settings/members");
   await page.getByLabel("Email").fill("x@example.com");
   await page.getByRole("button", { name: "Send invite" }).click();
@@ -219,8 +219,17 @@ test("someone in two organisations can switch between them", async ({ page }) =>
   const org = (name: string, slug: string) => ({ ...acme, id: slug, name, slug });
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [org("Acme", "acme"), org("Team B", "team-b")] }));
   await page.goto("/dashboard");
-  await expect(page.getByLabel("Organisation")).toHaveValue("acme");
-  await page.getByLabel("Organisation").selectOption("team-b");
+  const switcher = page.getByRole("button", { name: /^Organisation:/ });
+  await expect(switcher).toHaveAccessibleName("Organisation: Acme");
+  await expect(switcher).toHaveAttribute("aria-expanded", "false");
+  await switcher.click();
+  const list = page.getByRole("list", { name: "Organisations" });
+  await expect(list.getByRole("button", { name: "Acme" })).toHaveAttribute("aria-current", "true");
+  await page.keyboard.press("Escape");
+  await expect(list).toBeHidden();
+  await expect(switcher).toBeFocused();
+  await switcher.click();
+  await list.getByRole("button", { name: "Team B" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.getByLabel("Organisation")).toHaveValue("team-b");
+  await expect(switcher).toHaveAccessibleName("Organisation: Team B");
 });

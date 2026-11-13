@@ -264,6 +264,28 @@
         }
       }
     },
+    "/auth/me/terms": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "auth_accept_terms",
+        "responses": {
+          "204": {
+            "description": "Accepted; a repeat call keeps the first time"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/passkeys": {
       "get": {
         "tags": [
@@ -1321,16 +1343,6 @@
         ],
         "responses": {
           "204": {},
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "404": {
             "content": {
               "application/json": {
@@ -4183,16 +4195,6 @@
         ],
         "responses": {
           "204": {},
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "403": {
             "content": {
               "application/json": {
@@ -4284,16 +4286,6 @@
         ],
         "responses": {
           "204": {},
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "403": {
             "content": {
               "application/json": {
@@ -4364,16 +4356,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Member"
-                }
-              }
-            }
-          },
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
                 }
               }
             }
@@ -6591,6 +6573,14 @@
               "string",
               "null"
             ]
+          },
+          "terms_accepted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the user agreed to the Terms and the Privacy Policy; null until they do."
           }
         }
       },

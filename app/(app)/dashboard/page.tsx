@@ -1,93 +1,50 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Severity, Status } from "@/components/badges";
+import { ConnectionCard } from "@/components/connection-card";
 import { ErrorNote } from "@/components/error-note";
-import { TopIssues } from "@/components/top-issues";
+import { OverviewTiles } from "@/components/overview-tiles";
 import { SetupChecklist } from "@/components/setup-checklist";
-import { api, unwrap, type Connection } from "@/lib/api/client";
-import { SEVERITIES } from "@/lib/api/enums";
-import { connectionSentence } from "@/lib/connection-status";
+import { api, unwrap } from "@/lib/api/client";
 import { useOrg, useSetup } from "@/lib/org";
-import { latestScanStats, openTotal } from "@/lib/scan";
+import { latestScanStats, overview, type LatestScan } from "@/lib/scan";
 import { isSkipped, setSkipped } from "@/lib/setup-skip";
 import { useApi } from "@/lib/use-api";
 
-function ConnectionCard({ org, c, several }: { org: string; c: Connection; several: boolean }) {
-  const { data: latest, error } = useApi(() => latestScanStats(org, c.id), [org, c.id]);
-  const stats = latest?.stats;
-  return (
-    <div className="card">
-      <div className="conn-head">
-        <div>
-          <h3>
-            <Link href={`/connections/${c.id}`}>{c.display_name ?? c.id}</Link>
-          </h3>
-          <p className="muted">{c.provider}</p>
-        </div>
-        <Status value={c.status} />
-      </div>
-      <ErrorNote error={error} />
-      {latest?.lastFailed && <p role="status" className="error">Last scan failed.</p>}
-      {latest && !stats && !latest.lastFailed && (
-        <p className="muted empty">
-          {c.status === "connected" ? "Scanning your account. First results appear in a few minutes." : (connectionSentence(c.status, c.status_reason) ?? "Waiting for verification.")}
-        </p>
-      )}
-      {stats && (
-        <>
-          <div className="conn-body">
-            <p className="score" title="Higher is better">
-              <strong>{stats.score ?? "–"}</strong>
-              <span>out of 100</span>
-              <span>Posture score</span>
-            </p>
-            <ul className="counts" aria-label="Open findings by severity">
-              {SEVERITIES.map((s) => {
-                const n = stats.counts_by_severity?.[s] ?? 0;
-                return (
-                  <li key={s} className={n ? undefined : "zero"}>
-                    <Severity value={s} />
-                    <strong>{n}</strong>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <p className="view-all">
-            <Link href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</Link>
-          </p>
-          <TopIssues org={org} connection={c.id} />
-        </>
-      )}
-    </div>
+type Scan = { latest?: LatestScan; error?: Error };
+
+/** Connections with each one's latest scan; a failed scan read stays on its own card. */
+async function loadDashboard(org: string) {
+  const connections = await unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org } } }));
+  const scans = await Promise.all(
+    connections.map((c) => latestScanStats(org, c.id).then((latest): Scan => ({ latest }), (error: Error): Scan => ({ error }))),
   );
+  return connections.map((c, i) => ({ c, ...scans[i] }));
 }
 
 export default function Dashboard() {
   const org = useOrg();
   const { hasPasskey, reloadSession } = useSetup();
-  const { data: connections, error } = useApi(
-    () => unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org: org.slug } } })),
-    [org.slug],
-  );
+  const { data: rows, error } = useApi(() => loadDashboard(org.slug), [org.slug]);
   const [skipped, setSkippedState] = useState(false);
   useEffect(() => setSkippedState(isSkipped(org.slug)), [org.slug]);
   const toggleSkip = (v: boolean) => { setSkipped(org.slug, v); setSkippedState(v); };
   return (
     <main>
       <h1>Dashboard</h1>
+      <OverviewTiles overview={rows ? overview(rows.map((r) => ({ status: r.c.status, stats: r.latest?.stats }))) : null} total={rows?.length ?? 0} />
       <SetupChecklist org={org.slug} role={org.role} hasPasskey={hasPasskey} onPasskeyAdded={reloadSession} skipped={skipped} onSkip={() => toggleSkip(true)} />
-      {skipped && connections && !connections.length && (
+      {skipped && rows && !rows.length && (
         <p className="muted empty">
           No cloud account connected yet. <button type="button" className="link" onClick={() => toggleSkip(false)}>Show setup steps</button>
         </p>
       )}
       <ErrorNote error={error} />
-      <div className="cards">
-        {connections?.map((c) => <ConnectionCard key={c.id} org={org.slug} c={c} several={connections.length > 1} />)}
+      {!!rows?.length && <h2>Cloud accounts</h2>}
+      <div className="cards accounts">
+        {rows?.map((r) => <ConnectionCard key={r.c.id} org={org.slug} c={r.c} several={rows.length > 1} latest={r.latest} error={r.error} />)}
       </div>
-      {!!connections?.length && org.role === "owner" && (
+      {!!rows?.length && org.role === "owner" && (
         <p className="add-more">
           <Link href="/onboarding/connect-aws">Connect another account</Link>
         </p>

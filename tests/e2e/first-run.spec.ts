@@ -1,18 +1,49 @@
 import { expect, test } from "@playwright/test";
 import { connectNoisy, createOrg, signIn } from "./helpers";
 
-test("new user sees the welcome, then a setup checklist that follows their progress", async ({ page, request }) => {
-  await signIn(page, request);
+test("new user goes Terms, Passkey, Organisation, then a dashboard with a setup checklist that follows their progress", async ({ page, request }) => {
+  const email = await signIn(page, request, { onboard: false });
+  const steps = page.getByRole("list", { name: "Steps" });
+  const current = steps.locator('[aria-current="step"]');
 
-  // Welcome: no app bar links, no passkey card, the form and the road ahead.
+  // Step 1, terms: no sidebar, Continue is disabled until the box is ticked; sign out and delete stay reachable.
+  await expect(page.getByText("Step 1 of 3")).toBeVisible();
+  await expect(current).toHaveText(/Terms/);
+  await expect(page.getByRole("navigation", { name: "Main" })).toHaveCount(0);
+  await expect(page.getByText(email)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Delete my account" })).toBeVisible();
+  const terms = page.getByRole("link", { name: "Terms", exact: true });
+  await expect(terms).toHaveAttribute("href", "/terms");
+  await expect(terms).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+  const go = page.getByRole("button", { name: "Continue" });
+  await expect(go).toBeDisabled();
+  await page.reload(); // nothing is accepted by looking
+  await expect(go).toBeDisabled();
+  await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
+  await go.click();
+
+  // Step 2, passkey: optional.
+  await expect(page.getByText("Step 2 of 3")).toBeVisible();
+  await expect(current).toHaveText(/Passkey/);
+  await expect(page.getByRole("button", { name: "Add a passkey" })).toBeVisible();
+  await page.getByRole("button", { name: "Skip for now" }).click();
+
+  // Step 3, organisation.
+  await expect(page.getByText("Step 3 of 3")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
   await expect(page.getByLabel("Organisation name")).toBeFocused();
   await expect(page.getByRole("link", { name: "Findings" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Add a passkey (recommended)" })).toHaveCount(0);
-  await expect(page.getByRole("list", { name: "What happens next" }).getByText("Connect a cloud account")).toBeVisible();
 
-  // Checklist: Connect AWS is the current step.
+  // The dashboard, in the shell: sidebar, overview tiles reading "–" before a scan, and the checklist with Connect AWS current.
   await createOrg(page);
+  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Dashboard" })).toHaveAttribute("aria-current", "page");
+  const tile = (label: string) => page.locator(".tile").filter({ hasText: label }).locator("strong");
+  await expect(tile("Posture score")).toHaveText("–");
+  await expect(tile("Open findings")).toHaveText("–");
+  await expect(tile("Critical and high")).toHaveText("–");
+  await expect(tile("Accounts connected")).toHaveText("0");
   const checklist = page.getByRole("list", { name: "Setup" });
   const row = checklist.getByRole("listitem").filter({ hasText: "Connect a cloud account" });
   await expect(row).toHaveAttribute("aria-current", "step");
@@ -25,8 +56,20 @@ test("new user sees the welcome, then a setup checklist that follows their progr
   await page.getByRole("button", { name: "Show setup steps" }).click();
   await expect(checklist).toBeVisible();
 
-  // After connecting, the row is done.
+  // After connecting, the row is done and the tiles fill in once the first scan finishes.
   await connectNoisy(page);
   await page.goto("/dashboard");
   await expect(checklist.getByRole("listitem").filter({ hasText: "Connect a cloud account" })).toHaveAttribute("data-state", "done");
+  await expect(tile("Accounts connected")).toHaveText("1");
+  await expect(async () => {
+    await page.reload();
+    await expect(tile("Posture score")).toHaveText(/^\d+$/, { timeout: 3_000 });
+  }).toPass({ timeout: 60_000 });
+  await expect(tile("Open findings")).toHaveText(/^\d+$/);
+  await expect(tile("Critical and high")).toHaveText(/^\d+$/);
+
+  // Terms are asked once: the next visit opens the app.
+  await page.reload();
+  await expect(page.getByRole("navigation", { name: "Main" })).toBeVisible();
+  await expect(page.getByLabel("I agree to the Terms and the Privacy Policy")).toHaveCount(0);
 });

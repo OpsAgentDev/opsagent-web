@@ -108,3 +108,12 @@ export function readDismissedAt(storage: Pick<Storage, "getItem">): number | nul
 export function isDismissed(at: number | null, now: number): boolean {
   return at !== null && now - at < DISMISS_FOR;
 }
+
+/** Remembers "Not now" / "Skip for now" for 30 days. Blocked storage: it holds for this page view only. */
+export function dismissPasskeyPrompt(): void {
+  try {
+    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+  } catch {
+    // not remembered
+  }
+}

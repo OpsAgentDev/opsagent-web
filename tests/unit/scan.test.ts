@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "@/lib/api/client";
-import { hasFinishedScan, latestScanStats } from "@/lib/scan";
+import { hasFinishedScan, latestScanStats, overview } from "@/lib/scan";
 
 const ok = (data: unknown) => ({ data, response: new Response() });
 const stats = { score: 80, counts_by_severity: { high: 1 } };
@@ -54,5 +54,29 @@ describe("hasFinishedScan", () => {
     expect(await hasFinishedScan("o")).toBe(false);
     mockRuns([], {});
     expect(await hasFinishedScan("o")).toBe(false);
+  });
+});
+
+describe("overview", () => {
+  it("is dashes (null) until a scan has finished, but counts connected accounts", () => {
+    expect(overview([])).toEqual({ score: null, open: null, urgent: null, connected: 0 });
+    expect(overview([{ status: "connected", stats: null }, { status: "verifying" }])).toEqual({ score: null, open: null, urgent: null, connected: 1 });
+  });
+
+  it("takes the lowest score and sums open and critical + high across accounts", () => {
+    const rows = [
+      { status: "connected", stats: { score: 80, counts_by_severity: { critical: 1, high: 2, low: 4 } } },
+      { status: "degraded", stats: { score: 55, counts_by_severity: { high: 1, medium: 3 } } },
+      { status: "connected", stats: null },
+    ];
+    expect(overview(rows)).toEqual({ score: 55, open: 11, urgent: 4, connected: 2 });
+  });
+
+  it("leaves disconnected accounts out", () => {
+    const rows = [
+      { status: "disconnected", stats: { score: 10, counts_by_severity: { critical: 9 } } },
+      { status: "connected", stats: { score: 90, counts_by_severity: {} } },
+    ];
+    expect(overview(rows)).toEqual({ score: 90, open: 0, urgent: 0, connected: 1 });
   });
 });
