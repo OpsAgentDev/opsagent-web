@@ -26,13 +26,45 @@ test("findings are critical first with a summary; dashboard and connection page 
   await page.getByLabel("Status").selectOption("");
   await expect(page.getByRole("columnheader", { name: "Status" })).toBeVisible();
 
-  // Dashboard: a link to all findings and the top issues.
+  // Dashboard: the score as a ring, a link to all findings, and the issues to fix first across accounts.
   await page.goto("/dashboard");
   await expect(page.getByRole("link", { name: /^View all \d+ findings$/ })).toBeVisible();
   await expect(page.getByText("out of 100", { exact: true })).toBeVisible();
-  const issues = page.getByRole("list", { name: "Top open issues" }).getByRole("listitem");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/^Good (morning|afternoon|evening)$/);
+  await expect(page.getByText(/^Last scan \d+ \w+, \d\d:\d\d\./)).toBeVisible();
+  const score = page.locator(".tile").filter({ hasText: "Posture score" });
+  await expect(score.locator(".ov-ring strong")).toHaveText(/^\d+$/);
+  await expect(score.locator(".ov-ring svg")).toBeVisible();
+  // One finished scan: no change to compare and no chart yet.
+  await expect(page.locator(".tile").filter({ hasText: "Open findings" })).toContainText("Across connected accounts");
+  await expect(page.getByRole("figure", { name: "Open findings" })).toHaveCount(0);
+  const fix = page.getByRole("region", { name: "Fix these first" });
+  const issues = fix.getByRole("list", { name: "Fix these first" }).getByRole("listitem");
   await expect(issues.first()).toBeVisible();
-  expect(await issues.count()).toBeLessThanOrEqual(3);
+  expect(await issues.count()).toBeLessThanOrEqual(5);
+  await expect(issues.first().locator(".badge")).toHaveText(/^(critical|high)$/);
+
+  // With a second finished scan the chart appears, with its numbers as a table, and the tiles say what changed.
+  const day = (d: number) => `2026-11-${d}T02:00:00Z`;
+  const runs = [12, 11].map((d) => ({ id: `run-${d}`, job_type: "full_scan", status: "done", scheduled_at: day(d), finished_at: day(d) }));
+  const counts: Record<string, Record<string, number>> = { "run-12": { critical: 2, high: 1, low: 1 }, "run-11": { critical: 1, medium: 5 } };
+  await page.route(/\/v1\/orgs\/[^/]+\/runs\?.*connection=/, (r) => r.fulfill({ json: { items: runs, next_cursor: null } }));
+  await page.route(/\/v1\/orgs\/[^/]+\/runs\/run-\d+$/, (r) => {
+    const id = r.request().url().split("/").pop()!;
+    return r.fulfill({ json: { ...runs.find((x) => x.id === id), attempts: 1, stats: { score: 64, counts_by_severity: counts[id] } } });
+  });
+  await page.reload();
+  const chart = page.getByRole("figure", { name: "Open findings" });
+  await expect(chart).toContainText("Last 2 scans");
+  await expect(score.locator(".ov-ring strong")).toHaveText("64");
+  await expect(score.locator(".ov-ring circle.value")).toHaveCount(1);
+  await expect(chart.getByRole("row")).toHaveCount(3); // the header and one row per scan
+  await expect(chart.getByRole("row").last()).toContainText("4");
+  await expect(page.locator(".tile").filter({ hasText: "Open findings" })).toContainText("2 fewer than the previous scan");
+  await expect(page.locator(".tile").filter({ hasText: "Critical and high" })).toContainText("1 new critical since the previous scan");
+  await expect(page.getByText("1 new critical since the previous scan.")).toBeVisible();
+  await page.unrouteAll();
+
   await issues.first().getByRole("link").click();
   await expect(page).toHaveURL(/\/findings\/[0-9a-f-]+$/);
   expect(id).toBeTruthy();

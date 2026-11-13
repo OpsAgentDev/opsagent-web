@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ComingSoon } from "@/components/marketing/ComingSoon";
-import { AccessLedger, AgentSession, FindingsPanel, SlackAlert } from "@/components/marketing/LandingVisuals";
+import { AccessLedger, AgentSession, FindingsPanel, SlackAlert, SlackBriefing } from "@/components/marketing/LandingVisuals";
 import { MCP_URL } from "@/lib/agents";
 
 /** The home page's sections below the hero, in story order. One idea each; the visuals are in LandingVisuals. */
@@ -89,6 +89,7 @@ export function Delivery() {
         <p className="lp-more"><Link href="/features/alerts">More on alerts and briefings</Link></p>
       </div>
       <div className="lp-stack">
+        <SlackBriefing />
         <SlackAlert />
         <p className="mobile-strip">
           OpsAgent for iOS and Android: alerts and briefings in your pocket. <ComingSoon />

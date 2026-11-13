@@ -7,19 +7,29 @@ export type LatestScan = { stats: ScanStats | null; lastFailed: boolean };
 
 const FINISHED = new Set(["done", "partial"]);
 
+/** One finished full scan: when it finished and what it counted. */
+export type Scan = { at: string; stats: ScanStats };
+export type ScanHistory = LatestScan & { scans: Scan[] };
+
+/** The trend chart never shows more scans than this. */
+export const HISTORY_CAP = 14;
+
 /**
- * Stats of the newest finished (`done` or `partial`) full scan with stats, and whether the newest run of any
- * kind failed. A queued, running or failed run must not hide earlier results. Reads a few runs, then one detail.
+ * The newest finished (`done` or `partial`) full scans with stats, newest first, and whether the newest run of any
+ * kind failed. `stats` is the newest scan's. A queued, running or failed run must not hide earlier results.
+ * shortcut: one request per scan; move to a brain history endpoint when accounts have months of scans.
  */
-export async function latestScanStats(org: string, connection: string): Promise<LatestScan> {
-  const query = { connection, type: "full_scan", limit: 5 };
+export async function scanHistory(org: string, connection: string, cap = HISTORY_CAP): Promise<ScanHistory> {
+  const query = { connection, type: "full_scan", limit: cap + 6 };
   const runs = await unwrap(api.GET("/orgs/{org}/runs", { params: { path: { org }, query } }));
   const lastFailed = runs.items[0]?.status === "failed";
-  for (const r of runs.items.filter((i) => FINISHED.has(i.status))) {
-    const run = await unwrap(api.GET("/orgs/{org}/runs/{id}", { params: { path: { org, id: r.id } } }));
-    if (run.stats) return { stats: run.stats as ScanStats, lastFailed };
-  }
-  return { stats: null, lastFailed };
+  const finished = runs.items.filter((i) => FINISHED.has(i.status)).slice(0, cap);
+  const details = await Promise.all(finished.map((r) => unwrap(api.GET("/orgs/{org}/runs/{id}", { params: { path: { org, id: r.id } } }))));
+  const scans = finished.flatMap((r, i) => {
+    const stats = details[i]?.stats;
+    return stats ? [{ at: r.finished_at ?? r.scheduled_at, stats: stats as ScanStats }] : [];
+  });
+  return { stats: scans[0]?.stats ?? null, lastFailed, scans };
 }
 
 /**
@@ -54,4 +64,47 @@ export function overview(rows: { status: string; stats?: ScanStats | null }[]): 
     urgent: sum((s) => (s.counts_by_severity?.critical ?? 0) + (s.counts_by_severity?.high ?? 0)),
     connected: rows.filter((r) => r.status === "connected").length,
   };
+}
+
+export type TrendPoint = { at: string; open: number; critical: number };
+
+/**
+ * Open findings over time across accounts: one point per finished scan, oldest first, each the sum of every account's
+ * newest scan at that moment. Takes each account's scans (any order) and keeps the last `cap` points.
+ */
+export function trendSeries(accounts: Scan[][], cap = HISTORY_CAP): TrendPoint[] {
+  const events = accounts.flatMap((scans, account) => scans.map((s) => ({ account, ...s }))).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+  const newest = new Map<number, ScanStats>();
+  const points = events.map((e) => {
+    newest.set(e.account, e.stats);
+    const all = [...newest.values()];
+    return {
+      at: e.at,
+      open: all.reduce((a, s) => a + (openTotal(s) ?? 0), 0),
+      critical: all.reduce((a, s) => a + (s.counts_by_severity?.critical ?? 0), 0),
+    };
+  });
+  return points.slice(-cap);
+}
+
+export type SinceLast = { openDelta: number; newCritical: number };
+
+/**
+ * The newest point against the one before it; null with fewer than two scans.
+ * shortcut: `newCritical` is the rise in the critical count, so one fixed and one new reads as none; count by
+ * first-seen date when brain can filter findings by it.
+ */
+export function sinceLast(points: TrendPoint[]): SinceLast | null {
+  const [prev, last] = points.slice(-2);
+  return prev && last ? { openDelta: last.open - prev.open, newCritical: Math.max(0, last.critical - prev.critical) } : null;
+}
+
+/** "3 fewer than the previous scan", "1 more than the previous scan" or "Same as the previous scan". */
+export function deltaText(delta: number): string {
+  return delta === 0 ? "Same as the previous scan" : `${Math.abs(delta)} ${delta < 0 ? "fewer" : "more"} than the previous scan`;
+}
+
+/** The dashboard's greeting for an hour of the day (0 to 23). */
+export function greeting(hour: number): string {
+  return hour >= 5 && hour < 12 ? "Good morning" : hour >= 12 && hour < 18 ? "Good afternoon" : "Good evening";
 }

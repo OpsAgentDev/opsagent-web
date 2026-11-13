@@ -2,17 +2,17 @@
 .mkt.auth-shell { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px var(--gutter) 64px; }
 .mkt .auth-back { align-self: flex-start; font-size: 15px; color: var(--soft); text-decoration: none; }
 .mkt .auth-back:hover { color: var(--ink); }
-.mkt .auth-brand { margin-top: 56px; }
-.mkt .auth { width: 100%; max-width: 400px; padding: 24px 0 0; }
+.mkt .auth-brand { margin-top: 48px; color: var(--ink); }
+.mkt .auth { width: 100%; max-width: 440px; margin-top: 28px; padding: 32px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+@media (max-width: 480px) { .mkt .auth { padding: 24px 20px; } }
 .mkt .auth-options { display: grid; gap: 12px; }
-.mkt .auth h1 { text-align: center; margin-bottom: 20px; font-size: clamp(30px, 2vw + 18px, 38px); line-height: 1.15; letter-spacing: -0.025em; }
+.mkt .auth h1 { text-align: center; margin-bottom: 24px; font-size: clamp(26px, 1.4vw + 18px, 30px); line-height: 1.15; letter-spacing: -0.025em; }
 .mkt .auth p { color: var(--body); }
 .mkt .auth form { display: grid; gap: 12px; }
 .mkt .auth label { display: grid; gap: 6px; font-size: 15px; font-weight: 600; color: var(--ink); }
 .mkt .auth input {
   width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; font-weight: 400; color: var(--ink);
-  background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4); cursor: text;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; cursor: text;
 }
 .mkt .auth input::placeholder { color: var(--soft); opacity: 1; }
 .mkt .auth input:focus { border-color: var(--accent); }
@@ -23,12 +23,12 @@
 .mkt .turnstile { min-height: 0; }
 .mkt .auth-btn {
   width: 100%; padding: 12px 16px; font: inherit; font-size: 16px; font-weight: 600; color: var(--ink);
-  background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 8px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line-mid); border-radius: 10px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--shadow-sm);
 }
 .mkt .auth-btn svg { flex: none; }
-.mkt .auth-btn:hover:not(:disabled) { background: var(--line); border-color: var(--soft); }
+.mkt .auth-btn:hover:not(:disabled) { background: var(--surface-2); border-color: var(--line-strong); }
 .mkt .auth-btn.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 .mkt .auth-btn.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
 .mkt .auth input:focus-visible, .mkt .auth button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -39,8 +39,9 @@
 .mkt .auth-foot { margin-top: 12px; padding-top: 20px; border-top: 1px solid var(--line); }
 .mkt .auth-link { justify-self: start; text-align: left; padding: 0; font: inherit; font-size: 15px; color: var(--accent); background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .mkt .auth-link:hover { color: var(--accent-hover); }
-.mkt .auth .error { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--bad-bg); border-left: 3px solid var(--bad); border-radius: 6px; }
-.mkt .auth [role="status"] { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 6px; }
-/* The form's submit: solid and light, so it never reads as another field under the input. */
-.mkt .auth form .auth-btn:not(.primary) { color: var(--bg); background: var(--ink); border-color: var(--ink); }
-.mkt .auth form .auth-btn:not(.primary):hover:not(:disabled) { background: #ffffff; border-color: #ffffff; }
+.mkt .auth .error { padding: 10px 14px; font-size: 15px; color: var(--bad-ink); background: var(--bad-bg); border-radius: 8px; }
+.mkt .auth [role="status"] { padding: 10px 14px; font-size: 15px; color: var(--ink); background: var(--accent-bg); border-radius: 8px; }
+/* The form's submit: solid primary, so it never reads as another field under the input. */
+.mkt .auth form .auth-btn:not(.primary) { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+.mkt .auth form .auth-btn:not(.primary):hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.mkt main.auth > :last-child:not(section) { margin-bottom: 0; }

@@ -1,6 +1,6 @@
 import { SignupCta } from "@/components/marketing/SignupCta";
 import { Agent, Checks, Delivery, PricingPointer, ReadOnly, Trust } from "@/components/marketing/LandingSections";
-import { SlackBriefing } from "@/components/marketing/LandingVisuals";
+import { DashboardSample } from "@/components/marketing/LandingVisuals";
 import { closingLine } from "@/lib/signups";
 import "./home.css";
 
@@ -20,6 +20,7 @@ export default function Home() {
       {/* Every "Join the waitlist" link on the site points at #waitlist. */}
       <section className="hero" id="waitlist">
         <div className="hero-text">
+          <p className="hero-pill">Read-only. It never changes anything.</p>
           <h1>Your ops teammate that never sleeps.</h1>
           <p className="lead">
             OpsAgent is a read-only agent for teams with no ops person. It scans your cloud every night and sends one
@@ -34,9 +35,7 @@ export default function Home() {
             infrastructure when the contractor left.
           </p>
         </div>
-        <div className="hero-visual">
-          <SlackBriefing />
-        </div>
+        <DashboardSample />
       </section>
 
       <Checks />
