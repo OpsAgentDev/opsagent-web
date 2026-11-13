@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand/Logo";
 import { CreateOrg } from "@/components/create-org";
 import { DeleteAccount } from "@/components/delete-account";
 import { ErrorNote } from "@/components/error-note";
+import { ThemeSwitch } from "@/components/theme-switch";
 import { SignOut } from "@/components/sign-out";
 import { api, unwrap } from "@/lib/api/client";
 import type { OnboardingStep } from "@/lib/onboarding";
@@ -97,6 +98,7 @@ export function Onboarding({ email, step, steps, onTermsAccepted, onPasskeySkipp
           {step === "passkey" && <PasskeyStep onAdded={onChanged} onSkip={onPasskeySkipped} />}
           {step === "org" && <CreateOrg onCreated={onChanged} intro={<p>Your organisation owns your cloud connections, findings and billing.</p>} />}
         </section>
+        <div className="onboarding-theme"><ThemeSwitch /></div>
       </main>
     </div>
   );

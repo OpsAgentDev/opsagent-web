@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { TrendPoint } from "@/lib/scan";
 import "./overview.css";
 
@@ -12,6 +13,7 @@ const ceiling = (max: number) => (max <= 5 ? 5 : Math.ceil(max / 5) * 5);
  * The drawing is hidden from screen readers, which get the same numbers as a table.
  */
 export function TrendChart({ points }: { points: TrendPoint[] }) {
+  const fill = useId();
   if (points.length < 2) return null;
   const top = ceiling(Math.max(...points.map((p) => p.open)));
   const y = (open: number) => H - (open / top) * H;
@@ -29,10 +31,19 @@ export function TrendChart({ points }: { points: TrendPoint[] }) {
         <div className="ov-canvas">
           {[top, top / 2, 0].map((n, i) => <span key={n} className="ov-y" style={{ top: `${i * 50}%` }}>{n}</span>)}
           <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" focusable="false">
-            <polygon className="area" points={`0,${H} ${line} ${W},${H}`} />
             <line x1="0" x2={W} y1="0" y2="0" />
             <line x1="0" x2={W} y1={H / 2} y2={H / 2} />
             <line className="base" x1="0" x2={W} y1={H} y2={H} />
+          </svg>
+          {/* The data sits on its own layer so it can be revealed left to right, once (overview.css). */}
+          <svg className="ov-draw" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" focusable="false">
+            <defs>
+              <linearGradient id={fill} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" style={{ stopColor: "var(--accent)", stopOpacity: 0.32 }} />
+                <stop offset="1" style={{ stopColor: "var(--accent)", stopOpacity: 0 }} />
+              </linearGradient>
+            </defs>
+            <polygon points={`0,${H} ${line} ${W},${H}`} fill={`url(#${fill})`} />
             <polyline className="line" points={line} />
           </svg>
           {/* One hover column per scan; the browser's own tooltip shows the date and count. */}

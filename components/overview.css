@@ -1,34 +1,53 @@
 /* The dashboard overview: tiles, trend chart, issue list, account cards. Used by the app and by the landing page's
-   sample, so nothing here sits under .app or .mkt; every rule starts at an ov- class. */
+   sample, so nothing here sits under .app or .mkt; every rule starts at an ov- class. Motion is at the end and only
+   runs where the visitor has not asked for less of it. */
 
-.ov-greet { margin: 0 0 24px; }
-.ov-greet .ov-hello { margin: 0; font-size: 26px; font-weight: 650; line-height: 1.2; letter-spacing: -0.02em; color: var(--ink); }
-.ov-greet .ov-line { margin: 6px 0 0; font-size: 15px; line-height: 1.5; color: var(--soft); }
+.ov-greet { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0 0 20px; }
+.ov-greet .ov-hello { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; color: var(--ink); }
+.ov-greet .ov-line { flex: 1 0 100%; margin: 0; font-size: 14px; line-height: 1.5; color: var(--soft); }
+/* The live pill: what OpsAgent is doing right now, with a dot that breathes. */
+.ov-live { display: inline-flex; align-items: center; gap: 8px; padding: 3px 11px 3px 9px; font-size: 12.5px; font-weight: 500; line-height: 18px; color: var(--body); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow-sm); }
+.ov-live i { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+.ov-live[data-state="scanning"] i { background: var(--accent); }
+.ov-live i::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid currentColor; color: var(--ok); opacity: 0; }
+.ov-live[data-state="scanning"] i::after { color: var(--accent); }
 
 /* Tiles */
 .ov-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0 0 16px; }
-.ov-tiles .tile { min-width: 0; padding: 18px 20px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
-.ov-tiles .tile dt { font-size: 13px; font-weight: 500; line-height: 1.4; color: var(--soft); }
-.ov-tiles .tile dd { display: grid; gap: 8px; margin: 12px 0 0; font-size: 13px; line-height: 1.4; color: var(--soft); }
-.ov-tiles .tile dd strong { font-size: 34px; font-weight: 650; line-height: 1; letter-spacing: -0.03em; color: var(--ink); }
-.ov-tiles .tile[data-tone="bad"] dd > strong { color: var(--bad); }
-.ov-tiles .tile dd [data-tone="good"] { color: var(--ok-ink); font-weight: 500; }
+.ov-tiles .tile { position: relative; min-width: 0; overflow: hidden; padding: 16px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
+/* A faint accent light in the corner and a hairline along the top edge. */
+.ov-tiles .tile::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(140px 90px at 100% 0%, var(--glow), transparent 70%); }
+.ov-tiles .tile::after, .ov-panel::after { content: ""; position: absolute; inset: 0 12% auto; height: 1px; pointer-events: none; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.45; }
+.ov-tiles .tile[data-tone="bad"]::before { background: radial-gradient(140px 90px at 100% 0%, var(--bad-bg), transparent 70%); }
+.ov-tiles .tile[data-tone="bad"]::after { background: linear-gradient(90deg, transparent, var(--bad), transparent); }
+.ov-tiles .tile dt { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; line-height: 1.4; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); }
+.ov-chip { flex: none; display: grid; place-items: center; width: 24px; height: 24px; color: var(--accent); background: var(--accent-bg); border-radius: 7px; }
+.ov-tiles .tile[data-tone="bad"] .ov-chip { color: var(--bad-ink); background: var(--bad-bg); }
+.ov-tiles .tile dd { position: relative; display: grid; gap: 6px; margin: 12px 0 0; font-size: 13px; line-height: 1.4; color: var(--soft); }
+.ov-tiles .tile dd strong { font-size: 32px; font-weight: 700; line-height: 1; color: var(--ink); }
+.ov-tiles .tile[data-tone="bad"] dd > strong { color: var(--bad-ink); }
+.ov-tiles .tile dd [data-tone="good"] { color: var(--ok-ink); }
 .ov-tiles .tile.score dd { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; margin-top: 8px; }
 
 .ov-ring { position: relative; display: block; flex: none; width: 64px; height: 64px; }
-.ov-ring svg { display: block; width: 100%; height: 100%; }
+.ov-ring svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .ov-ring circle { fill: none; stroke: var(--line); stroke-width: 3.5; }
-.ov-ring circle.value { stroke: var(--accent); stroke-linecap: round; }
-.ov-ring strong, .ov-tiles .tile dd .ov-ring strong { position: absolute; inset: 0; display: grid; place-items: center; font-size: 21px; font-weight: 650; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
+.ov-ring circle.value { stroke-linecap: round; filter: drop-shadow(0 0 3px var(--glow)); }
+.ov-ring strong, .ov-tiles .tile dd .ov-ring strong { position: absolute; inset: 0; display: grid; place-items: center; font-size: 21px; font-weight: 700; line-height: 1; color: var(--ink); }
 .ov-ring.small { width: 56px; height: 56px; }
 .ov-ring.small strong { font-size: 18px; }
 
+/* A number that counts up: the real text holds its place (and is what assistive tech and tests read); where the
+   browser can animate an integer, the moving digits are drawn over it. */
+@property --ov-n { syntax: "<integer>"; initial-value: 0; inherits: false; }
+.ov-count { position: relative; display: inline-block; }
+
 /* The row under the tiles: trend beside the fix-first list; one of them alone takes the row. */
-.ov-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; margin: 0 0 32px; }
+.ov-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; margin: 0 0 28px; }
 .ov-two > :only-child { grid-column: 1 / -1; }
-.ov-panel { min-width: 0; margin: 0; padding: 20px 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
+.ov-panel { position: relative; min-width: 0; margin: 0; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
 .ov-panel .ov-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 14px; }
-.ov-panel .ov-title { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.4; letter-spacing: -0.005em; color: var(--ink); }
+.ov-panel .ov-title { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.4; color: var(--ink); }
 .ov-panel .ov-sub { font-size: 13px; color: var(--soft); }
 .ov-panel .ov-head a { font-size: 13px; font-weight: 600; }
 
@@ -36,42 +55,55 @@
 .ov-trend { display: flex; flex-direction: column; }
 .ov-trend .ov-plot { flex: 1; display: flex; flex-direction: column; padding: 6px 30px 2px 30px; }
 .ov-trend .ov-canvas { position: relative; flex: 1 0 150px; }
-.ov-trend svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ov-trend svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; }
 .ov-trend svg line { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
-.ov-trend svg line.base { stroke: var(--line-mid); }
-.ov-trend svg .area { fill: var(--accent-bg); }
-.ov-trend svg .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.ov-trend svg line.base { stroke: var(--line-strong); opacity: 0.6; }
+.ov-trend svg .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 4px var(--glow)); }
 .ov-trend .ov-y { position: absolute; left: -30px; width: 22px; transform: translateY(-50%); text-align: right; font-size: 11.5px; line-height: 1; color: var(--soft); font-variant-numeric: tabular-nums; }
 .ov-trend .ov-hit { position: absolute; top: 0; bottom: 0; transform: translateX(-50%); }
-.ov-trend .ov-hit:hover { background: rgba(37, 83, 230, 0.07); }
-.ov-trend .ov-end { position: absolute; right: -5px; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--surface); pointer-events: none; }
+.ov-trend .ov-hit:hover { background: var(--glow); }
+.ov-trend .ov-end { position: absolute; right: -5px; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--surface), 0 0 12px 2px var(--accent); pointer-events: none; }
+.ov-trend .ov-end::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; }
 .ov-trend .ov-end b { position: absolute; left: 15px; top: -3px; font-size: 12.5px; font-weight: 600; line-height: 16px; color: var(--ink); font-variant-numeric: tabular-nums; }
 .ov-trend .ov-xs { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11.5px; line-height: 1; color: var(--soft); }
 .ov-trend .ov-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; box-shadow: none; }
 
 /* Issue list */
 .ov-issues { margin: 0; padding: 0; list-style: none; }
-.ov-issues li { display: grid; grid-template-columns: 70px minmax(0, 1fr) minmax(0, auto); align-items: baseline; gap: 12px; padding: 11px 0; font-size: 14px; line-height: 1.45; border-top: 1px solid var(--line); }
+.ov-issues li { display: grid; grid-template-columns: 66px minmax(0, 1fr) minmax(0, auto); align-items: baseline; gap: 12px; padding: 10px 0; font-size: 14px; line-height: 1.45; border-top: 1px solid var(--line); }
 .ov-issues li:last-child { padding-bottom: 2px; }
 .ov-issues li .badge { justify-self: start; }
 .ov-issues li a, .ov-issues li .ov-issue-title { min-width: 0; font-weight: 500; color: var(--ink); overflow-wrap: anywhere; text-decoration: none; }
 .ov-issues li a:hover, .ov-issues li a:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .ov-issues li code { max-width: 190px; padding: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--soft); background: none; }
-.ov-calm { margin: 0; padding-top: 14px; font-size: 14px; color: var(--soft); border-top: 1px solid var(--line); }
+.ov-calm { margin: 0; padding-top: 12px; font-size: 14px; color: var(--soft); border-top: 1px solid var(--line); }
 
 /* Account cards */
 .ov-account .ov-account-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.ov-account .ov-account-head h3 { margin: 0 0 2px; font-size: 16px; font-weight: 600; letter-spacing: -0.005em; }
+.ov-account .ov-account-head h3 { margin: 0 0 2px; font-size: 17px; }
 .ov-account .ov-account-head p { margin: 0; font-size: 13px; }
-.ov-account .ov-account-head + * { margin-top: 18px; }
-.ov-account .ov-account-body { display: flex; align-items: center; gap: 20px 28px; flex-wrap: wrap; }
+.ov-account .ov-account-head + * { margin-top: 16px; }
+.ov-account .ov-account-body { display: flex; align-items: center; gap: 16px 24px; flex-wrap: wrap; }
 .ov-account .ov-score { display: grid; justify-items: center; gap: 6px; margin: 0; font-size: 12px; color: var(--soft); }
-.ov-account .ov-counts { flex: 1 1 220px; display: grid; grid-template-columns: repeat(auto-fit, minmax(68px, 1fr)); gap: 14px 8px; margin: 0; padding: 0; list-style: none; }
+.ov-account .ov-counts { flex: 1 1 220px; display: grid; grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); gap: 14px 8px; margin: 0; padding: 0; list-style: none; }
 .ov-account .ov-counts li { display: grid; justify-items: start; gap: 6px; }
-.ov-account .ov-counts strong { font-size: 20px; font-weight: 650; line-height: 1; color: var(--ink); }
-.ov-account .ov-counts li.zero strong { color: var(--line-strong); font-weight: 500; }
-.ov-account .ov-account-foot { margin: 18px 0 0; padding-top: 14px; font-size: 14px; font-weight: 600; border-top: 1px solid var(--line); }
-.ov-account .empty { margin: 0; padding: 18px; font-size: 14px; background: var(--bg); border: 0; }
+.ov-account .ov-counts strong { font-size: 20px; font-weight: 700; line-height: 1; color: var(--ink); }
+.ov-account .ov-counts li.zero strong { color: var(--soft); font-weight: 400; }
+/* Open findings by severity as one bar; each part is as wide as its count. */
+.ov-bar { display: flex; gap: 3px; height: 6px; margin-top: 16px; }
+.ov-bar span { flex-basis: 0; min-width: 4px; border-radius: 3px; background: var(--line-strong); transform-origin: left; }
+.ov-bar .sev-critical { background: var(--bad); }
+.ov-bar .sev-high { background: var(--high); opacity: 0.7; }
+.ov-bar .sev-medium { background: var(--warn); }
+.ov-bar .sev-low { background: var(--soft); }
+.ov-account .ov-account-foot { margin: 14px 0 0; padding-top: 12px; font-size: 14px; font-weight: 600; border-top: 1px solid var(--line); }
+.ov-account .empty { margin: 0; }
+
+/* Loading: quiet blocks in the shape of what is coming, with one slow light passing over. */
+.ov-skel { display: grid; gap: 16px; margin: 0 0 28px; }
+.ov-skel i { display: block; height: 180px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.ov-skel.rows i { height: 44px; }
+.ov-skel i::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, var(--row-hover), var(--glow), transparent); }
 
 /* Narrow tiles and panels (the landing sample, small screens) trim themselves, whatever the viewport. */
 .ov-tiles .tile, .ov-panel { container-type: inline-size; }
@@ -81,21 +113,53 @@
   .ov-tiles .tile.score .ov-ring strong { font-size: 17px; }
 }
 @container (max-width: 420px) {
-  .ov-issues li { grid-template-columns: 70px minmax(0, 1fr); }
+  .ov-issues li { grid-template-columns: 66px minmax(0, 1fr); }
   .ov-issues li code { display: none; }
 }
-
 @media (max-width: 1100px) {
   .ov-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ov-two { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 640px) {
-  .ov-greet .ov-hello { font-size: 22px; }
-}
+@media (max-width: 640px) { .ov-greet .ov-hello { font-size: 22px; } }
 @media (max-width: 420px) {
   .ov-tiles { gap: 10px; }
-  .ov-tiles .tile { padding: 14px 14px 16px; }
+  .ov-tiles .tile { padding: 14px; }
   .ov-tiles .tile dd strong { font-size: 28px; }
   .ov-tiles .tile.score dd { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .ov-panel { padding: 16px; }
 }
+
+/* ---- Life. Everything below is decoration: it never holds content back, and none of it runs under reduced motion. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Numbers count up once. `--d` lets a parent delay its whole group (the landing hero does). */
+  @supports (content: "x" / "") {
+    .ov-count > span { color: transparent; }
+    .ov-count::after { content: counter(ov-n) / ""; counter-reset: ov-n var(--ov-n); position: absolute; inset: 0; color: var(--ov-ink, inherit); --ov-n: var(--to); animation: ov-count 900ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms) backwards; }
+  }
+  /* The ring sweeps, the chart draws left to right, then its end point arrives and keeps a slow pulse. */
+  .ov-ring circle.value { animation: ov-sweep 1000ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms) backwards; }
+  .ov-trend .ov-draw { animation: ov-draw 1100ms cubic-bezier(0.3, 0.6, 0.2, 1) calc(var(--d, 0ms) + 150ms) backwards; }
+  .ov-trend .ov-end { animation: ov-pop 300ms ease-out calc(var(--d, 0ms) + 1150ms) backwards; }
+  .ov-trend .ov-end::after { animation: ov-ring 2600ms ease-out calc(var(--d, 0ms) + 1500ms) infinite; }
+  /* Rows and bars arrive in order, once. */
+  .ov-issues li { animation: ov-in 380ms ease-out calc(var(--d, 0ms) + var(--i, 0) * 70ms) backwards; }
+  .ov-issues li:nth-child(2) { --i: 1; } .ov-issues li:nth-child(3) { --i: 2; } .ov-issues li:nth-child(4) { --i: 3; } .ov-issues li:nth-child(5) { --i: 4; }
+  .ov-bar span { animation: ov-grow 600ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+  .ov-bar span:nth-child(2) { animation-delay: 80ms; } .ov-bar span:nth-child(3) { animation-delay: 160ms; } .ov-bar span:nth-child(4) { animation-delay: 240ms; } .ov-bar span:nth-child(5) { animation-delay: 320ms; }
+  /* The live dot breathes; faster while a scan runs. */
+  .ov-live i::after { animation: ov-ring 2800ms ease-out infinite; }
+  .ov-live[data-state="scanning"] i::after { animation-duration: 1400ms; }
+  .ov-skel i::after { animation: ov-shimmer 1600ms ease-in-out infinite; }
+  .ov-skel i:nth-child(2)::after { animation-delay: 120ms; } .ov-skel i:nth-child(3)::after { animation-delay: 240ms; }
+  /* Hover: a 1px lift and a brighter edge. */
+  .ov-tiles .tile, .ov-account { transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .ov-tiles .tile:hover, .ov-account:hover { transform: translateY(-1px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+}
+@keyframes ov-count { from { --ov-n: 0; } }
+@keyframes ov-sweep { from { stroke-dasharray: 0 100; } }
+@keyframes ov-draw { from { clip-path: inset(-10px 100% -10px 0); } to { clip-path: inset(-10px -10px -10px 0); } }
+@keyframes ov-pop { from { opacity: 0; transform: scale(0.2); } }
+@keyframes ov-ring { 0% { opacity: 0.7; transform: scale(0.6); } 70%, 100% { opacity: 0; transform: scale(1.9); } }
+@keyframes ov-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes ov-grow { from { transform: scaleX(0); } }
+@keyframes ov-shimmer { to { transform: translateX(100%); } }

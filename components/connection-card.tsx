@@ -49,6 +49,9 @@ export function ConnectionCard({ c, several, latest, error }: { c: Connection; s
               })}
             </ul>
           </div>
+          <div className="ov-bar" aria-hidden="true">
+            {SEVERITIES.map((s) => (stats.counts_by_severity?.[s] ? <span key={s} className={`sev-${s}`} style={{ flexGrow: stats.counts_by_severity[s] }} /> : null))}
+          </div>
           <p className="ov-account-foot">
             <Link href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</Link>
           </p>

@@ -18,7 +18,6 @@ body:has(.mkt) { background: var(--bg); }
 .mkt h1, .mkt h2, .mkt h3, .mkt p, .mkt ul, .mkt ol, .mkt figure { margin: 0; }
 .mkt ul, .mkt ol { padding: 0; list-style: none; }
 .mkt h1, .mkt h2, .mkt h3 { color: var(--ink); font-weight: 650; text-wrap: balance; }
-.mkt p { text-wrap: pretty; }
 .mkt a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .mkt a:hover { color: var(--accent-hover); text-decoration-thickness: 2px; }
 .mkt a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
@@ -38,9 +37,10 @@ body:has(.mkt) { background: var(--bg); }
   height: 40px;
   color: var(--accent);
   background: var(--accent-bg);
+  border: 1px solid var(--accent-line);
   border-radius: 10px;
 }
-.mkt .ico-bad { color: var(--bad-ink); background: var(--bad-bg); }
+.mkt .ico-bad { color: var(--bad-ink); background: var(--bad-bg); border-color: var(--bad-line); }
 .mkt .step-badge {
   display: grid;
   place-items: center;
@@ -48,7 +48,7 @@ body:has(.mkt) { background: var(--bg); }
   height: 48px;
   color: var(--accent);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 14px;
   position: relative;
   z-index: 1;
@@ -56,27 +56,27 @@ body:has(.mkt) { background: var(--bg); }
 }
 
 /* Header */
-.mkt .site-header { position: sticky; top: 0; z-index: 10; background: var(--surface); border-bottom: 1px solid var(--line); }
+.mkt .site-header { position: sticky; top: 0; z-index: 10; background: var(--bg); border-bottom: 1px solid var(--line); }
 .mkt .site-header-bar {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 14px var(--gutter);
+  padding: 16px var(--gutter);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
-.mkt .menu-button { display: none; font: inherit; font-size: 15px; color: var(--ink); background: var(--surface); border: 1px solid var(--line-mid); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.mkt .menu-button { display: none; font: inherit; font-size: 15px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
 .mkt .menu-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.mkt .site-header nav { display: flex; align-items: center; gap: 24px; font-size: 15px; font-weight: 500; }
+.mkt .site-header nav { display: flex; align-items: center; gap: 24px; font-size: 15px; }
 .mkt .site-header nav a, .mkt .site-header .more-button { color: var(--body); text-decoration: none; white-space: nowrap; }
 .mkt .site-header nav a:hover, .mkt .site-header nav a[aria-current="page"], .mkt .site-header .more-button[aria-current] { color: var(--ink); }
 .mkt .site-header nav a[aria-current="page"], .mkt .site-header .more-button[aria-current] { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .mkt .site-header .sign-in { padding-left: 24px; border-left: 1px solid var(--line); }
-.mkt .site-header nav a.join { padding: 9px 16px; color: var(--accent-ink); background: var(--accent); border-radius: 10px; font-weight: 600; }
+.mkt .site-header nav a.join { padding: 9px 16px; color: var(--accent-ink); background: var(--accent); border-radius: 8px; font-weight: 600; }
 .mkt .site-header nav a.join:hover { color: var(--accent-ink); background: var(--accent-hover); }
 .mkt .site-header .more { position: relative; }
-.mkt .site-header .more-button { font: inherit; font-size: 15px; font-weight: 500; color: var(--body); background: none; border: 0; padding: 0; cursor: pointer; }
+.mkt .site-header .more-button { font: inherit; font-size: 15px; color: var(--body); background: none; border: 0; padding: 0; cursor: pointer; }
 .mkt .site-header .more-button:hover, .mkt .site-header .more-button[aria-expanded="true"] { color: var(--ink); }
 .mkt .site-header .more-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .site-header .more-panel { display: none; position: absolute; top: calc(100% + 12px); left: -14px; min-width: 240px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
@@ -92,7 +92,7 @@ body:has(.mkt) { background: var(--bg); }
 }
 @media (max-width: 860px) {
   .mkt .menu-button { display: block; }
-  .mkt .site-header nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: var(--surface); border-bottom: 1px solid var(--line); box-shadow: var(--shadow); }
+  .mkt .site-header nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 20px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .mkt .site-header nav.open { display: flex; }
   .mkt .site-header nav a { padding: 12px 0; }
   .mkt .site-header .sign-in { padding-left: 0; border-left: 0; }
@@ -114,16 +114,16 @@ body:has(.mkt) { background: var(--bg); }
 .mkt main > ol { list-style: decimal; padding-left: 1.4em; }
 .mkt main > ol li { margin-bottom: 6px; }
 .mkt main > :last-child:not(section) { margin-bottom: 96px; }
-.mkt pre { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.mkt pre { overflow-x: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
 .mkt pre code { background: none; padding: 0; }
 
-.mkt .lead { margin-top: 24px; font-size: 19px; line-height: 1.55; color: var(--soft); max-width: 34em; }
+.mkt .lead { margin-top: 24px; font-size: 19px; line-height: 1.55; color: var(--body); max-width: 34em; }
 
 /* Sample briefing card */
 .mkt .briefing {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--shadow);
   overflow: hidden;
 }
@@ -183,24 +183,24 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .site-footer-badges img { display: block; height: 40px; width: auto; }
 
 
-.mkt .waitlist { max-width: 480px; }
+.mkt .waitlist { max-width: 460px; }
 .mkt .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .mkt .waitlist-row { display: flex; gap: 10px; }
 .mkt .waitlist input {
   flex: 1; min-width: 0; padding: 13px 14px; font: inherit; font-size: 16px; color: var(--ink);
-  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; box-shadow: var(--shadow-sm);
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px;
 }
 .mkt .waitlist input:focus-visible, .mkt .waitlist button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .waitlist button {
   padding: 13px 20px; font: inherit; font-size: 16px; font-weight: 600; color: var(--accent-ink); background: var(--accent);
-  border: 0; border-radius: 10px; cursor: pointer; white-space: nowrap; box-shadow: var(--shadow-sm);
+  border: 0; border-radius: 8px; cursor: pointer; white-space: nowrap;
 }
 .mkt .waitlist button:hover:not([aria-disabled="true"]) { background: var(--accent-hover); }
 .mkt .waitlist button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
 .mkt .waitlist-err:not(:empty) { margin-top: 10px; }
 .mkt .waitlist-err { font-size: 14px; color: var(--bad-ink); }
 .mkt .waitlist-hint { margin-top: 10px; font-size: 14px; color: var(--soft); }
-.mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; text-align: left; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: inset 3px 0 0 var(--accent), var(--shadow-sm); }
+.mkt .waitlist-ok { padding: 16px 18px; font-size: 17px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 8px; }
 @media (max-width: 480px) { .mkt .waitlist-row { flex-direction: column; } }
 
 /* How it works, Security, Pricing, Contact, Docs */
@@ -223,9 +223,10 @@ body:has(.mkt) { background: var(--bg); }
   top: 56px;
   bottom: 8px;
   width: 1px;
-  background: var(--line-mid);
+  background: var(--line-strong);
+  opacity: 0.6;
 }
-.mkt .step-card { padding: 22px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .step-card { padding: 22px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .step-card::before {
   content: "Step " counter(step, decimal-leading-zero);
   display: block;
@@ -245,7 +246,7 @@ body:has(.mkt) { background: var(--bg); }
 
 /* Pricing */
 .mkt .plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 40px; align-items: stretch; }
-.mkt .plans > li { position: relative; display: flex; flex-direction: column; padding: 28px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .plans > li { position: relative; display: flex; flex-direction: column; padding: 28px 24px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .plans > li.plan-featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
 .mkt .plan-badge {
   position: absolute;
@@ -268,14 +269,14 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .plans dt svg { flex: none; }
 .mkt .plans dt svg { color: var(--accent); }
 .mkt .plans dd { margin: 0; font-weight: 600; color: var(--ink); text-align: right; }
-.mkt .plans .btn { display: block; margin-top: auto; padding: 12px 16px; text-align: center; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line-mid); border-radius: 10px; text-decoration: none; }
-.mkt .plans .btn:hover { color: var(--ink); background: var(--surface-2); }
+.mkt .plans .btn { display: block; margin-top: auto; padding: 12px 16px; text-align: center; font-weight: 600; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 8px; text-decoration: none; }
+.mkt .plans .btn:hover { color: var(--ink); background: var(--line); }
 .mkt .plans .plan-featured .btn { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
 .mkt .plans .plan-featured .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .mkt .plans .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .trial-note { font-size: 15px; }
 .mkt .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
-.mkt .faq > div { padding: 20px 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .faq > div { padding: 20px 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .mkt .page .faq h3 { margin-top: 0; }
 .mkt .page .faq p { margin-top: 6px; font-size: 15.5px; }
 @media (max-width: 800px) {
@@ -290,19 +291,20 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .contact label:first-of-type { margin-top: 0; }
 .mkt .contact input, .mkt .contact select, .mkt .contact textarea {
   width: 100%; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--ink);
-  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px;
+  box-shadow: var(--inset);
 }
 .mkt .contact textarea { resize: vertical; min-height: 148px; }
 .mkt .contact ::placeholder { color: var(--soft); opacity: 1; }
 .mkt .contact input:focus, .mkt .contact select:focus, .mkt .contact textarea:focus { border-color: var(--accent); }
 .mkt .contact input:focus-visible, .mkt .contact select:focus-visible, .mkt .contact textarea:focus-visible, .mkt .contact button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .contact button {
-  margin-top: 24px; padding: 12px 22px; font: inherit; font-size: 16px; font-weight: 600; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 10px; cursor: pointer;
+  margin-top: 24px; padding: 12px 22px; font: inherit; font-size: 16px; font-weight: 600; color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 8px; cursor: pointer;
 }
 .mkt .contact button:hover:not([aria-disabled="true"]) { background: var(--accent-hover); }
 .mkt .contact button[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
 .mkt .contact .contact-hp { position: absolute; left: -9999px; width: 1px; height: 1px; }
-.mkt .contact-card { display: grid; gap: 20px; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .contact-card { display: grid; gap: 20px; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .contact-card li { display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 14px; align-items: start; }
 .mkt .contact-card li + li { padding-top: 20px; border-top: 1px solid var(--line); }
 .mkt .page .contact-card p { margin-top: 0; padding-top: 9px; font-size: 15px; }
@@ -312,7 +314,7 @@ body:has(.mkt) { background: var(--bg); }
 }
 
 /* Docs: code panels with a Copy button, and one card per client */
-.mkt .code-panel { margin-top: 28px; overflow: hidden; background: var(--device); border: 1px solid var(--device); border-radius: 12px; }
+.mkt .code-panel { margin-top: 28px; overflow: hidden; background: var(--device); border: 1px solid var(--line); border-radius: 12px; }
 .mkt .code-panel-head {
   display: flex;
   align-items: center;
@@ -322,31 +324,31 @@ body:has(.mkt) { background: var(--bg); }
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--device-soft);
-  border-bottom: 1px solid var(--device-line);
+  color: var(--soft);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
 }
 .mkt .code-panel-head > span:first-child { margin-right: auto; }
 .mkt .code-panel pre { margin: 0; padding: 16px; background: none; border: 0; border-radius: 0; }
-.mkt .code-panel code { display: block; padding: 0; font: 14.5px/1.55 var(--mono); color: var(--device-ink); background: none; overflow-wrap: anywhere; white-space: pre-wrap; }
+.mkt .code-panel code { display: block; padding: 0; font: 15px/1.5 var(--mono); color: var(--device-accent); background: none; overflow-wrap: anywhere; white-space: pre-wrap; }
 .mkt .code-panel > code { padding: 16px; }
-.mkt .copy-status { font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: #6EE7B7; }
+.mkt .copy-status { font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ok-ink); }
 .mkt .copy-btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none;
-  color: var(--device-ink); background: transparent; border: 1px solid var(--device-line); border-radius: 7px; cursor: pointer;
+  color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 7px; cursor: pointer;
 }
-.mkt .copy-btn:hover { background: var(--device-line); }
-.mkt .copy-btn:focus-visible { outline-color: var(--device-accent); }
+.mkt .copy-btn:hover { background: var(--line); }
 .mkt .copy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .mkt .client-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; margin-top: 40px; }
-.mkt .client-cards > section { min-width: 0; margin: 0; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .client-cards > section { min-width: 0; margin: 0; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .client-cards .code-panel { margin-top: 14px; }
 .mkt .page .client-cards p { margin-top: 10px; }
 .mkt .client-cards ol { margin-top: 14px; padding-left: 1.4em; list-style: decimal; color: var(--body); }
 .mkt .client-cards ol li + li { margin-top: 8px; }
 .mkt .client-cards ol li::marker { color: var(--accent); font-weight: 600; }
-.mkt .cursor-link { display: inline-flex; align-items: center; margin-top: 14px; padding: 10px 16px; font-weight: 600; color: var(--ink); background: var(--surface); border: 1px solid var(--line-mid); border-radius: 10px; text-decoration: none; }
+.mkt .cursor-link { display: inline-flex; align-items: center; margin-top: 14px; padding: 10px 16px; font-weight: 600; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 8px; text-decoration: none; }
 .mkt .page a.cursor-link { color: var(--ink); }
-.mkt .page a.cursor-link:hover { background: var(--surface-2); }
+.mkt .page a.cursor-link:hover { background: var(--line); }
 .mkt .page .muted { margin-top: 28px; font-size: 15px; color: var(--soft); }
 .mkt .client-cards ol code { overflow-wrap: anywhere; }
 @media (max-width: 480px) {
@@ -362,7 +364,7 @@ body:has(.mkt) { background: var(--bg); }
 /* Privacy, Terms */
 .mkt .legal-list, .mkt .page .bullets { margin-top: 12px; padding-left: 1.3em; list-style: disc; max-width: 40em; color: var(--body); }
 .mkt .legal-list li + li, .mkt .page .bullets li + li { margin-top: 6px; }
-.mkt .copy-status.failed { color: #FDA29B; }
+.mkt .copy-status.failed { color: var(--bad-ink); }
 
 /* Feature pages (/features/*): the shared frame in FeaturePage.tsx */
 .mkt .feature-kicker { font: 600 12px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
@@ -386,12 +388,12 @@ body:has(.mkt) { background: var(--bg); }
 
 /* Checks: three facts, then one card per check */
 .mkt .feature-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
-.mkt .feature-facts li { padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .feature-facts li { padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .page .feature-facts h2 { margin-top: 14px; font-size: 17px; }
 .mkt .page .feature-facts p { margin-top: 6px; font-size: 15px; }
 .mkt .check-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 24px; counter-reset: check; }
-.mkt .check-cards > li { counter-increment: check; position: relative; display: flex; flex-direction: column; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
-.mkt .check-cards > li:hover { border-color: var(--line-mid); }
+.mkt .check-cards > li { counter-increment: check; position: relative; display: flex; flex-direction: column; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+.mkt .check-cards > li:hover { border-color: var(--line-strong); }
 .mkt .check-cards > li::after { content: counter(check, decimal-leading-zero); position: absolute; top: 22px; right: 22px; font: 600 12px/1 var(--mono); letter-spacing: 0.06em; color: var(--soft); }
 .mkt .check-cards .ico { width: 36px; height: 36px; }
 .mkt .page .check-cards h3 { margin-top: 16px; }
@@ -403,18 +405,18 @@ body:has(.mkt) { background: var(--bg); }
 
 /* Dashboard AI and human review */
 .mkt .credit-table { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 480px; margin: 16px 0 4px; }
-.mkt .credit-table > div { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
+.mkt .credit-table > div { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .mkt .credit-table dt { font-size: 13px; color: var(--soft); }
 .mkt .credit-table dd { margin: 2px 0 0; font-size: 20px; font-weight: 650; color: var(--ink); letter-spacing: -0.01em; }
-.mkt .reviewer { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 24px; margin-top: 32px; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .reviewer { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 24px; margin-top: 32px; padding: 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .reviewer-photo { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-strong); }
 .mkt .page .reviewer h3 { margin-top: 4px; font-size: 20px; }
 .mkt .page .reviewer p { margin-top: 4px; }
 .mkt .reviewer-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .mkt .reviewer-chips li { padding: 4px 10px; font-size: 13px; color: var(--body); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; }
-.mkt .reviewer-chips li.strong { color: var(--accent); background: var(--accent-bg); border-color: transparent; font-weight: 600; }
+.mkt .reviewer-chips li.strong { color: var(--accent); background: var(--accent-bg); border-color: var(--accent-line); font-weight: 600; }
 .mkt .review-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
-.mkt .review-cards li { padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
+.mkt .review-cards li { padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .mkt .page .review-cards h3 { margin-top: 0; }
 .mkt .page .review-cards .review-price { margin-top: 6px; font-size: 32px; font-weight: 700; line-height: 1.1; color: var(--ink); letter-spacing: -0.03em; }
 .mkt .page .review-cards p:last-child { margin-top: 10px; font-size: 15px; }
@@ -428,23 +430,50 @@ body:has(.mkt) { background: var(--bg); }
 }
 .mkt a.trial-cta, .mkt .page a.trial-cta {
   display: inline-block; margin-top: 8px; padding: 13px 20px; font-size: 16px; font-weight: 600; text-decoration: none;
-  color: var(--accent-ink); background: var(--accent); border-radius: 10px;
+  color: var(--accent-ink); background: var(--accent); border-radius: 8px;
 }
 .mkt a.trial-cta:hover, .mkt .page a.trial-cta:hover { color: var(--accent-ink); background: var(--accent-hover); }
 .mkt .trial-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Status page */
-.mkt .status-list { list-style: none; margin: 32px 0 0; padding: 0 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-sm); }
-.mkt .status-list li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; }
-.mkt .status-list li + li { border-top: 1px solid var(--line); }
+.mkt .status-list { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.mkt .status-list li { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .mkt .status-detail { display: block; margin-top: 2px; font-size: 14px; color: var(--body); }
 .mkt .status-pill { flex: none; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
 .mkt .status-ok { color: var(--ok-ink); background: var(--ok-bg); }
 .mkt .status-warn { color: var(--warn-ink); background: var(--warn-bg); }
 .mkt .status-bad { color: var(--bad-ink); background: var(--bad-bg); }
-.mkt .status-unknown { color: var(--body); background: var(--surface-2); }
+.mkt .status-unknown { color: var(--body); background: var(--line); }
 .mkt .status-checked { margin-top: 24px; font-size: 14px; }
 .mkt .client-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
 .mkt .page .client-jump a { padding: 6px 12px; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; text-decoration: none; }
 .mkt .page .client-jump a:hover { background: var(--surface-2); }
 .mkt .client-cards > section { scroll-margin-top: 88px; }
+
+/* ---- Depth and life, inside the existing styling: same radii, borders and colours; raised things get a top
+   highlight and a shadow, the primary action a soft sheen, and hover answers with a 1px lift. ---- */
+.mkt .site-header { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.mkt .site-footer .theme-switch { align-self: center; }
+.mkt .plans > li, .mkt .faq > div, .mkt .step-card, .mkt .check-cards > li, .mkt .feature-facts li, .mkt .review-cards li, .mkt .reviewer, .mkt .contact-card, .mkt .client-cards > section, .mkt .credit-table > div { box-shadow: var(--shadow-sm); }
+.mkt .plans > li.plan-featured { box-shadow: 0 0 0 1px var(--accent), 0 0 48px -12px var(--glow), var(--shadow); }
+.mkt .waitlist button, .mkt .contact button, .mkt .site-header nav a.join, .mkt a.trial-cta, .mkt .plans .plan-featured .btn, .mkt .auth-btn.primary {
+  background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.25), 0 8px 24px -10px var(--glow);
+}
+.mkt .waitlist button:hover:not([aria-disabled="true"]), .mkt .contact button:hover:not([aria-disabled="true"]), .mkt .site-header nav a.join:hover, .mkt a.trial-cta:hover, .mkt .plans .plan-featured .btn:hover, .mkt .auth-btn.primary:hover:not(:disabled) { background-image: none; }
+.mkt .waitlist input:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-bg); }
+@media (prefers-reduced-motion: no-preference) {
+  .mkt .plans > li, .mkt .faq > div, .mkt .step-card, .mkt .check-cards > li, .mkt .feature-facts li, .mkt .review-cards li, .mkt .client-cards > section { transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .mkt .plans > li:hover, .mkt .faq > div:hover, .mkt .step-card:hover, .mkt .check-cards > li:hover, .mkt .feature-facts li:hover, .mkt .review-cards li:hover { transform: translateY(-1px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .mkt .plans > li.plan-featured:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 56px -8px var(--glow), var(--shadow); }
+  .mkt .ico { transition: transform 150ms ease; }
+  .mkt li:hover > .ico, .mkt .sec-row:hover > .ico { transform: scale(1.06); }
+  .mkt .site-header nav a, .mkt .site-header .more-button, .mkt .site-footer a { transition: color 150ms ease; }
+  .mkt .waitlist button, .mkt .contact button, .mkt .site-header nav a.join, .mkt a.trial-cta, .mkt .plans .btn, .mkt .auth-btn, .mkt .copy-btn { transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease; }
+  .mkt .waitlist button:hover:not([aria-disabled="true"]), .mkt .contact button:hover, .mkt .site-header nav a.join:hover, .mkt a.trial-cta:hover, .mkt .plans .btn:hover, .mkt .auth-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .mkt .waitlist button:active, .mkt .contact button:active, .mkt .site-header nav a.join:active, .mkt a.trial-cta:active, .mkt .plans .btn:active, .mkt .auth-btn:active:not(:disabled), .mkt .copy-btn:active { transform: translateY(1px) scale(0.985); }
+  .mkt .demo-evidence::after { display: inline-block; transition: transform 150ms ease; }
+  .mkt .demo-findings li:hover .demo-evidence::after { transform: translateX(3px); }
+  .mkt .site-header .more-panel.open { animation: mkt-pop 160ms ease-out; transform-origin: 20px 0; }
+  .mkt .waitlist-ok { animation: mkt-pop 260ms ease-out; }
+}
+@keyframes mkt-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }

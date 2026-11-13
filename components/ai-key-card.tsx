@@ -97,7 +97,7 @@ function SavedKey({ org, slot, aiKey, preset, removeText, onChanged }: Base & {
       <p>{keyLine(aiKey)}</p>
       <ErrorNote error={models.error ?? error} />
       <ModelFields list={models.data} {...{ routine, chat, setRoutine, setChat }} />
-      {saved && <p role="status">Saved.</p>}
+      {saved && <p role="status" className="ok">Saved.</p>}
       {confirming ? (
         <div className="stack">
           <p>{removeText}</p>

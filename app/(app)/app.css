@@ -2,8 +2,8 @@
 .app { --page: 1120px; --gutter: clamp(16px, 4vw, 32px); min-height: 100vh; }
 .app main { max-width: calc(var(--page) + 2 * var(--gutter)); padding: 32px var(--gutter) 64px; }
 .app main.wide { max-width: calc(var(--page) + 2 * var(--gutter)); }
-.app h1 { margin: 0 0 20px; font-size: 26px; font-weight: 650; line-height: 1.2; letter-spacing: -0.02em; }
-.app main > h2, .app main > section > h2 { margin: 36px 0 12px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.app h1 { margin: 0 0 20px; font-size: 26px; line-height: 1.25; letter-spacing: -0.01em; }
+.app main > h2, .app main > section > h2 { margin: 32px 0 12px; font-size: 18px; }
 .app code { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink); }
 .app .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; overflow-wrap: anywhere; }
 
@@ -18,26 +18,25 @@
 .app .sidebar { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; padding: 0 12px 14px; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--line); }
 .app .sidebar-head { flex: none; display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 8px; }
 .app .sidebar .brand:hover { text-decoration: none; }
-.app a.brand { color: var(--ink); }
 .app .sidebar .drawer-close { display: none; }
 .app .sidebar nav { display: grid; gap: 2px; padding-top: 8px; font-size: 14px; }
 .app .sidebar nav div { display: grid; gap: 2px; }
-.app .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--body); font-weight: 500; text-decoration: none; }
+.app .sidebar nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--body); text-decoration: none; }
 .app .sidebar nav a svg { flex: none; color: var(--soft); }
-.app .sidebar nav a:hover { color: var(--ink); background: var(--surface-2); text-decoration: none; }
-.app .sidebar nav a[aria-current="page"] { color: var(--accent); font-weight: 600; background: var(--accent-bg); }
+.app .sidebar nav a:hover { color: var(--ink); background: var(--surface-2); }
+.app .sidebar nav a[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--accent-bg); }
 .app .sidebar nav a[aria-current="page"] svg { color: var(--accent); }
 .app .sidebar nav a:focus-visible { outline-offset: -2px; }
-.app .nav-label { margin: 22px 10px 6px; font-size: 12px; font-weight: 500; color: var(--soft); }
+.app .nav-label { margin: 20px 10px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
 .app .sidebar-foot { margin-top: auto; display: grid; gap: 8px; justify-items: start; padding: 14px 8px 0; border-top: 1px solid var(--line); }
 .app .account-email { max-width: 100%; font-size: 13px; color: var(--soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.app .top-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 var(--gutter); background: var(--surface); border-bottom: 1px solid var(--line); }
+.app .top-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
 .app .top-bar .account-email { margin-left: auto; }
 .app .top-title { font-size: 14px; color: var(--soft); white-space: nowrap; }
-.app .top-title::before { content: "/"; margin-right: 12px; color: var(--line-mid); }
+.app .top-title::before { content: "/"; margin-right: 12px; color: var(--line-strong); }
 .app .menu-button { display: none; flex: none; }
 .app .org-switch { position: relative; display: flex; align-items: center; gap: 10px; min-width: 0; margin: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
-.app .org-switch .avatar { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--accent); color: var(--accent-ink); font-size: 13px; }
+.app .org-switch .avatar { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--accent-bg); color: var(--accent); font-size: 13px; }
 .app .org-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .app .org-button { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 4px 10px 4px 4px; font-weight: 600; background: transparent; border-color: var(--line); box-shadow: none; }
 .app .org-button .caret { font-size: 11px; color: var(--soft); }
@@ -52,23 +51,23 @@
   .app .sidebar.open { visibility: visible; transform: none; box-shadow: var(--shadow); }
   .app .sidebar .drawer-close { display: block; }
   .app .sidebar nav a { padding: 10px; }
-  .app .drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(14, 27, 51, 0.4); }
+  .app .drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 25; background: var(--backdrop); }
   .app .menu-button { display: block; }
   .app .top-title, .app .top-bar .account-email { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .app .sidebar { transition: none; } }
 
 /* Banners: billing notices and the passkey prompt as slim strips. */
-.app .banner { padding: 10px var(--gutter); font-size: 14px; text-align: center; color: var(--ink); background: var(--accent-bg); border-bottom-color: transparent; }
-.app .banner.warn { background: var(--warn-bg); }
+.app .banner { padding: 10px var(--gutter); font-size: 14px; text-align: center; }
+.app .banner.warn { border-bottom-color: var(--warn-line); }
 .app .banner a { font-weight: 600; }
-.app .passkey-prompt { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; max-width: var(--page); margin: 20px var(--gutter) 0; padding: 12px 14px 12px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: inset 3px 0 0 var(--accent), var(--shadow-sm); }
+.app .passkey-prompt { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 16px; max-width: var(--page); margin: 20px var(--gutter) 0; padding: 10px 12px 10px 16px; border-color: var(--line); border-left: 3px solid var(--accent); border-radius: 8px; }
 .app .passkey-prompt h2 { margin: 0; font-size: 15px; }
 .app .passkey-prompt p { margin: 0; flex: 1 1 260px; font-size: 14px; color: var(--soft); }
 .app .passkey-prompt .row { flex: none; }
 
 /* Controls */
-.app input, .app select, .app textarea { padding: 8px 12px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; }
+.app input, .app select, .app textarea { padding: 8px 12px; background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: var(--inset); }
 .app select { padding-right: 28px; }
 .app input:focus-visible, .app select:focus-visible, .app textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
 .app input[type="checkbox"], .app input[type="radio"] { padding: 0; box-shadow: none; accent-color: var(--accent); width: 16px; height: 16px; }
@@ -82,27 +81,27 @@
 .app .stack > h2, .app .stack > h3 { margin: 16px 0 0; }
 .app .stack > h1 { margin-bottom: 8px; }
 .app p + table { margin-top: 8px; }
-.app button { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--surface); border: 1px solid var(--line-mid); box-shadow: var(--shadow-sm); transition: background-color 0.12s, border-color 0.12s; }
-.app button:hover:not(:disabled) { background: var(--surface-2); border-color: var(--line-strong); }
+.app button { padding: 8px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); transition: background-color 0.12s, border-color 0.12s; }
+.app button:hover:not(:disabled) { background: var(--surface-3); border-color: var(--soft); }
 .app button[type="submit"], .app button.primary { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); font-weight: 600; }
 .app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
-.app button.danger { color: var(--bad-ink); background: var(--surface); border-color: #F3B7B1; }
+.app button.danger { color: var(--bad-ink); background: transparent; border-color: var(--bad-line); box-shadow: none; }
 .app button.danger:hover:not(:disabled) { background: var(--bad-bg); border-color: var(--bad); }
-.app button.quiet { padding: 4px 10px; font-size: 13px; background: transparent; border-color: var(--line-mid); box-shadow: none; color: var(--body); }
+.app button.quiet { padding: 4px 10px; font-size: 13px; background: transparent; border-color: var(--line); box-shadow: none; color: var(--body); }
 .app button.quiet:hover:not(:disabled) { color: var(--ink); background: var(--surface-2); border-color: var(--line-strong); }
 .app .row { gap: 10px; }
 .app main > .row:has(> label) { margin-bottom: 16px; align-items: end; }
 
 /* Cards */
-.app .card { padding: 20px; border-radius: 10px; box-shadow: var(--shadow-sm); }
+.app .card { padding: 20px; border-radius: 10px; }
 .app .cards { gap: 16px; }
 
 /* Tables */
-.app table { font-size: 14px; border: 1px solid var(--line); border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden; background: var(--surface); box-shadow: var(--shadow-sm); }
-.app th { padding: 11px 16px; font-size: 12.5px; font-weight: 500; color: var(--soft); background: var(--surface); border-bottom: 1px solid var(--line); }
-.app td { padding: 12px 16px; vertical-align: middle; color: var(--body); border-bottom: 1px solid var(--line); }
+.app table { font-size: 14px; border: 1px solid var(--line); border-radius: 10px; border-collapse: separate; border-spacing: 0; overflow: hidden; background: var(--surface); }
+.app th { padding: 10px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--soft); background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.app td { padding: 11px 14px; vertical-align: middle; border-bottom: 1px solid var(--line); }
 .app tbody tr:last-child td { border-bottom: 0; }
-.app tbody tr:hover td { background: #FAFBFD; }
+.app tbody tr:hover td { background: var(--row-hover); }
 .app td a { font-weight: 500; color: var(--ink); }
 .app td a:hover { color: var(--accent); }
 .app td.row { display: table-cell; }
@@ -111,8 +110,8 @@
 .app main > table + .row, .app section > table + .row { margin-top: 16px; }
 
 /* Severity badges and status chips (text plus colour). */
-.app .chip-status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 18px; white-space: nowrap; color: var(--body); background: var(--surface); border: 1px solid var(--line); }
-
+.app .chip-status { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; line-height: 18px; white-space: nowrap; border: 1px solid transparent; }
+.app .chip-status { font-weight: 500; color: var(--body); background: var(--surface-2); border-color: var(--line); }
 .app .chip-status::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 6px 1px 0; border-radius: 50%; background: var(--soft); vertical-align: middle; }
 .app .st-open::before, .app .st-pending::before, .app .st-verifying::before { background: var(--accent); }
 .app .st-connected::before, .app .st-resolved::before, .app .st-accepted::before, .app .st-sent::before { background: var(--ok); }
@@ -120,8 +119,8 @@
 .app .st-disconnected::before, .app .st-failed::before { background: var(--bad); }
 
 /* Empty and error states */
-.app p[role="alert"].error { padding: 10px 14px; color: var(--bad-ink); background: var(--bad-bg); border: 1px solid #F8CFCA; border-radius: 8px; font-size: 14px; }
-.app .empty { padding: 28px 20px; text-align: center; background: var(--surface); border: 1px dashed var(--line-mid); border-radius: 10px; }
+.app p[role="alert"].error { padding: 10px 14px; color: var(--ink); background: var(--bad-bg); border: 1px solid var(--bad-line); border-radius: 8px; font-size: 14px; }
+.app .empty { padding: 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: 10px; }
 
 /* Dashboard home: connection cards */
 .app .cards.accounts { grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); }
@@ -132,7 +131,7 @@
 .app .conn-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 20px; }
 .app .conn-title h1 { margin: 0; }
 .app .conn-sentence { flex: 1 0 100%; margin: 0; color: var(--body); }
-.app .facts { display: grid; grid-template-columns: max-content 1fr; gap: 10px 32px; margin: 0 0 20px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
+.app .facts { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin: 0 0 20px; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .app .facts dt { color: var(--soft); font-size: 13px; }
 .app .facts dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
 .app .trial-panel { max-width: 60ch; }
@@ -169,35 +168,35 @@
 
 /* Onboarding flow and dashboard setup checklist */
 .app .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.app .onboarding-bar { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 var(--gutter); background: var(--surface); border-bottom: 1px solid var(--line); }
+.app .onboarding-bar { display: flex; align-items: center; gap: 16px; height: 56px; padding: 0 var(--gutter); border-bottom: 1px solid var(--line); }
 .app .onboarding-bar .account-email { margin-left: auto; }
 .app.onboarding main { max-width: 560px; margin: 0 auto; padding: 56px var(--gutter) 64px; }
-.app .onboarding .eyebrow, .app.onboarding .eyebrow { margin: 0 0 14px; font-size: 13px; font-weight: 600; color: var(--accent); }
+.app .onboarding .eyebrow, .app.onboarding .eyebrow { margin: 0 0 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .app .steps-strip { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 20px; padding: 0; list-style: none; font-size: 14px; color: var(--soft); }
 .app .steps-strip li { display: flex; align-items: center; gap: 8px; }
 .app .steps-strip li[aria-current="step"] { color: var(--ink); font-weight: 600; }
-.app .steps-strip .n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line-mid); font-size: 12px; font-weight: 600; }
+.app .steps-strip .n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line-strong); font-size: 12px; font-weight: 600; }
 .app .steps-strip li[aria-current="step"] .n { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
-.app .steps-strip li[data-done] .n { color: var(--ok-ink); background: var(--ok-bg); border-color: transparent; }
-.app .onboarding-card { padding: 32px; border-radius: 12px; box-shadow: var(--shadow); }
+.app .steps-strip li[data-done] .n { color: var(--ok-ink); border-color: var(--ok); }
+.app .onboarding-card { padding: 28px; box-shadow: var(--shadow); }
 .app .onboarding-card .stack { max-width: none; gap: 16px; }
 .app .onboarding-card h1, .app .onboarding-card p { margin: 0; }
 .app .onboarding-card .agree { padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
 .app .small { font-size: 13px; }
 
 
-.app .checklist-card { margin-bottom: 28px; padding: 22px 24px; }
-.app .checklist-card h2 { margin: 0 0 12px; font-size: 17px; font-weight: 600; }
+.app .checklist-card { margin-bottom: 24px; }
+.app .checklist-card h2 { margin: 0 0 12px; font-size: 18px; }
 .app .checklist { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
 .app .checklist li { display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; align-items: start; padding: 10px 12px; border-radius: 8px; color: var(--soft); }
 .app .checklist li p { margin: 2px 0 0; font-size: 13px; }
 .app .checklist li strong { font-weight: 600; }
 .app .checklist li .mark { margin-top: 1px; }
-.app .checklist li[data-state="done"] .mark { color: var(--ok); }
-.app .checklist li[data-state="current"] { color: var(--body); background: var(--accent-bg); }
+.app .checklist li[data-state="done"] .mark { color: var(--ok-ink); }
+.app .checklist li[data-state="current"] { color: var(--body); background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
 .app .checklist li[data-state="current"] strong { color: var(--ink); }
 .app .checklist li[data-state="current"] .mark { color: var(--accent); }
-.app .checklist .act { align-self: center; font-size: 14px; font-weight: 600; }
+.app .checklist .act { align-self: center; font-size: 14px; }
 @media (max-width: 640px) { .app .checklist li { grid-template-columns: 20px 1fr; } .app .checklist .act { grid-column: 2; } }
 
 /* Onboarding pages: step note and the short how-to list. */
@@ -215,3 +214,59 @@
   .app .chat-layout { flex-direction: column; align-items: stretch !important; }
   .app .chat-layout > nav { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ---- Depth and life, inside the existing styling: same radii, borders and colours. Panels get a top highlight,
+   raised things a shadow, the primary action a soft sheen; motion is short, runs once, and is off under reduced motion. ---- */
+.app.shell .content { background: radial-gradient(900px 300px at 28% -120px, var(--glow), transparent 70%) no-repeat; }
+.app .top-bar { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+.app .sidebar { box-shadow: 12px 0 32px -26px var(--backdrop); }
+.app .card, .app table, .app .facts { box-shadow: var(--shadow-sm); }
+.app .onboarding-card { position: relative; box-shadow: var(--hl), var(--shadow); }
+.app .onboarding-card::before { content: ""; position: absolute; inset: 0 14% auto; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
+.app.onboarding { background: radial-gradient(700px 320px at 50% -60px, var(--glow), transparent 70%) no-repeat; }
+.app button[type="submit"], .app button.primary { background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px var(--glow); }
+.app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled), .app button[type="submit"].secondary { background-image: none; }
+.app .sidebar-foot .theme-switch { margin-bottom: 4px; }
+.app .onboarding-theme { display: flex; justify-content: center; margin-top: 32px; }
+/* Sidebar: icons sit in a chip that lights up on the current page; one marker slides behind the current link. */
+.app .sidebar nav { position: relative; }
+.app .sidebar nav a { position: relative; z-index: 1; }
+.app .sidebar nav a svg { box-sizing: content-box; padding: 3px; margin: -3px; border-radius: 7px; }
+.app .sidebar nav a[aria-current="page"] svg { background: var(--accent-bg); }
+.app .nav-mark { position: absolute; z-index: 0; left: 0; right: 0; top: 0; border-radius: 8px; background: var(--accent-bg); box-shadow: inset 2px 0 0 var(--accent); pointer-events: none; }
+.app .sidebar nav:has(.nav-mark) a[aria-current="page"] { background: transparent; }
+/* A confirmed action: a drawn tick before the message. */
+.app p[role="status"].ok { display: flex; align-items: center; gap: 8px; color: var(--ok-ink); }
+.app p[role="status"].ok::before { content: ""; flex: none; width: 9px; height: 5px; margin: 0 2px 3px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); }
+.app .onboarding-card .agree:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .app .nav-mark { transition: transform 240ms cubic-bezier(0.3, 0.7, 0.2, 1), height 240ms ease; }
+  .app .sidebar nav a, .app .sidebar nav a svg { transition: color 150ms ease, background-color 150ms ease; }
+  .app .org-list { animation: app-pop 160ms ease-out; transform-origin: 16px 0; }
+  .app button { transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 200ms ease; }
+  .app button:hover:not(:disabled):not(.link) { transform: translateY(-1px); }
+  .app button:active:not(:disabled):not(.link) { transform: translateY(1px) scale(0.985); }
+  .app .card { transition: border-color 150ms ease, box-shadow 150ms ease; }
+  .app .cards .card:hover { border-color: var(--line-strong); }
+  .app tbody tr td { transition: background-color 150ms ease; }
+  .app p[role="status"].ok { animation: app-pop 260ms ease-out; }
+  .app p[role="status"].ok::before { animation: app-tick 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4) 80ms backwards; }
+  .app .banner { animation: app-pop 260ms ease-out; }
+  /* Onboarding: the step marker moves on with a small pop; the agreement box and Continue answer the tick. */
+  .app .steps-strip li, .app .steps-strip .n { transition: color 250ms ease, background-color 250ms ease, border-color 250ms ease; }
+  .app .steps-strip li[aria-current="step"] .n { animation: app-step 420ms cubic-bezier(0.2, 0.8, 0.2, 1.4); }
+  .app .steps-strip li[data-done] .n { animation: app-step 320ms ease-out; }
+  .app .onboarding-card { animation: app-rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+  .app .onboarding-card .agree { transition: border-color 200ms ease, background-color 200ms ease; }
+  .app .onboarding-card .agree:has(input:checked) ~ button, .app .onboarding-card form:has(input:checked) button[type="submit"]:not(:disabled) { animation: app-ready 500ms ease-out; }
+  .app .checklist li { transition: background-color 200ms ease; }
+  .app .checklist li[data-state="done"] .mark path { stroke-dasharray: 14; animation: app-draw 500ms ease-out backwards; }
+  .app dialog[open] { animation: app-pop 180ms ease-out; }
+}
+@keyframes app-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
+@keyframes app-rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes app-tick { from { opacity: 0; transform: rotate(-45deg) scale(0.2); } }
+@keyframes app-step { from { transform: scale(0.6); } 60% { transform: scale(1.15); } }
+@keyframes app-ready { 0% { box-shadow: 0 0 0 0 var(--accent); } 100% { box-shadow: 0 0 0 10px transparent; } }
+@keyframes app-draw { from { stroke-dashoffset: 14; } }

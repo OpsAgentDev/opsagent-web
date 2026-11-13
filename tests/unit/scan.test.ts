@@ -19,12 +19,12 @@ afterEach(() => vi.restoreAllMocks());
 describe("scanHistory", () => {
   it("keeps earlier results when the newest run failed, and says it failed", async () => {
     mockRuns([{ id: "13", status: "failed" }, { id: "12", status: "done" }], { 12: stats });
-    expect(await scanHistory("o", "x")).toEqual({ stats, lastFailed: true, scans: [{ at: at("12"), stats }] });
+    expect(await scanHistory("o", "x")).toEqual({ stats, lastFailed: true, running: false, scans: [{ at: at("12"), stats }] });
   });
 
   it("skips queued and running runs without calling it a failure", async () => {
     mockRuns([{ id: "13", status: "running" }, { id: "12", status: "partial" }], { 12: stats });
-    expect(await scanHistory("o", "x")).toMatchObject({ stats, lastFailed: false });
+    expect(await scanHistory("o", "x")).toMatchObject({ stats, lastFailed: false, running: true });
   });
 
   it("skips a finished run with no stats", async () => {
@@ -34,9 +34,9 @@ describe("scanHistory", () => {
 
   it("is first-scan only when nothing finished", async () => {
     mockRuns([{ id: "11", status: "queued" }], {});
-    expect(await scanHistory("o", "x")).toEqual({ stats: null, lastFailed: false, scans: [] });
+    expect(await scanHistory("o", "x")).toEqual({ stats: null, lastFailed: false, running: true, scans: [] });
     mockRuns([], {});
-    expect(await scanHistory("o", "x")).toEqual({ stats: null, lastFailed: false, scans: [] });
+    expect(await scanHistory("o", "x")).toEqual({ stats: null, lastFailed: false, running: false, scans: [] });
   });
 
   it("lists scans newest first and reads no more than the cap", async () => {

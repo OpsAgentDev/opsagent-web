@@ -19,7 +19,7 @@ export function ConfirmAction({ label, done, run }: { label: string; done: strin
     }
   }
 
-  if (state.done) return <p role="status">{done}</p>;
+  if (state.done) return <p role="status" className="ok">{done}</p>;
   return (
     <div className="stack">
       <button type="button" onClick={act} disabled={state.busy}>

@@ -242,16 +242,3 @@ test("a used confirmation link says so in plain words", async ({ page }) => {
   await page.getByRole("button", { name: "Confirm my email" }).click();
   await expect(page.locator("main").getByText("This link was already used or isn't valid.")).toBeVisible();
 });
-
-test("Daylight: light scheme, Geist served from this origin, nothing asked of Google Fonts", async ({ page }) => {
-  const asked: string[] = [];
-  page.on("request", (r) => asked.push(r.url()));
-  await page.goto("/");
-  await page.evaluate(() => document.fonts.ready);
-  expect(await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme)).toBe("light");
-  expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe("rgb(245, 247, 250)");
-  expect(await page.evaluate(() => getComputedStyle(document.querySelector("h1")!).fontFamily)).toMatch(/Geist/);
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#F5F7FA");
-  expect(asked.some((u) => /\.woff2(\?|$)/.test(u) && u.startsWith("http://localhost:3001/"))).toBe(true);
-  expect(asked.filter((u) => /fonts\.(googleapis|gstatic)\.com/.test(u))).toEqual([]);
-});

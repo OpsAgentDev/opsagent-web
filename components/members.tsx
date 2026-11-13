@@ -112,7 +112,7 @@ export function Members({ org, owner, selfId }: Props) {
           </tbody>
         </table>
       )}
-      {sentTo && <p role="status">Invite sent to {sentTo.email} as {sentTo.role}.</p>}
+      {sentTo && <p role="status" className="ok">Invite sent to {sentTo.email} as {sentTo.role}.</p>}
       {owner && invites.data && invites.data.length > 0 && (
         <>
           <h2>Pending invites</h2>

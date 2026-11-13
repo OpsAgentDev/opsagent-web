@@ -36,7 +36,7 @@ function Ceiling({ org, s, onChanged }: Props) {
         <input type="number" min={0} step="0.01" value={ceiling} onChange={(e) => setCeiling(e.target.value)} />
       </label>
       <ErrorNote error={error} />
-      {saved && <p role="status">Saved.</p>}
+      {saved && <p role="status" className="ok">Saved.</p>}
       <button type="button" className="fit" disabled={busy} onClick={save}>Save ceiling</button>
     </div>
   );

@@ -248,7 +248,8 @@ test("feature pages make no forbidden claims and use no gradients or outbound re
     const html = (await page.locator("main").innerHTML()).toLowerCase();
     for (const bad of ["harun.dev", "gradient", "auto-fix", "paging"]) expect(html, `${p.path}: ${bad}`).not.toContain(bad);
     const gradients = await page.evaluate(() =>
-      [...document.querySelectorAll("main *")].filter((el) => getComputedStyle(el).backgroundImage.includes("gradient")).length,
+      // Buttons carry a soft sheen since the depth pass; nothing else on a feature page is a gradient.
+      [...document.querySelectorAll("main *:not(button):not(a)")].filter((el) => getComputedStyle(el).backgroundImage.includes("gradient")).length,
     );
     expect(gradients, p.path).toBe(0);
   }

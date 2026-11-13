@@ -7,6 +7,7 @@ import { Pager, useCursors } from "@/components/pager";
 import { FindingActionDialog, type FindingAction } from "@/components/finding-action-dialog";
 import { api, unwrap, type FindingSummary } from "@/lib/api/client";
 import { SEVERITIES, STATUSES } from "@/lib/api/enums";
+import { Skeleton } from "@/components/skeleton";
 import { findingsSummary } from "@/lib/findings";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
@@ -65,7 +66,7 @@ export default function Findings() {
         </label>
       </div>
       <ErrorNote error={error ?? actionError} />
-      {loading && <p className="muted" role="status">Loading…</p>}
+      {loading && (page?.items.length ? <p className="sr-only" role="status">Loading…</p> : <Skeleton rows count={6} />)}
       {summary && <p className="summary" data-testid="findings-summary">{summary}</p>}
       <table className="findings">
         <thead>

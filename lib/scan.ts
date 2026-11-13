@@ -5,11 +5,14 @@ export type ScanStats = { score?: number; counts_by_severity?: Partial<Record<st
 
 export type LatestScan = { stats: ScanStats | null; lastFailed: boolean };
 
+const RUNNING = new Set(["queued", "running"]);
+
 const FINISHED = new Set(["done", "partial"]);
 
 /** One finished full scan: when it finished and what it counted. */
 export type Scan = { at: string; stats: ScanStats };
-export type ScanHistory = LatestScan & { scans: Scan[] };
+/** `running`: the newest run is queued or under way. */
+export type ScanHistory = LatestScan & { scans: Scan[]; running: boolean };
 
 /** The trend chart never shows more scans than this. */
 export const HISTORY_CAP = 14;
@@ -29,7 +32,7 @@ export async function scanHistory(org: string, connection: string, cap = HISTORY
     const stats = details[i]?.stats;
     return stats ? [{ at: r.finished_at ?? r.scheduled_at, stats: stats as ScanStats }] : [];
   });
-  return { stats: scans[0]?.stats ?? null, lastFailed, scans };
+  return { stats: scans[0]?.stats ?? null, lastFailed, scans, running: RUNNING.has(runs.items[0]?.status ?? "") };
 }
 
 /**

@@ -74,7 +74,7 @@ function ReviewForm({ org, connections, onSent }: { org: string; connections: Co
       )}
       <ErrorNote error={error} />
       {limited && <p role="alert" className="error">You&apos;ve sent 5 requests today. Try again tomorrow.</p>}
-      {sent && <p role="status">Request sent. Harun will reply within 1 business day.</p>}
+      {sent && <p role="status" className="ok">Request sent. Harun will reply within 1 business day.</p>}
     </form>
   );
 }
