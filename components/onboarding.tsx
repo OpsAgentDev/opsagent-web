@@ -13,13 +13,14 @@ import { addPasskey, dismissPasskeyPrompt } from "@/lib/webauthn";
 
 const LABEL: Record<OnboardingStep, string> = { terms: "Terms", org: "Organisation" };
 
-/** Terms, with the recommended (never required) passkey on the same card: one page instead of two. */
+/** The recommended passkey (ticked by default, never required) and the terms on one card. */
 function TermsStep({ offerPasskey, onAccepted }: { offerPasskey: boolean; onAccepted: () => void }) {
   const [agreed, setAgreed] = useState(false);
+  const [withPasskey, setWithPasskey] = useState(offerPasskey);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  async function accept(withPasskey: boolean) {
+  async function accept() {
     if (!agreed || busy) return;
     setBusy(true);
     setError(null);
@@ -40,9 +41,18 @@ function TermsStep({ offerPasskey, onAccepted }: { offerPasskey: boolean; onAcce
   }
 
   return (
-    <form className="stack" onSubmit={(e) => { e.preventDefault(); void accept(offerPasskey); }}>
-      <h1>Agree to the terms</h1>
-      <p>OpsAgent reads your cloud accounts with read-only access. Before you start, please read and agree to how we work and how we handle your data.</p>
+    <form className="stack" onSubmit={(e) => { e.preventDefault(); void accept(); }}>
+      <h1>Before you start</h1>
+      <p>OpsAgent reads your cloud accounts with read-only access. Please read and agree to how we work and how we handle your data.</p>
+      {offerPasskey && (
+        <label className="row agree onboarding-passkey">
+          <input type="checkbox" checked={withPasskey} onChange={(e) => setWithPasskey(e.target.checked)} />
+          <span>
+            <strong>Add a passkey <span className="muted">(recommended)</span></strong>
+            <span className="muted small">Sign in next time with your fingerprint, face or device PIN. No email to wait for, and nothing to phish. Untick to skip: you can add one later in Settings, under Security.</span>
+          </span>
+        </label>
+      )}
       <label className="row agree">
         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
         <span>
@@ -50,17 +60,8 @@ function TermsStep({ offerPasskey, onAccepted }: { offerPasskey: boolean; onAcce
           <Link href="/privacy" target="_blank" rel="noopener">Privacy Policy</Link>
         </span>
       </label>
-      {offerPasskey && (
-        <div className="onboarding-passkey">
-          <strong>Add a passkey <span className="muted">(recommended)</span></strong>
-          <p className="muted small">Sign in next time with your fingerprint, face or device PIN. No email to wait for, and nothing to phish. It is not required: you can add one later in Settings, under Security.</p>
-        </div>
-      )}
       <div className="row">
-        <button type="submit" disabled={!agreed || busy}>{offerPasskey ? "Continue and add a passkey" : "Continue"}</button>
-        {offerPasskey && (
-          <button type="button" disabled={!agreed || busy} onClick={() => void accept(false)}>Continue without a passkey</button>
-        )}
+        <button type="submit" disabled={!agreed || busy}>Continue</button>
       </div>
       <ErrorNote error={error} />
     </form>

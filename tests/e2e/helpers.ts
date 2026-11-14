@@ -57,7 +57,8 @@ export function brainTask(...args: string[]): void {
 /** Onboarding step 1: agrees to the terms without a passkey; leaves the user on the organisation step. */
 export async function passTerms(page: Page): Promise<void> {
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
-  await page.getByRole("button", { name: "Continue without a passkey" }).click();
+  await page.getByRole("checkbox", { name: /Add a passkey/ }).uncheck();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
 }
 

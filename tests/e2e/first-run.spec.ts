@@ -17,16 +17,18 @@ test("new user goes Terms (with the recommended passkey), Organisation, then a d
   await expect(terms).toHaveAttribute("href", "/terms");
   await expect(terms).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
-  const go = page.getByRole("button", { name: "Continue without a passkey" });
-  // The passkey is offered on the same card, recommended but not required, and waits for the tick as well.
-  const withPasskey = page.getByRole("button", { name: "Continue and add a passkey" });
+  const go = page.getByRole("button", { name: "Continue", exact: true });
+  // The passkey sits on top of the same card, ticked by default; the terms box below it is what Continue waits for.
+  const passkey = page.getByRole("checkbox", { name: /Add a passkey/ });
   await expect(page.getByText("Add a passkey (recommended)")).toBeVisible();
+  await expect(passkey).toBeChecked();
+  expect((await passkey.boundingBox())!.y).toBeLessThan((await page.getByLabel("I agree to the Terms and the Privacy Policy").boundingBox())!.y);
   await expect(page.getByRole("group", { name: "Theme" })).toHaveCount(0);
   await expect(go).toBeDisabled();
-  await expect(withPasskey).toBeDisabled();
   await page.reload(); // nothing is accepted by looking
   await expect(go).toBeDisabled();
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
+  await passkey.uncheck();
   await go.click();
 
   // Step 2, organisation.

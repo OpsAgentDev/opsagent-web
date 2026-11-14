@@ -85,7 +85,8 @@ test("onboarding: agreeing to the terms can add the passkey in the same step", a
   await signIn(page, request, { onboard: false });
   await authenticator(page);
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
-  await page.getByRole("button", { name: "Continue and add a passkey" }).click();
+  await expect(page.getByRole("checkbox", { name: /Add a passkey/ })).toBeChecked(); // on by default
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
   await expect(page.getByText("Step 2 of 2")).toBeVisible();
   await createOrg(page);
