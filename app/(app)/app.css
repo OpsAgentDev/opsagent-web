@@ -227,8 +227,9 @@
 .app button[type="submit"], .app button.primary { background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px var(--glow); }
 .app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled), .app button[type="submit"].secondary { background-image: none; }
 .app .sidebar-foot .theme-switch { margin-bottom: 4px; }
-.app .onboarding-passkey { padding-top: 16px; border-top: 1px solid var(--line); }
-.app .onboarding-passkey p { margin: 4px 0 0; }
+.app .onboarding-passkey { align-items: flex-start; }
+.app .onboarding-passkey input { margin-top: 3px; }
+.app .onboarding-passkey .small { display: block; margin-top: 4px; }
 /* Sidebar: icons sit in a chip that lights up on the current page; one marker slides behind the current link. */
 .app .sidebar nav { position: relative; }
 .app .sidebar nav a { position: relative; z-index: 1; }
