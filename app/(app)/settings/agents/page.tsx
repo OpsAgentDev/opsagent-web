@@ -40,7 +40,7 @@ export default function ConnectedAgents() {
       {note && <p className="muted">{note}</p>}
       <ErrorNote error={error ?? actionError} />
       {data && data.length === 0 && (
-        <p>
+        <p className="muted empty">
           No agents are connected. <Link href="/docs/connect-your-agent">Connect your agent</Link>.
         </p>
       )}
