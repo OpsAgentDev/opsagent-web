@@ -385,3 +385,7 @@
 .app .chip.strong { color: var(--ink); background: var(--accent-bg); }
 .app .quote { background: none; border: 1px solid var(--line); border-radius: 8px; }
 .app .price { font-weight: 600; letter-spacing: -0.02em; }
+
+/* The plan sits under the organisation's name in the top bar. */
+.app .org-id { display: grid; min-width: 0; line-height: 1.25; text-align: left; }
+.app .org-plan { font-size: 12px; font-weight: 400; color: var(--soft); }

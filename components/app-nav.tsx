@@ -43,7 +43,7 @@ const Chevron = () => <svg className="chev" width="12" height="12" viewBox="0 0 
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
-export function AppShell({ email, orgs, current, children }: { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; children: ReactNode }) {
+export function AppShell({ email, orgs, current, plan, children }: { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; plan?: string | null; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = splitOrgPath(usePathname()).path;
   const to = (path: string) => orgHref(current.slug, path);
@@ -149,7 +149,7 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
             Menu
           </button>
           {collapsed && toggle}
-          <OrgSwitcher orgs={orgs} current={current} />
+          <OrgSwitcher orgs={orgs} current={current} plan={plan} />
           {title && <span className="top-title" aria-hidden="true">{title}</span>}
           <span className="account-email" title={email}>{email}</span>
         </header>

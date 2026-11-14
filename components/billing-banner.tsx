@@ -1,13 +1,11 @@
 "use client";
 import { OrgLink } from "@/components/org-link";
-import { loadBilling } from "@/lib/billing";
-import { useApi } from "@/lib/use-api";
+import type { Billing } from "@/lib/api/client";
 
 const READ_ONLY = new Set(["paused", "canceled", "trial_ended"]);
 
 /** Billing notices above every app page. Silent when billing isn't set up or can't be read. */
-export function BillingBanner({ org }: { org: string }) {
-  const { data } = useApi(() => loadBilling(org), [org]);
+export function BillingBanner({ data }: { data: Billing | null | undefined }) {
   if (!data) return null;
   return (
     <>

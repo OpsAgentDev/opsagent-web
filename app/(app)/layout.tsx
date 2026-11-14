@@ -7,6 +7,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Onboarding } from "@/components/onboarding";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { api, ApiError, unwrap } from "@/lib/api/client";
+import { loadBilling, planLine } from "@/lib/billing";
 import { preferOrg, preferredOrg, takePendingInvite } from "@/lib/members";
 import { onboardingStep, onboardingSteps } from "@/lib/onboarding";
 import { orgHref, splitOrgPath } from "@/lib/org-path";
@@ -52,6 +53,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     else router.replace(orgHref(orgSlug, pathname) + window.location.search);
   }, [orgSlug, slug, pathname, router]);
 
+  // Billing is read once here: the banner and the plan line under the organisation's name both use it.
+  const billing = useApi(() => (orgSlug ? loadBilling(orgSlug) : Promise.resolve(null)), [orgSlug]).data;
+
   if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
   if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
   // Client-only: this renders after the client-side session load, so localStorage is there.
@@ -77,8 +81,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const showPrompt = showPasskeyPrompt({ hasPasskey: data.me.has_passkey, pathname, checklistOpen });
 
   return (
-    <AppShell email={data.me.email} orgs={data.orgs} current={org}>
-      <BillingBanner org={org.slug} />
+    <AppShell email={data.me.email} orgs={data.orgs} current={org} plan={planLine(billing)}>
+      <BillingBanner data={billing} />
       {showPrompt && <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
         <SetupContext.Provider value={{ hasPasskey: data.me.has_passkey, reloadSession: reload, setChecklistOpen }}>
