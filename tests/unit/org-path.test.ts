@@ -9,4 +9,8 @@ describe("organisation addresses", () => {
     expect(splitOrgPath("/oauth/consent")).toEqual({ slug: null, path: "/oauth/consent" });
     expect(orgHref("acme", "/settings/billing")).toBe("/o/acme/settings/billing");
   });
+
+  it("treats a malformed escape in the slug as no organisation instead of throwing", () => {
+    expect(splitOrgPath("/o/%E0%A4%A/dashboard")).toEqual({ slug: null, path: "/dashboard" });
+  });
 });

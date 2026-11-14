@@ -11,7 +11,11 @@ import { useApi } from "@/lib/use-api";
 
 // An explicit button, not an accept on load: mail scanners prefetch links.
 export default function Invite() {
-  const { token } = useParams<{ token: string }>();
+  // Held in state: the effect below removes it from the address bar and history.
+  const [token] = useState(useParams<{ token: string }>().token);
+  useEffect(() => {
+    window.history.replaceState(null, "", "/invites");
+  }, []);
   const { data: me, error: meError } = useApi(() => unwrap(api.GET("/auth/me")), []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
