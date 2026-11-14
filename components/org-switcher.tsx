@@ -19,7 +19,7 @@ function switchOrg(slug: string) {
 }
 
 /** The top bar's organisation name: plain text with one organisation, a button that opens the list with more. */
-export function OrgSwitcher({ orgs, current }: { orgs: OrgChoice[]; current: OrgChoice }) {
+export function OrgSwitcher({ orgs, current, plan }: { orgs: OrgChoice[]; current: OrgChoice; plan?: string | null }) {
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
@@ -28,7 +28,10 @@ export function OrgSwitcher({ orgs, current }: { orgs: OrgChoice[]; current: Org
   const name = (
     <>
       <span className="avatar" aria-hidden="true">{initials(current.name)}</span>
-      <span className="org-name">{current.name}</span>
+      <span className="org-id">
+        <span className="org-name">{current.name}</span>
+        {plan && <span className="org-plan">{plan}</span>}
+      </span>
     </>
   );
   if (orgs.length < 2) return <p className="org-switch">{name}</p>;

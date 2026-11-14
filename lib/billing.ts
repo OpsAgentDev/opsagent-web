@@ -12,6 +12,21 @@ export async function loadBilling(org: string): Promise<Billing | null> {
   }
 }
 
+export const TIERS: Record<string, string> = { starter: "Starter", team: "Team", scale: "Scale" };
+
+/** The short plan line under the organisation's name; null when billing isn't set up or isn't read yet. */
+export function planLine(b: Pick<Billing, "status" | "tier"> | null | undefined): string | null {
+  if (!b) return null;
+  const tier = (b.tier && TIERS[b.tier]) || "";
+  switch (b.status) {
+    case "trialing": return `${tier} trial`.trim().replace(/^t/, "T");
+    case "active": return tier ? `${tier} plan` : null;
+    case "past_due": return "Payment failed";
+    case "paused": return "Paused";
+    default: return "No plan"; // none, canceled, trial_ended
+  }
+}
+
 /** Navigates to a Stripe-hosted page; refuses any other URL. */
 export function goToStripe(url: string): void {
   const u = new URL(url);

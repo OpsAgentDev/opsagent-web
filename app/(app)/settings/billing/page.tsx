@@ -4,11 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
-import { goToStripe, loadBilling } from "@/lib/billing";
+import { goToStripe, loadBilling, TIERS } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
-const TIERS: Record<string, string> = { starter: "Starter", team: "Team", scale: "Scale" };
 const POLLS = 5;
 
 function BillingPage() {
