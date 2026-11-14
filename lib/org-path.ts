@@ -4,7 +4,11 @@
 /** `/o/acme/findings/1` → `{ slug: "acme", path: "/findings/1" }`; an address without the prefix has no slug. */
 export function splitOrgPath(pathname: string): { slug: string | null; path: string } {
   const m = /^\/o\/([^/]+)(\/.*)?$/.exec(pathname);
-  return m ? { slug: decodeURIComponent(m[1]!), path: m[2] ?? "/dashboard" } : { slug: null, path: pathname };
+  if (!m) return { slug: null, path: pathname };
+  let slug: string | null = null;
+  // A malformed % escape names no organisation; the layout then corrects the address like any unknown slug.
+  try { slug = decodeURIComponent(m[1]!); } catch { /* slug stays null */ }
+  return { slug, path: m[2] ?? "/dashboard" };
 }
 
 /** The address of an in-app path inside an organisation. */

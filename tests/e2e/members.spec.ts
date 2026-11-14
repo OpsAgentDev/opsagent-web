@@ -34,7 +34,9 @@ test("a signed-out visit is remembered and the app returns to the invite after s
   await mockSession(page); // now signed in
   await page.route("**/v1/orgs", (r) => r.fulfill({ json: [] }));
   await page.goto("/dashboard");
-  await expect(page).toHaveURL(/\/invites\/tok12345$/);
+  // Back on the invite page, which takes the token out of the address bar once it has read it.
+  await expect(page.getByRole("button", { name: "Accept invite" })).toBeVisible();
+  await expect(page).toHaveURL(/\/invites$/);
 });
 
 test("a full team gives the invitee no owner-only advice", async ({ page }) => {
