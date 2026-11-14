@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { codeInMail, forgetPasskeySkip, signUp } from "./helpers";
+import { codeInMail, createOrg, forgetPasskeySkip, signIn, signUp } from "./helpers";
 
 const CARD = "Add a passkey (recommended)";
 
@@ -79,4 +79,16 @@ test("a cancelled passkey sign-in says so and email still works", async ({ page,
   await page.getByRole("button", { name: "Send link and code" }).click();
   await page.getByLabel("Code").fill(await codeInMail(request, email));
   await expect(page).toHaveURL(/\/dashboard$/);
+});
+
+test("onboarding: agreeing to the terms can add the passkey in the same step", async ({ page, request }) => {
+  await signIn(page, request, { onboard: false });
+  await authenticator(page);
+  await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
+  await page.getByRole("button", { name: "Continue and add a passkey" }).click();
+  await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
+  await expect(page.getByText("Step 2 of 2")).toBeVisible();
+  await createOrg(page);
+  await page.goto("/settings/security");
+  await expect(page.getByRole("row")).toHaveCount(2); // header plus the passkey made in onboarding
 });
