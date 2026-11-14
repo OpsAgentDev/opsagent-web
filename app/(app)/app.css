@@ -350,3 +350,23 @@
   .app.shell[data-collapsed] .sidebar-foot { padding: 14px 0 0; justify-items: center; }
   .app.shell[data-collapsed] .sidebar-foot .theme-switch, .app.shell[data-collapsed] .user-row .who, .app.shell[data-collapsed] .user-row button { display: none; }
 }
+
+/* Groups fold under their label, and the person's row opens a menu (theme, sign out). */
+.app button.nav-label { display: flex; align-items: center; justify-content: space-between; width: calc(100% - 20px); padding: 0; line-height: inherit; background: none; border: 0; border-radius: 4px; box-shadow: none; cursor: pointer; }
+.app button.nav-label:hover:not(:disabled) { color: var(--ink); background: none; }
+.app .chev { flex: none; transition: transform 150ms ease; }
+.app button.nav-label[aria-expanded="false"] .chev { transform: rotate(-90deg); }
+.app .sidebar-foot { position: relative; }
+.app button.user-row { width: 100%; padding: 6px; text-align: left; background: none; border: 0; border-radius: 8px; box-shadow: none; }
+.app button.user-row:hover:not(:disabled), .app button.user-row[aria-expanded="true"] { background: var(--surface-2); }
+.app button.user-row .chev { color: var(--soft); }
+.app button.user-row[aria-expanded="true"] .chev { transform: rotate(180deg); }
+.app .user-menu { position: absolute; left: 8px; right: 8px; bottom: calc(100% - 6px); z-index: 20; display: grid; gap: 10px; justify-items: start; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+@media (min-width: 861px) {
+  .app.shell[data-collapsed] button.nav-label { width: auto; font-size: 0; }
+  .app.shell[data-collapsed] button.nav-label .chev, .app.shell[data-collapsed] button.user-row .chev { display: none; }
+  .app.shell[data-collapsed] button.user-row { width: auto; padding: 0; }
+  .app.shell[data-collapsed] .user-menu { position: fixed; left: 64px; right: auto; bottom: 12px; min-width: 220px; }
+}
+@media (prefers-reduced-motion: reduce) { .app .chev { transition: none; } }
+@media (min-width: 861px) { .app.shell[data-collapsed] button.nav-label { pointer-events: none; } }

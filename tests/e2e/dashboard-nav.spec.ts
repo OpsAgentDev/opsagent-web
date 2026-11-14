@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { signUp } from "./helpers";
+import { openUserMenu, signUp } from "./helpers";
 
 const GROUPS: [string | null, [string, string][]][] = [
   [null, [["Dashboard", "/dashboard"]]],
@@ -33,7 +33,23 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(bar.getByText(email)).toBeVisible();
   const menu = bar.getByRole("button", { name: "Menu", exact: true });
   await expect(menu).toBeHidden();
+  // The person's row at the foot opens a menu with the theme switch and Sign out; Escape closes it.
+  await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
+  await openUserMenu(page);
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  await expect(page.locator(".user-menu").getByRole("group", { name: "Theme" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
+
+  // A group folds under its label and stays folded after a reload; the page you are on stays listed.
+  const profile = nav.getByRole("group", { name: "Profile" });
+  await profile.getByRole("button", { name: "Profile" }).click();
+  await expect(profile.getByRole("link")).toHaveCount(0);
+  await page.reload();
+  await expect(profile.getByRole("button", { name: "Profile" })).toHaveAttribute("aria-expanded", "false");
+  await expect(profile.getByRole("link")).toHaveCount(0);
+  await profile.getByRole("button", { name: "Profile" }).click();
+  await expect(profile.getByRole("link")).toHaveCount(2);
 
   await nav.getByRole("link", { name: "Billing", exact: true }).click();
   await expect(page).toHaveURL(/\/settings\/billing$/);

@@ -38,6 +38,8 @@ export const NAV_GROUPS: { id: string; label: string; links: NavLink[] }[] = [
 ];
 
 const COLLAPSED = "opsagent.sidebar-collapsed";
+const CLOSED = "opsagent.nav-closed";
+const Chevron = () => <svg className="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" /></svg>;
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
@@ -61,6 +63,21 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
   useEffect(() => {
     if (open) drawer.current?.querySelector("a")?.focus();
   }, [open]);
+
+  // Groups fold under their label; the closed ones are remembered per browser. A folded sidebar shows every icon.
+  const [closed, setClosed] = useState<string[]>([]);
+  useEffect(() => { try { setClosed((localStorage.getItem(CLOSED) ?? "").split(",").filter(Boolean)); } catch { /* all open */ } }, []);
+  const toggleGroup = (id: string) => {
+    const next = closed.includes(id) ? closed.filter((g) => g !== id) : [...closed, id];
+    setClosed(next);
+    try { localStorage.setItem(CLOSED, next.join(",")); } catch { /* not remembered */ }
+  };
+
+  // The signed-in person's menu (theme, sign out) opens above their row.
+  const [userOpen, setUserOpen] = useState(false);
+  const userMenu = useRef<HTMLDivElement>(null);
+  const userButton = useRef<HTMLButtonElement>(null);
+  useDismiss(userOpen, () => setUserOpen(false), userMenu, userButton);
 
   // One marker behind the current link; it slides when the page changes (the stylesheet animates the move).
   const nav = useRef<HTMLElement>(null);
@@ -99,21 +116,31 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
           {link(HOME)}
           {NAV_GROUPS.map((g) => (
             <div key={g.id} role="group" aria-labelledby={`nav-${g.id}`}>
-              <p className="nav-label" id={`nav-${g.id}`}>{g.label}</p>
-              {g.links.map(link)}
+              <button type="button" className="nav-label" id={`nav-${g.id}`} aria-expanded={!closed.includes(g.id)} onClick={() => toggleGroup(g.id)}>
+                {g.label}
+                <Chevron />
+              </button>
+              {/* A closed group still shows the page you are on. */}
+              {g.links.filter((l) => collapsed || !closed.includes(g.id) || within(pathname, l.href)).map(link)}
             </div>
           ))}
         </nav>
         <div className="sidebar-foot">
-          <ThemeSwitch />
-          <div className="user-row">
+          {userOpen && (
+            <div id="user-menu" ref={userMenu} className="user-menu">
+              <span className="account-email" title={email}>{email}</span>
+              <ThemeSwitch />
+              <SignOut className="quiet" />
+            </div>
+          )}
+          <button ref={userButton} type="button" className="user-row" aria-label={`Account: ${email}`} aria-expanded={userOpen} aria-controls="user-menu" onClick={() => setUserOpen(!userOpen)}>
             <span className="avatar" aria-hidden="true">{email.charAt(0).toUpperCase()}</span>
             <span className="who">
-              <span className="account-email" title={email}>{email}</span>
+              <span className="account-email">{email}</span>
               {current.role && <span className="role">{current.role.charAt(0).toUpperCase() + current.role.slice(1)}</span>}
             </span>
-            <SignOut className="quiet" />
-          </div>
+            <Chevron />
+          </button>
         </div>
       </aside>
       <div className="content">

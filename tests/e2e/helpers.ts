@@ -54,6 +54,11 @@ export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }
 
+/** Opens the signed-in person's menu at the foot of the sidebar (theme, sign out). */
+export async function openUserMenu(page: Page): Promise<void> {
+  await page.getByRole("button", { name: /^Account: / }).click();
+}
+
 /** Onboarding step 1: agrees to the terms without a passkey; leaves the user on the organisation step. */
 export async function passTerms(page: Page): Promise<void> {
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
