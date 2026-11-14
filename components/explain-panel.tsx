@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useState } from "react";
 import { AiStateNote } from "@/components/ai-state-note";
 import { ErrorNote } from "@/components/error-note";
@@ -64,7 +64,7 @@ export function ExplainPanel({ org, id, role, cached }: Props) {
           {busy ? "Explaining…" : "Explain this finding"}
         </button>
       )}
-      <Link href={`/chat?finding=${id}`}>Ask about this finding</Link>
+      <OrgLink href={`/chat?finding=${id}`}>Ask about this finding</OrgLink>
     </section>
   );
 }

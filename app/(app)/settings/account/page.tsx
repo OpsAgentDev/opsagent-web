@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useRef, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap } from "@/lib/api/client";
@@ -85,7 +85,7 @@ export default function AccountSettings() {
             <button type="button" onClick={() => dialog.current?.close()}>Cancel</button>
           </div>
           {kind && <ErrorNote error={error} showCode={false} />}
-          {kind === "account" && lastOwner && <p><Link href="/settings/members">Go to Members</Link></p>}
+          {kind === "account" && lastOwner && <p><OrgLink href="/settings/members">Go to Members</OrgLink></p>}
         </form>
       </dialog>
     </main>

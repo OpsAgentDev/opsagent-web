@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { ScoreRing } from "@/components/overview-tiles";
@@ -17,7 +17,7 @@ export function ConnectionCard({ c, several, latest, error }: { c: Connection; s
       <div className="ov-account-head">
         <div>
           <h3>
-            <Link href={`/connections/${c.id}`}>{c.display_name ?? c.id}</Link>
+            <OrgLink href={`/connections/${c.id}`}>{c.display_name ?? c.id}</OrgLink>
           </h3>
           <p className="muted">{c.provider}</p>
         </div>
@@ -53,7 +53,7 @@ export function ConnectionCard({ c, several, latest, error }: { c: Connection; s
             {SEVERITIES.map((s) => (stats.counts_by_severity?.[s] ? <span key={s} className={`sev-${s}`} style={{ flexGrow: stats.counts_by_severity[s] }} /> : null))}
           </div>
           <p className="ov-account-foot">
-            <Link href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</Link>
+            <OrgLink href="/findings">{several ? "View all findings" : `View all ${openTotal(stats) ?? ""} findings`}</OrgLink>
           </p>
         </>
       )}

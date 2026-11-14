@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext } from "react";
 import type { Org } from "./api/client";
+import { orgHref } from "./org-path";
 
 export const OrgContext = createContext<Org | null>(null);
 
@@ -9,6 +10,12 @@ export function useOrg(): Org {
   const org = useContext(OrgContext);
   if (!org) throw new Error("useOrg outside the (app) layout");
   return org;
+}
+
+/** Turns an in-app path into its address in the active organisation; outside the app frame the path is left as it is. */
+export function useOrgHref(): (path: string) => string {
+  const org = useContext(OrgContext);
+  return (path) => (org ? orgHref(org.slug, path) : path);
 }
 
 /** Reloads the (app) layout's session (`me`, orgs), e.g. after a passkey is added or removed. */

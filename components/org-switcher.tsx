@@ -1,14 +1,21 @@
 "use client";
 import { useRef, useState } from "react";
 import { preferOrg } from "@/lib/members";
+import { orgHref } from "@/lib/org-path";
 import { useDismiss } from "@/lib/use-dismiss";
 
 export type OrgChoice = { slug: string; name: string };
 
+/** Two letters for the badge: the first letters of the first two words, else the first two letters. */
+const initials = (name: string) => {
+  const words = name.trim().split(/\s+/);
+  return (words.length > 1 ? words[0]!.charAt(0) + words[1]!.charAt(0) : name.trim().slice(0, 2)).toUpperCase();
+};
+
 /** Choosing another organisation makes it the one the app opens, then reloads into it. */
 function switchOrg(slug: string) {
   preferOrg(slug);
-  window.location.assign("/dashboard");
+  window.location.assign(orgHref(slug, "/dashboard"));
 }
 
 /** The top bar's organisation name: plain text with one organisation, a button that opens the list with more. */
@@ -20,7 +27,7 @@ export function OrgSwitcher({ orgs, current }: { orgs: OrgChoice[]; current: Org
 
   const name = (
     <>
-      <span className="avatar" aria-hidden="true">{current.name.charAt(0).toUpperCase()}</span>
+      <span className="avatar" aria-hidden="true">{initials(current.name)}</span>
       <span className="org-name">{current.name}</span>
     </>
   );

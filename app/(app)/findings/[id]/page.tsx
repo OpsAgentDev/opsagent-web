@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useParams } from "next/navigation";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
@@ -21,7 +21,7 @@ export default function FindingPage() {
 
   return (
     <main>
-      <p className="back"><Link href="/findings">Findings</Link></p>
+      <p className="back"><OrgLink href="/findings">Findings</OrgLink></p>
       <ErrorNote error={error} />
       {!f && !error && <p className="muted" role="status">Loading…</p>}
       {f && (

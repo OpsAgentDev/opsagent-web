@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useState } from "react";
 import { Severity, Status } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
@@ -82,7 +82,7 @@ export default function Findings() {
           {page?.items.map((f) => (
             <tr key={f.id} data-id={f.id}>
               <td className="c-sev"><Severity value={f.severity} /></td>
-              <td className="c-title"><Link href={`/findings/${f.id}`}>{f.title}</Link></td>
+              <td className="c-title"><OrgLink href={`/findings/${f.id}`}>{f.title}</OrgLink></td>
               <td className="c-res muted mono">{f.resource_identity}</td>
               {showStatus && <td className="c-status"><Status value={f.status} /></td>}
               <td className="c-actions actions">

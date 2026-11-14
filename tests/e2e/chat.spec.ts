@@ -21,7 +21,7 @@ test("streamed answer with a finding citation link", async ({ page, request }) =
   await expect(page.getByText("Looking at list findings…")).toBeVisible();
   const cite = page.getByRole("link", { name: "view finding" });
   await expect(cite).toBeVisible();
-  await expect(cite).toHaveAttribute("href", new RegExp(`^/findings/${UUID}$`));
+  await expect(cite).toHaveAttribute("href", new RegExp(`^/o/[^/]+/findings/${UUID}$`));
   await expect(page.locator("main")).toContainText("Your newest finding is view finding");
 
   // The session is listed and its history reloads.

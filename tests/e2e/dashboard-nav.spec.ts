@@ -1,11 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { signUp } from "./helpers";
 
-const TOP: [string, string][] = [["Dashboard", "/dashboard"], ["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"]];
-const SETTINGS: [string, string][] = [
-  ["Delivery settings", "/settings/delivery"], ["Connected agents", "/settings/agents"], ["Security", "/settings/security"],
-  ["Members", "/settings/members"], ["Billing", "/settings/billing"], ["AI", "/settings/ai"],
-  ["Human review", "/settings/human-review"], ["Account", "/settings/account"],
+const GROUPS: [string | null, [string, string][]][] = [
+  [null, [["Dashboard", "/dashboard"]]],
+  ["Monitoring", [["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"]]],
+  ["Organisation", [
+    ["Members", "/settings/members"], ["Billing", "/settings/billing"], ["Delivery settings", "/settings/delivery"],
+    ["Connected agents", "/settings/agents"], ["AI", "/settings/ai"], ["Human review", "/settings/human-review"],
+  ]],
+  ["Profile", [["Security", "/settings/security"], ["Account", "/settings/account"]]],
 ];
 
 test("app shell: sidebar with every link, current page marked, top bar, phone drawer opens and closes", async ({ page, request }) => {
@@ -13,12 +16,14 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/findings");
   const nav = page.getByRole("navigation", { name: "Main" });
-  for (const [name, href] of TOP) await expect(nav.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  // Every link is addressed inside the organisation (/o/<slug>/…), each group under its own label.
+  for (const [group, links] of GROUPS) {
+    const within = group ? nav.getByRole("group", { name: group }) : nav;
+    for (const [name, href] of links) await expect(within.getByRole("link", { name, exact: true })).toHaveAttribute("href", new RegExp(`^/o/e2e-\\d+${href}$`));
+  }
+  await expect(page).toHaveURL(/\/o\/e2e-\d+\/findings$/); // the old address was corrected
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).toHaveAttribute("aria-current", "page");
-  // Settings links are always visible, in their own labelled group.
-  const settings = nav.getByRole("group", { name: "Settings" });
-  for (const [name, href] of SETTINGS) await expect(settings.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
-  await expect(nav.getByRole("link")).toHaveCount(TOP.length + SETTINGS.length);
+  await expect(nav.getByRole("link")).toHaveCount(GROUPS.flatMap(([, l]) => l).length);
   for (const link of await nav.getByRole("link").all()) await expect(link.locator("svg")).toBeVisible(); // an icon on every link
 
   // Top bar: the organisation as plain text (one organisation), the account email; no Menu button on desktop.
@@ -35,13 +40,25 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(nav.getByRole("link", { name: "Billing", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).not.toHaveAttribute("aria-current");
 
+  // The sidebar folds to its icons and back; the links keep their names and the choice survives a reload.
+  const side = page.locator(".sidebar");
+  expect((await side.boundingBox())!.width).toBeGreaterThan(200);
+  await page.locator(".sidebar").getByRole("button", { name: "Collapse sidebar" }).click();
+  expect((await side.boundingBox())!.width).toBeLessThan(70);
+  await expect(nav.getByRole("link", { name: "Findings", exact: true })).toBeVisible();
+  await page.reload();
+  await expect(bar.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+  expect((await side.boundingBox())!.width).toBeLessThan(70);
+  await bar.getByRole("button", { name: "Expand sidebar" }).click();
+  expect((await side.boundingBox())!.width).toBeGreaterThan(200);
+
   // Phone: the sidebar is a drawer.
   await page.setViewportSize({ width: 390, height: 800 });
   await expect(nav).toBeHidden();
   await expect(menu).toHaveAttribute("aria-expanded", "false");
   await menu.click();
   await expect(menu).toHaveAttribute("aria-expanded", "true");
-  for (const [name] of [...TOP, ...SETTINGS]) await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
+  for (const [name] of GROUPS.flatMap(([, l]) => l)) await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
 
   // Escape closes it and focus returns to the button.
   await page.keyboard.press("Escape");

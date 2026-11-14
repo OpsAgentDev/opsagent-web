@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { Status } from "@/components/badges";
 import type { Connection } from "@/lib/api/client";
 import { accountText, connectionSentence, reasonText, scheduleText } from "@/lib/connection-status";
@@ -36,8 +36,8 @@ export function ConnectionActions({ c, canScan, onScan, started }: { c: Connecti
     <div className="row">
       {!removed && <button type="button" onClick={onScan} disabled={!canScan}>Scan now</button>}
       {started && <span>Scan started. Findings appear as checks finish.</span>}
-      {!removed && <Link href={`/connections/${c.id}/briefing`}>Preview briefing</Link>}
-      <Link href="/findings">View findings</Link>
+      {!removed && <OrgLink href={`/connections/${c.id}/briefing`}>Preview briefing</OrgLink>}
+      <OrgLink href="/findings">View findings</OrgLink>
     </div>
   );
 }

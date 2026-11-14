@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useEffect } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
@@ -90,10 +90,10 @@ export function SetupChecklist({ org, role, hasPasskey, onPasskeyAdded, skipped,
   function action(id: StepId) {
     const ask = (what: string) => <span className="muted">Ask an owner to {what}.</span>;
     switch (id) {
-      case "trial": return owner ? <Link href="/settings/billing">{noTrialLeft ? "Start plan" : "Start free trial"}</Link> : ask(noTrialLeft ? "start a plan" : "start the trial");
-      case "aws": return owner ? <Link href="/onboarding/connect-aws">Connect an AWS account</Link> : ask("connect a cloud account");
+      case "trial": return owner ? <OrgLink href="/settings/billing">{noTrialLeft ? "Start plan" : "Start free trial"}</OrgLink> : ask(noTrialLeft ? "start a plan" : "start the trial");
+      case "aws": return owner ? <OrgLink href="/onboarding/connect-aws">Connect an AWS account</OrgLink> : ask("connect a cloud account");
       case "scan": return <span className="muted">Scanning, this takes a few minutes</span>;
-      case "delivery": return owner ? <Link href="/settings/delivery">Set up delivery</Link> : ask("choose where briefings go");
+      case "delivery": return owner ? <OrgLink href="/settings/delivery">Set up delivery</OrgLink> : ask("choose where briefings go");
       case "passkey": return <button type="button" disabled={busy} onClick={add}>Add a passkey</button>;
       default: return null;
     }
