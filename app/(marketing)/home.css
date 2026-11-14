@@ -258,6 +258,8 @@
   }
   /* Nothing loops while the window is off-screen or the tab is hidden (Live sets data-paused). */
   .mkt .lp-live[data-paused] *, .mkt .lp-live[data-paused] *::before, .mkt .lp-live[data-paused] *::after { animation-play-state: paused; }
+  /* The window's own entrance is not part of the loop: paused, it would stay invisible on a short screen until scrolled to. */
+  .mkt .lp-live[data-paused] > .lp-dash { animation-play-state: running; }
 
   /* Slack: three dots, then the briefing pops in, once, when first seen. The alert's red dot then asks for attention. */
   .mkt .lp-live[data-armed]:not([data-seen]) .lp-slack .lp-msg-body > :not(.lp-msg-head) { opacity: 0; }

@@ -273,3 +273,10 @@ test("agents feature page copies the MCP URL and links the setup docs", async ({
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("https://brain.opsagent.dev/mcp");
   await expect(page.locator("main").getByRole("link", { name: /Set it up/ })).toHaveAttribute("href", "/docs/connect-your-agent");
 });
+
+test("the hero window appears on a short screen without scrolling", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto("/");
+  // Under 30% of it is in view, so its live loop is paused; the window itself must still fade in.
+  await expect(page.locator(".lp-dash")).toHaveCSS("opacity", "1");
+});
