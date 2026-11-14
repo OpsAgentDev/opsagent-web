@@ -31,6 +31,7 @@ export const SETTINGS_LINKS: NavLink[] = [
   { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={18} /> },
 ];
 
+const COLLAPSED = "opsagent.sidebar-collapsed";
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
@@ -40,6 +41,13 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
   const drawer = useRef<HTMLElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const close = () => setOpen(false);
+  // Desktop: the sidebar folds to its icons; remembered per browser (storage may be blocked).
+  const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => { try { setCollapsed(localStorage.getItem(COLLAPSED) === "1"); } catch { /* stays open */ } }, []);
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+    try { localStorage.setItem(COLLAPSED, collapsed ? "0" : "1"); } catch { /* not remembered */ }
+  };
   useDismiss(open, close, drawer, button);
   useEffect(() => setOpen(false), [pathname]);
   // The drawer sits before the button in the page, so focus is moved into it.
@@ -56,15 +64,15 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
   }, [pathname, open]);
 
   const link = (l: NavLink) => (
-    <Link key={l.href} href={l.href} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined}>
+    <Link key={l.href} href={l.href} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined} title={collapsed ? l.label : undefined}>
       {l.icon}
-      {l.label}
+      <span>{l.label}</span>
     </Link>
   );
   const title = [...APP_LINKS, ...SETTINGS_LINKS].find((l) => within(pathname, l.href))?.label;
 
   return (
-    <div className="app shell">
+    <div className="app shell" data-collapsed={collapsed || undefined}>
       {open && <div className="drawer-backdrop" aria-hidden="true" />}
       <aside id="app-menu" ref={drawer} className={open ? "sidebar open" : "sidebar"}>
         <div className="sidebar-head">
@@ -89,6 +97,9 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
         <header className="top-bar">
           <button ref={button} type="button" className="menu-button" aria-expanded={open} aria-controls="app-menu" onClick={() => setOpen(!open)}>
             Menu
+          </button>
+          <button type="button" className="quiet sidebar-toggle" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="app-menu" onClick={toggleCollapsed}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2" /><path d="M6 3v10" /></svg>
           </button>
           <OrgSwitcher orgs={orgs} current={current} />
           {title && <span className="top-title" aria-hidden="true">{title}</span>}

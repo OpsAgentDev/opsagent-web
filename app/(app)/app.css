@@ -321,3 +321,17 @@
   .app .ov-tiles .tile:nth-child(n + 3) { border-top: 1px solid var(--line); }
 }
 .app .checklist-card h2 { padding-bottom: 0; border-bottom: 0; }
+
+/* The sidebar folds to its icons on desktop (the button is in the top bar); phones keep the drawer. */
+.app .sidebar-toggle { flex: none; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: var(--soft); box-shadow: none; border-color: transparent; background: transparent; }
+@media (min-width: 861px) {
+  .app.shell[data-collapsed] { grid-template-columns: 57px minmax(0, 1fr); }
+  .app.shell[data-collapsed] .sidebar { padding: 0 8px 14px; overflow-x: hidden; }
+  .app.shell[data-collapsed] .sidebar-head { padding: 0 9px; overflow: hidden; }
+  .app.shell[data-collapsed] .sidebar .brand { width: 22px; overflow: hidden; }
+  .app.shell[data-collapsed] .sidebar nav a { justify-content: center; padding: 8px 0; }
+  .app.shell[data-collapsed] .sidebar nav a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .app.shell[data-collapsed] .nav-label { height: 1px; margin: 12px 8px; overflow: hidden; color: transparent; background: var(--line); }
+  .app.shell[data-collapsed] .sidebar-foot { display: none; }
+}
+@media (max-width: 860px) { .app .sidebar-toggle { display: none; } }

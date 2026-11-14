@@ -35,6 +35,18 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(nav.getByRole("link", { name: "Billing", exact: true })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).not.toHaveAttribute("aria-current");
 
+  // The sidebar folds to its icons and back; the links keep their names and the choice survives a reload.
+  const side = page.locator(".sidebar");
+  expect((await side.boundingBox())!.width).toBeGreaterThan(200);
+  await bar.getByRole("button", { name: "Collapse sidebar" }).click();
+  expect((await side.boundingBox())!.width).toBeLessThan(70);
+  await expect(nav.getByRole("link", { name: "Findings", exact: true })).toBeVisible();
+  await page.reload();
+  await expect(bar.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+  expect((await side.boundingBox())!.width).toBeLessThan(70);
+  await bar.getByRole("button", { name: "Expand sidebar" }).click();
+  expect((await side.boundingBox())!.width).toBeGreaterThan(200);
+
   // Phone: the sidebar is a drawer.
   await page.setViewportSize({ width: 390, height: 800 });
   await expect(nav).toBeHidden();
