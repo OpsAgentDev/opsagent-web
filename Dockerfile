@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:26-alpine AS builder
+FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5 AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
@@ -16,7 +16,9 @@ ENV NEXT_PUBLIC_SIGNUPS_OPEN=$NEXT_PUBLIC_SIGNUPS_OPEN
 RUN test -n "$NEXT_PUBLIC_API_BASE_URL" || { echo "NEXT_PUBLIC_API_BASE_URL build arg is required" >&2; exit 1; }
 RUN npm run build
 
-FROM node:26-alpine
+FROM node:26-alpine@sha256:6bd9ab43c0ec0190ca7b2d193906cb8b7edf6e7f4afa43ddeccd6452710bffb5
+# Pick up Alpine security fixes newer than the base image (zlib CVE-2026-4738).
+RUN apk upgrade --no-cache
 WORKDIR /app
 ENV NODE_ENV=production PORT=3001 HOSTNAME=0.0.0.0
 COPY --from=builder --chown=node:node /app/.next/standalone ./
