@@ -262,8 +262,8 @@
 @keyframes app-draw { from { stroke-dashoffset: 14; } }
 
 /* ---- Stripe-inspired pass (2026-11-14, docs/tech-spec/dashboard-look.md in the hub): a flat page, a quiet tinted
-   sidebar, hairlines instead of boxes, sentence-case labels, compact controls. No glows, no gradients. The overview
-   classes (ov-) are restyled here under .app only, so the landing page's sample keeps its own look. ---- */
+   sidebar, hairlines instead of boxes, sentence-case labels, compact controls. No glows, no gradients. The overview's
+   own flat rules are at the end of components/overview.css, shared with the landing page's sample. ---- */
 .app { font-size: 14px; font-variant-numeric: tabular-nums; background: var(--band); }
 .app .sidebar { background: var(--bg); }
 .app .top-bar { background: var(--band); }
@@ -295,28 +295,6 @@
 .app .badge.sev-low { color: var(--body); }
 .app .badge.sev-info { border-color: var(--line); }
 
-/* Overview: the four figures are one ruled strip, the panels are headed lists. */
-.app .ov-live { padding: 0; background: none; border: 0; box-shadow: none; color: var(--soft); }
-.app .ov-tiles { gap: 0; margin-bottom: 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.app .ov-tiles .tile { padding: 16px 20px; background: none; border: 0; border-left: 1px solid var(--line); border-radius: 0; box-shadow: none; }
-.app .ov-tiles .tile:first-child { padding-left: 0; border-left: 0; }
-.app .ov-tiles .tile::before, .app .ov-tiles .tile::after, .app .ov-panel::after, .app .ov-chip { display: none; }
-.app .ov-tiles .tile:hover, .app .ov-account:hover { transform: none; box-shadow: none; }
-.app .ov-tiles .tile dt { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
-.app .ov-tiles .tile dd strong { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
-.app .ov-tiles .tile dd .ov-ring strong { font-size: 21px; letter-spacing: 0; }
-.app .ov-two { gap: 40px; margin-bottom: 36px; }
-.app .ov-panel { padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
-.app .ov-panel .ov-head { margin: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.app .ov-panel .ov-title { font-size: 16px; }
-.app .ov-issues li:first-child, .app .ov-calm { border-top: 0; }
-.app .ov-trend .ov-plot { padding-top: 20px; }
-.app .ov-ring circle.value, .app .ov-trend svg .line { filter: none; }
-.app .ov-trend .ov-end { box-shadow: 0 0 0 2px var(--band); }
-@media (max-width: 1100px) {
-  .app .ov-tiles .tile:nth-child(odd) { padding-left: 0; border-left: 0; }
-  .app .ov-tiles .tile:nth-child(n + 3) { border-top: 1px solid var(--line); }
-}
 .app .checklist-card h2 { padding-bottom: 0; border-bottom: 0; }
 
 /* The sidebar folds to its icons on desktop (the button is in the top bar); phones keep the drawer. */

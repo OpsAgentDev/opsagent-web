@@ -301,3 +301,14 @@
 @keyframes lp-typing { 0% { opacity: 0; } 8%, 88% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes lp-pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
 @keyframes lp-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* The hero dashboard follows the app's shell: a tinted sidebar beside a flat page, the current link as a filled row. */
+.mkt .lp-dash { background: var(--band); }
+.mkt .lp-dash::after { background: linear-gradient(transparent, var(--band)); }
+.mkt .lp-dash-side { background: var(--bg); }
+.mkt .lp-dash-nav { border-radius: 6px; }
+.mkt .lp-dash-nav.on { background: var(--surface-2); }
+.mkt .lp-dash-nav.on i { border-color: var(--ink); }
+.mkt .lp-dash-org span { font-size: 12px; font-weight: 700; color: var(--accent-ink); background: var(--accent); }
+.mkt .lp-dash .badge { padding: 1px 6px; border-color: transparent; border-radius: 4px; }
+.mkt .lp-dash .badge.sev-critical { color: var(--bad-ink); background: var(--bad-bg); }
