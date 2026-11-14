@@ -23,9 +23,10 @@ function Linked({ text }: { text: string }) {
 /** The conversation: messages oldest first, a "Looking at <tool>…" line per tool call, partial tags. */
 export function ChatThread({ messages }: { messages: ThreadMessage[] }) {
   return (
-    <div className="stack">
+    <div className="stack chat-thread">
+      {messages.length === 0 && <p className="muted chat-empty">Ask about your findings, what changed since the last scan, or what to fix first.</p>}
       {messages.map((m, i) => (
-        <article key={i} className="stack">
+        <article key={i} className="stack" data-role={m.role}>
           <strong>{m.role === "user" ? "You" : "OpsAgent"}</strong>
           {m.tools?.map((t, j) => <p key={j} role="status" className="muted">Looking at {t.replaceAll("_", " ")}…</p>)}
           {m.text && <Linked text={m.text} />}

@@ -370,3 +370,26 @@
 }
 @media (prefers-reduced-motion: reduce) { .app .chev { transition: none; } }
 @media (min-width: 861px) { .app.shell[data-collapsed] button.nav-label { pointer-events: none; } }
+
+/* Chat: the list of chats beside the conversation; the thread is quiet text, the person's own messages sit on a tint.
+   Written without a running build (2026-11-14): check it in the browser before it ships. */
+.app .chat-layout { gap: 32px; flex-wrap: nowrap; }
+.app .chat-layout > nav { flex: 0 0 220px; gap: 2px; max-width: none; }
+.app .chat-layout > nav button { width: 100%; justify-self: stretch; padding: 6px 10px; text-align: left; font-weight: 400; color: var(--body); background: transparent; border-color: transparent; box-shadow: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app .chat-layout > nav button:hover:not(:disabled) { color: var(--ink); background: var(--surface-2); }
+.app .chat-layout > nav button[aria-current] { color: var(--ink); font-weight: 600; background: var(--surface-2); }
+.app .chat-layout > nav button:first-child { margin-bottom: 10px; font-weight: 500; text-align: center; color: var(--ink); background: var(--surface); border-color: var(--line); box-shadow: var(--shadow-sm); }
+.app .chat-layout > section { min-width: 0; max-width: 720px; gap: 20px; }
+.app .chat-layout .chat-thread, .app .chat-layout form.stack { max-width: none; }
+.app .chat-layout .chat-thread { gap: 18px; }
+.app .chat-layout .chat-empty { padding: 20px; text-align: center; border: 1px dashed var(--line-strong); border-radius: 10px; }
+.app .chat-layout article { gap: 4px; max-width: none; }
+.app .chat-layout article > strong { font-size: 12px; font-weight: 600; color: var(--soft); }
+.app .chat-layout article p { margin: 0; line-height: 1.6; }
+.app .chat-layout article[data-role="user"] { justify-self: end; max-width: 85%; padding: 10px 14px; background: var(--surface-2); border-radius: 10px; }
+.app .chat-layout textarea { width: 100%; min-height: 96px; resize: vertical; }
+@media (max-width: 640px) {
+  .app .chat-layout { gap: 16px; }
+  .app .chat-layout > nav { flex: none; }
+  .app .chat-layout > section { max-width: none; }
+}
