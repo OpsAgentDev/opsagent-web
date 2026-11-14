@@ -77,7 +77,9 @@ test("the theme switch is in the app's sidebar, not in onboarding, and both them
   expect(await pageColour(app)).toBe(DARK);
   await inSidebar.getByRole("button", { name: "Light" }).click();
   expect(await pageColour(app)).toBe(LIGHT);
-  // The sidebar is a panel in both themes: white in light.
-  expect(await app.locator(".sidebar").evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(255, 255, 255)");
+  // In light the page is white and the sidebar carries the tint.
+  const bg = (sel: string) => app.locator(sel).first().evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(await bg(".app")).toBe("rgb(255, 255, 255)");
+  expect(await bg(".sidebar")).toBe("rgb(245, 247, 250)");
   await fresh.close();
 });
