@@ -7,6 +7,12 @@ import { goToStripe } from "@/lib/billing";
 export const price = (cents: number) => `$${(cents / 100).toLocaleString("en-US")}`;
 export const CONFIRM = "Pay securely with Stripe. Harun replies within 1 business day.";
 export const PAYMENT_LABEL: Record<string, string> = { paid: "Paid", pending: "Awaiting payment", invoice: "Invoice" };
+const DAY = 24 * 60 * 60 * 1000;
+/** Stripe closes an unpaid checkout after 24 hours, so an older pending request can no longer be paid. */
+export function paymentLabel(r: { payment: string; created_at: string }, now = Date.now()): string {
+  if (r.payment === "pending" && now - new Date(r.created_at).getTime() > DAY) return "Expired, not charged";
+  return PAYMENT_LABEL[r.payment] ?? r.payment;
+}
 
 type ReviewBody = { kind: string; connection_id?: string; finding_id?: string; note: string | null };
 
@@ -116,7 +122,7 @@ export function HumanReviewView(p: {
                 <td>{title(r.kind)}</td>
                 <td>{r.target_label}</td>
                 <td>{price(r.price_cents)}</td>
-                <td>{PAYMENT_LABEL[r.payment] ?? r.payment}</td>
+                <td>{paymentLabel(r)}</td>
               </tr>
             ))}
           </tbody>

@@ -1,7 +1,7 @@
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { HumanReviewView, ReviewNotice, sendReview } from "@/components/human-review";
+import { HumanReviewView, paymentLabel, ReviewNotice, sendReview } from "@/components/human-review";
 import { FindingReviewButton } from "@/components/human-review-dialog";
 import { ReviewerProfile } from "@/components/reviewer-profile";
 import { ErrorNote } from "@/components/error-note";
@@ -96,10 +96,16 @@ describe("checkout", () => {
     expect(await sendReview("o", body)).toBe(false);
   });
   it("shows payment status per request", () => {
-    const mk = (payment: string) => ({ id: payment, kind: "account", target_label: "t", price_cents: 100, created_at: "2026-11-03T00:00:00Z", payment, paid_at: null });
+    const mk = (payment: string) => ({ id: payment, kind: "account", target_label: "t", price_cents: 100, created_at: new Date().toISOString(), payment, paid_at: null });
     const d = { ...data, requests: ["paid", "pending", "invoice"].map(mk) } as HumanReviews;
     const html = renderToStaticMarkup(createElement(HumanReviewView, { org: "o", owner: true, data: d, connections: conns, onSent: () => {} }));
     for (const l of ["Paid", "Awaiting payment", "Invoice"]) expect(html).toContain(`<td>${l}</td>`);
+  });
+  it("marks an unpaid request as expired after Stripe's 24 hours", () => {
+    const now = Date.parse("2026-11-14T12:00:00Z");
+    expect(paymentLabel({ payment: "pending", created_at: "2026-11-13T13:00:00Z" }, now)).toBe("Awaiting payment");
+    expect(paymentLabel({ payment: "pending", created_at: "2026-11-13T11:00:00Z" }, now)).toBe("Expired, not charged");
+    expect(paymentLabel({ payment: "paid", created_at: "2026-11-01T00:00:00Z" }, now)).toBe("Paid");
   });
   it("shows the paid and canceled notices", () => {
     expect(renderToStaticMarkup(createElement(ReviewNotice, { paid: true, canceled: false }))).toContain("Payment received. Harun will reply within 1 business day.");

@@ -30,11 +30,13 @@ export function ConnectionFacts({ c }: { c: Connection }) {
 
 /** Next actions: scan now (when the account can be read), preview the briefing, go to the findings. */
 export function ConnectionActions({ c, canScan, onScan, started }: { c: Connection; canScan: boolean; onScan: () => void; started: boolean }) {
+  // A removed connection can be neither scanned nor briefed; its old findings stay readable.
+  const removed = c.status === "disconnected";
   return (
     <div className="row">
-      <button type="button" onClick={onScan} disabled={!canScan}>Scan now</button>
+      {!removed && <button type="button" onClick={onScan} disabled={!canScan}>Scan now</button>}
       {started && <span>Scan started. Findings appear as checks finish.</span>}
-      <Link href={`/connections/${c.id}/briefing`}>Preview briefing</Link>
+      {!removed && <Link href={`/connections/${c.id}/briefing`}>Preview briefing</Link>}
       <Link href="/findings">View findings</Link>
     </div>
   );
