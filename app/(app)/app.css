@@ -371,8 +371,7 @@
 @media (prefers-reduced-motion: reduce) { .app .chev { transition: none; } }
 @media (min-width: 861px) { .app.shell[data-collapsed] button.nav-label { pointer-events: none; } }
 
-/* Chat: the list of chats beside the conversation; the thread is quiet text, the person's own messages sit on a tint.
-   Written without a running build (2026-11-14): check it in the browser before it ships. */
+/* Chat: the list of chats beside the conversation; the thread is quiet text, the person's own messages sit on a tint. */
 .app .chat-layout { gap: 32px; flex-wrap: nowrap; }
 .app .chat-layout > nav { flex: 0 0 220px; gap: 2px; max-width: none; }
 .app .chat-layout > nav button { width: 100%; justify-self: stretch; padding: 6px 10px; text-align: left; font-weight: 400; color: var(--body); background: transparent; border-color: transparent; box-shadow: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
