@@ -25,6 +25,8 @@ export default function DeliverySettings() {
     (i) => i.kind === "slack" && i.status === "active",
   );
   const owner = isOwner(org.role);
+  // Removed connections take no alerts or channels; recipients keep the full list to name old rows.
+  const live = data?.connections.filter((c) => c.status !== "disconnected") ?? [];
 
   return (
     <main>
@@ -44,13 +46,13 @@ export default function DeliverySettings() {
             owner={owner}
             active={!!slack}
             teamName={slack?.team_name}
-            connections={data.connections}
+            connections={live}
             onChanged={reload}
           />
           <UrgentAlerts
             owner={owner}
             org={org.slug}
-            connections={data.connections}
+            connections={live}
             onChanged={reload}
           />
           <Recipients
