@@ -392,3 +392,18 @@
   .app .chat-layout > nav { flex: none; }
   .app .chat-layout > section { max-width: none; }
 }
+
+/* Settings and detail pages: section rules run the full width while the text and fields under them stay narrow;
+   a card's own title has no rule; the reviewer's profile is flat, with sentence-case labels and square tags. */
+.app main > section.stack:not(.card) { max-width: none; }
+.app main > section.stack:not(.card) > :not(h2, table, section, .cards, .row) { max-width: 420px; }
+.app main > section.stack:not(.card) > h2:first-child { margin-top: 24px; }
+.app main > section.card > h2 { margin: 0; padding-bottom: 0; border-bottom: 0; }
+.app main > section + button { margin-top: 12px; }
+.app .profile { border-radius: 8px; box-shadow: none; }
+.app .profile h3 { font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--ink); }
+.app .profile-photo { border: 1px solid var(--line); }
+.app .chip { padding: 2px 8px; color: var(--body); background: var(--surface-2); border-color: transparent; border-radius: 4px; }
+.app .chip.strong { color: var(--ink); background: var(--accent-bg); }
+.app .quote { background: none; border: 1px solid var(--line); border-radius: 8px; }
+.app .price { font-weight: 600; letter-spacing: -0.02em; }
