@@ -217,15 +217,7 @@
 
 /* ---- Depth and life, inside the existing styling: same radii, borders and colours. Panels get a top highlight,
    raised things a shadow, the primary action a soft sheen; motion is short, runs once, and is off under reduced motion. ---- */
-.app.shell .content { background: radial-gradient(900px 300px at 28% -120px, var(--glow), transparent 70%) no-repeat; }
-.app .top-bar { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.app .sidebar { box-shadow: 12px 0 32px -26px var(--backdrop); }
-.app .card, .app table, .app .facts { box-shadow: var(--shadow-sm); }
 .app .onboarding-card { position: relative; box-shadow: var(--hl), var(--shadow); }
-.app .onboarding-card::before { content: ""; position: absolute; inset: 0 14% auto; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0.5; }
-.app.onboarding { background: radial-gradient(700px 320px at 50% -60px, var(--glow), transparent 70%) no-repeat; }
-.app button[type="submit"], .app button.primary { background-image: var(--btn-grad); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px var(--glow); }
-.app button[type="submit"]:hover:not(:disabled), .app button.primary:hover:not(:disabled), .app button[type="submit"].secondary { background-image: none; }
 .app .sidebar-foot .theme-switch { margin-bottom: 4px; }
 .app .onboarding-passkey { align-items: flex-start; }
 .app .onboarding-passkey input { margin-top: 3px; }
@@ -233,8 +225,6 @@
 /* Sidebar: icons sit in a chip that lights up on the current page; one marker slides behind the current link. */
 .app .sidebar nav { position: relative; }
 .app .sidebar nav a { position: relative; z-index: 1; }
-.app .sidebar nav a svg { box-sizing: content-box; padding: 3px; margin: -3px; border-radius: 7px; }
-.app .sidebar nav a[aria-current="page"] svg { background: var(--accent-bg); }
 .app .nav-mark { position: absolute; z-index: 0; left: 0; right: 0; top: 0; border-radius: 8px; background: var(--accent-bg); box-shadow: inset 2px 0 0 var(--accent); pointer-events: none; }
 .app .sidebar nav:has(.nav-mark) a[aria-current="page"] { background: transparent; }
 /* A confirmed action: a drawn tick before the message. */
@@ -247,7 +237,6 @@
   .app .sidebar nav a, .app .sidebar nav a svg { transition: color 150ms ease, background-color 150ms ease; }
   .app .org-list { animation: app-pop 160ms ease-out; transform-origin: 16px 0; }
   .app button { transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, opacity 200ms ease; }
-  .app button:hover:not(:disabled):not(.link) { transform: translateY(-1px); }
   .app button:active:not(:disabled):not(.link) { transform: translateY(1px) scale(0.985); }
   .app .card { transition: border-color 150ms ease, box-shadow 150ms ease; }
   .app .cards .card:hover { border-color: var(--line-strong); }
@@ -272,3 +261,63 @@
 @keyframes app-step { from { transform: scale(0.6); } 60% { transform: scale(1.15); } }
 @keyframes app-ready { 0% { box-shadow: 0 0 0 0 var(--accent); } 100% { box-shadow: 0 0 0 10px transparent; } }
 @keyframes app-draw { from { stroke-dashoffset: 14; } }
+
+/* ---- Stripe-inspired pass (2026-11-14, docs/tech-spec/dashboard-look.md in the hub): a flat page, a quiet tinted
+   sidebar, hairlines instead of boxes, sentence-case labels, compact controls. No glows, no gradients. The overview
+   classes (ov-) are restyled here under .app only, so the landing page's sample keeps its own look. ---- */
+.app { font-size: 14px; font-variant-numeric: tabular-nums; background: var(--band); }
+.app .sidebar { background: var(--bg); }
+.app .top-bar { background: var(--band); }
+.app h1, .app .ov-greet .ov-hello { font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
+.app main > h2, .app main > section > h2 { margin: 40px 0 16px; padding-bottom: 12px; font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--line); }
+
+.app .sidebar nav { gap: 1px; }
+.app .sidebar nav div { gap: 1px; }
+.app .sidebar nav a { padding: 6px 10px; border-radius: 6px; font-weight: 500; }
+.app .sidebar nav a:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.app .sidebar nav a[aria-current="page"] { color: var(--accent); background: transparent; }
+.app .nav-mark { display: none; }
+.app .nav-label { margin: 22px 10px 4px; font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+
+.app button { padding: 5px 12px; font-size: 13.5px; line-height: 20px; border-radius: 6px; background: var(--surface); border-color: var(--line); }
+.app button[type="submit"], .app button.primary { box-shadow: var(--shadow-sm); }
+.app button.quiet { padding: 3px 9px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.app input, .app select, .app textarea { padding: 6px 10px; border-radius: 6px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.app .card { border-radius: 8px; }
+.app .onboarding-card { box-shadow: var(--shadow); }
+
+/* Tables: no box, a quiet header, hairlines between rows. */
+.app table { background: none; border: 0; border-radius: 0; overflow: visible; }
+.app th { padding: 8px 12px; font-size: 12px; letter-spacing: 0; text-transform: none; background: none; }
+.app td { padding: 10px 12px; }
+.app tbody tr:last-child td { border-bottom: 1px solid var(--line); }
+
+/* Severity and status: small tinted tags. */
+.app .badge, .app .chip-status { padding: 1px 6px; border-radius: 4px; border-color: transparent; }
+.app .badge.sev-critical { color: var(--bad-ink); background: var(--bad-bg); }
+.app .badge.sev-low { color: var(--body); }
+.app .badge.sev-info { border-color: var(--line); }
+
+/* Overview: the four figures are one ruled strip, the panels are headed lists. */
+.app .ov-live { padding: 0; background: none; border: 0; box-shadow: none; color: var(--soft); }
+.app .ov-tiles { gap: 0; margin-bottom: 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.app .ov-tiles .tile { padding: 16px 20px; background: none; border: 0; border-left: 1px solid var(--line); border-radius: 0; box-shadow: none; }
+.app .ov-tiles .tile:first-child { padding-left: 0; border-left: 0; }
+.app .ov-tiles .tile::before, .app .ov-tiles .tile::after, .app .ov-panel::after, .app .ov-chip { display: none; }
+.app .ov-tiles .tile:hover, .app .ov-account:hover { transform: none; box-shadow: none; }
+.app .ov-tiles .tile dt { font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.app .ov-tiles .tile dd strong { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.app .ov-tiles .tile dd .ov-ring strong { font-size: 21px; letter-spacing: 0; }
+.app .ov-two { gap: 40px; margin-bottom: 36px; }
+.app .ov-panel { padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.app .ov-panel .ov-head { margin: 0; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.app .ov-panel .ov-title { font-size: 16px; }
+.app .ov-issues li:first-child, .app .ov-calm { border-top: 0; }
+.app .ov-trend .ov-plot { padding-top: 20px; }
+.app .ov-ring circle.value, .app .ov-trend svg .line { filter: none; }
+.app .ov-trend .ov-end { box-shadow: 0 0 0 2px var(--band); }
+@media (max-width: 1100px) {
+  .app .ov-tiles .tile:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .app .ov-tiles .tile:nth-child(n + 3) { border-top: 1px solid var(--line); }
+}
+.app .checklist-card h2 { padding-bottom: 0; border-bottom: 0; }
