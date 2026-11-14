@@ -280,3 +280,13 @@ test("the hero window appears on a short screen without scrolling", async ({ pag
   // Under 30% of it is in view, so its live loop is paused; the window itself must still fade in.
   await expect(page.locator(".lp-dash")).toHaveCSS("opacity", "1");
 });
+
+test("the header offers the dashboard instead of Sign in once the app has been opened in this browser", async ({ page }) => {
+  await page.goto("/");
+  const header = page.getByRole("banner");
+  await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
+  await page.evaluate(() => localStorage.setItem("opsagent.org", "acme"));
+  await page.reload();
+  await expect(header.getByRole("link", { name: "Open dashboard" })).toHaveAttribute("href", "/o/acme/dashboard");
+  await expect(header.getByRole("link", { name: "Sign in" })).toHaveCount(0);
+});
