@@ -5,34 +5,42 @@ import { Logo } from "@/components/brand/Logo";
 import { CreateOrg } from "@/components/create-org";
 import { DeleteAccount } from "@/components/delete-account";
 import { ErrorNote } from "@/components/error-note";
-import { ThemeSwitch } from "@/components/theme-switch";
 import { SignOut } from "@/components/sign-out";
 import { api, unwrap } from "@/lib/api/client";
 import type { OnboardingStep } from "@/lib/onboarding";
-import { usePasskeyAdd } from "@/lib/use-passkey-add";
-import { dismissPasskeyPrompt } from "@/lib/webauthn";
+import { log } from "@/lib/log";
+import { addPasskey, dismissPasskeyPrompt } from "@/lib/webauthn";
 
-const LABEL: Record<OnboardingStep, string> = { terms: "Terms", passkey: "Passkey", org: "Organisation" };
+const LABEL: Record<OnboardingStep, string> = { terms: "Terms", org: "Organisation" };
 
-function TermsStep({ onAccepted }: { onAccepted: () => void }) {
+/** Terms, with the recommended (never required) passkey on the same card: one page instead of two. */
+function TermsStep({ offerPasskey, onAccepted }: { offerPasskey: boolean; onAccepted: () => void }) {
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  async function accept() {
+  async function accept(withPasskey: boolean) {
+    if (!agreed || busy) return;
     setBusy(true);
     setError(null);
     try {
       await unwrap(api.POST("/auth/me/terms"));
-      onAccepted();
     } catch (err) {
       setError(err as Error);
       setBusy(false);
+      return;
     }
+    if (withPasskey) {
+      // The terms are agreed either way: a cancelled or failed passkey never holds the person back.
+      await addPasskey().catch((err) => log.warn("adding a passkey failed", { name: err instanceof Error ? err.name : undefined }));
+    } else if (offerPasskey) {
+      dismissPasskeyPrompt();
+    }
+    onAccepted();
   }
 
   return (
-    <form className="stack" onSubmit={(e) => { e.preventDefault(); if (agreed && !busy) void accept(); }}>
+    <form className="stack" onSubmit={(e) => { e.preventDefault(); void accept(offerPasskey); }}>
       <h1>Agree to the terms</h1>
       <p>OpsAgent reads your cloud accounts with read-only access. Before you start, please read and agree to how we work and how we handle your data.</p>
       <label className="row agree">
@@ -42,36 +50,32 @@ function TermsStep({ onAccepted }: { onAccepted: () => void }) {
           <Link href="/privacy" target="_blank" rel="noopener">Privacy Policy</Link>
         </span>
       </label>
-      <button type="submit" disabled={!agreed || busy}>Continue</button>
+      {offerPasskey && (
+        <div className="onboarding-passkey">
+          <strong>Add a passkey <span className="muted">(recommended)</span></strong>
+          <p className="muted small">Sign in next time with your fingerprint, face or device PIN. No email to wait for, and nothing to phish. It is not required: you can add one later in Settings, under Security.</p>
+        </div>
+      )}
+      <div className="row">
+        <button type="submit" disabled={!agreed || busy}>{offerPasskey ? "Continue and add a passkey" : "Continue"}</button>
+        {offerPasskey && (
+          <button type="button" disabled={!agreed || busy} onClick={() => void accept(false)}>Continue without a passkey</button>
+        )}
+      </div>
       <ErrorNote error={error} />
     </form>
   );
 }
 
-function PasskeyStep({ onAdded, onSkip }: { onAdded: () => void; onSkip: () => void }) {
-  const { busy, error, add } = usePasskeyAdd(onAdded);
-  return (
-    <div className="stack">
-      <h1>Add a passkey</h1>
-      <p>Sign in next time with your fingerprint, face or device PIN. No email to wait for, and nothing to phish.</p>
-      <div className="row">
-        <button type="button" className="primary" disabled={busy} onClick={add}>Add a passkey</button>
-        <button type="button" disabled={busy} onClick={() => { dismissPasskeyPrompt(); onSkip(); }}>Skip for now</button>
-      </div>
-      <p className="muted small">You can add one later in Settings, under Security.</p>
-      <ErrorNote error={error} />
-    </div>
-  );
-}
-
 /** The full-screen flow a signed-in person sees while a step is open: no sidebar, one step at a time. */
-export function Onboarding({ email, step, steps, onTermsAccepted, onPasskeySkipped, onChanged }: {
+export function Onboarding({ email, step, steps, offerPasskey, onTermsAccepted, onChanged }: {
   email: string;
   step: OnboardingStep;
   steps: OnboardingStep[];
+  /** No passkey yet and the browser can make one: the terms step offers it. */
+  offerPasskey: boolean;
   onTermsAccepted: () => void;
-  onPasskeySkipped: () => void;
-  /** Reloads the session after a passkey or an organisation was added. */
+  /** Reloads the session after an organisation was added. */
   onChanged: () => void;
 }) {
   const at = steps.indexOf(step);
@@ -94,11 +98,9 @@ export function Onboarding({ email, step, steps, onTermsAccepted, onPasskeySkipp
           ))}
         </ol>
         <section className="card onboarding-card">
-          {step === "terms" && <TermsStep onAccepted={onTermsAccepted} />}
-          {step === "passkey" && <PasskeyStep onAdded={onChanged} onSkip={onPasskeySkipped} />}
+          {step === "terms" && <TermsStep offerPasskey={offerPasskey} onAccepted={onTermsAccepted} />}
           {step === "org" && <CreateOrg onCreated={onChanged} intro={<p>Your organisation owns your cloud connections, findings and billing.</p>} />}
         </section>
-        <div className="onboarding-theme"><ThemeSwitch /></div>
       </main>
     </div>
   );

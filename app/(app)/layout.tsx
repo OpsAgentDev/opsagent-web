@@ -12,7 +12,7 @@ import { onboardingStep, onboardingSteps } from "@/lib/onboarding";
 import { showPasskeyPrompt } from "@/lib/passkey-scope";
 import { OrgContext, SessionReloadContext, SetupContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
-import { isDismissed, readDismissedAt, supported } from "@/lib/webauthn";
+import { supported } from "@/lib/webauthn";
 import "./app.css";
 
 async function loadSession() {
@@ -25,9 +25,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   // The dashboard's setup checklist reports whether it is showing (null: not known yet); it carries its own passkey nudge.
   const [checklistOpen, setChecklistOpen] = useState<boolean | null>(null);
-  // Onboarding, this page session: terms were just accepted (the passkey step follows once), and that step was skipped.
+  // Onboarding, this page session: terms were just accepted, so they stay in the step count.
   const [afterTerms, setAfterTerms] = useState(false);
-  const [passkeySkipped, setPasskeySkipped] = useState(false);
   const { data, error, reload } = useApi(loadSession, []);
   const signedOut = error instanceof ApiError && error.status === 401;
   useEffect(() => {
@@ -49,9 +48,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const inputs = {
     termsAccepted: !!data.me.terms_accepted_at,
     afterTerms,
-    hasPasskey: data.me.has_passkey,
-    passkeySupported: supported(),
-    passkeyDismissed: passkeySkipped || isDismissed(readDismissedAt(localStorage), Date.now()),
     hasOrg: !!org,
   };
   const step = onboardingStep(inputs);
@@ -61,8 +57,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         email={data.me.email}
         step={step ?? "org"}
         steps={onboardingSteps(inputs)}
+        offerPasskey={!data.me.has_passkey && supported()}
         onTermsAccepted={() => { setAfterTerms(true); reload(); }}
-        onPasskeySkipped={() => setPasskeySkipped(true)}
         onChanged={reload}
       />
     );

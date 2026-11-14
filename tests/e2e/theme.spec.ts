@@ -63,12 +63,10 @@ test("Geist is served from this origin; nothing is asked of Google Fonts", async
   expect(asked.filter((u) => /fonts\.(googleapis|gstatic)\.com/.test(u))).toEqual([]);
 });
 
-test("the theme switch is in onboarding and in the app's sidebar, and both themes paint the app", async ({ page, request }) => {
+test("the theme switch is in the app's sidebar, not in onboarding, and both themes paint the app", async ({ page, request }) => {
   await signIn(page, request, { onboard: false });
-  await expect(page.getByText("Step 1 of 3")).toBeVisible();
-  await theme(page).getByRole("button", { name: "Light" }).click();
-  expect(await pageColour(page)).toBe(LIGHT);
-  await theme(page).getByRole("button", { name: "Dark" }).click();
+  await expect(page.getByText("Step 1 of 2")).toBeVisible();
+  await expect(theme(page)).toHaveCount(0);
 
   const fresh = await page.context().browser()!.newContext();
   const app = await fresh.newPage();

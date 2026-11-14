@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { connectNoisy, createOrg, signIn } from "./helpers";
 
-test("new user goes Terms, Passkey, Organisation, then a dashboard with a setup checklist that follows their progress", async ({ page, request }) => {
+test("new user goes Terms (with the recommended passkey), Organisation, then a dashboard with a setup checklist that follows their progress", async ({ page, request }) => {
   const email = await signIn(page, request, { onboard: false });
   const steps = page.getByRole("list", { name: "Steps" });
   const current = steps.locator('[aria-current="step"]');
 
   // Step 1, terms: no sidebar, Continue is disabled until the box is ticked; sign out and delete stay reachable.
-  await expect(page.getByText("Step 1 of 3")).toBeVisible();
+  await expect(page.getByText("Step 1 of 2")).toBeVisible();
   await expect(current).toHaveText(/Terms/);
   await expect(page.getByRole("navigation", { name: "Main" })).toHaveCount(0);
   await expect(page.getByText(email)).toBeVisible();
@@ -17,21 +17,20 @@ test("new user goes Terms, Passkey, Organisation, then a dashboard with a setup 
   await expect(terms).toHaveAttribute("href", "/terms");
   await expect(terms).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
-  const go = page.getByRole("button", { name: "Continue" });
+  const go = page.getByRole("button", { name: "Continue without a passkey" });
+  // The passkey is offered on the same card, recommended but not required, and waits for the tick as well.
+  const withPasskey = page.getByRole("button", { name: "Continue and add a passkey" });
+  await expect(page.getByText("Add a passkey (recommended)")).toBeVisible();
+  await expect(page.getByRole("group", { name: "Theme" })).toHaveCount(0);
   await expect(go).toBeDisabled();
+  await expect(withPasskey).toBeDisabled();
   await page.reload(); // nothing is accepted by looking
   await expect(go).toBeDisabled();
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
   await go.click();
 
-  // Step 2, passkey: optional.
-  await expect(page.getByText("Step 2 of 3")).toBeVisible();
-  await expect(current).toHaveText(/Passkey/);
-  await expect(page.getByRole("button", { name: "Add a passkey" })).toBeVisible();
-  await page.getByRole("button", { name: "Skip for now" }).click();
-
-  // Step 3, organisation.
-  await expect(page.getByText("Step 3 of 3")).toBeVisible();
+  // Step 2, organisation.
+  await expect(page.getByText("Step 2 of 2")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
   await expect(page.getByLabel("Organisation name")).toBeFocused();
   await expect(page.getByRole("link", { name: "Findings" })).toHaveCount(0);

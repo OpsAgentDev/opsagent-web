@@ -54,11 +54,10 @@ export function brainTask(...args: string[]): void {
   execFileSync("cargo", ["run", "-q", "--", "task", ...args], { cwd: `${BRAIN_DIR}/app`, stdio: "inherit" });
 }
 
-/** Onboarding steps 1 and 2: agrees to the terms and skips the passkey; leaves the user on the organisation step. */
+/** Onboarding step 1: agrees to the terms without a passkey; leaves the user on the organisation step. */
 export async function passTerms(page: Page): Promise<void> {
   await page.getByLabel("I agree to the Terms and the Privacy Policy").check();
-  await page.getByRole("button", { name: "Continue" }).click();
-  await page.getByRole("button", { name: "Skip for now" }).click();
+  await page.getByRole("button", { name: "Continue without a passkey" }).click();
   await expect(page.getByRole("heading", { name: "Create your organisation" })).toBeVisible();
 }
 
