@@ -634,6 +634,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/connections/{id}/reconnect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Owner only, for a `revoked` connection (409 `connection_not_revoked` otherwise). The owner
+         *     launches the stack again and calls `verify`; the connection and its findings are kept.
+         */
+        post: operations["connections_reconnect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/connections/{id}/scan": {
         parameters: {
             query?: never;
@@ -1892,6 +1912,12 @@ export interface components {
             status: string;
             /** Format: date-time */
             unsubscribed_at?: string | null;
+        };
+        ReconnectLink: {
+            /** @description CloudFormation quick-create link with this connection's ExternalId; null for test providers. */
+            quick_create_url?: string | null;
+            /** @description The stack to delete first if it still exists: a second one of this name cannot be created. */
+            stack_name: string;
         };
         RedeemRequest: {
             token: string;
@@ -4218,6 +4244,62 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    connections_reconnect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReconnectLink"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
