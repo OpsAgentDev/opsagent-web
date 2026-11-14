@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { signIn, signUp } from "./helpers";
+import { openUserMenu, signIn, signUp } from "./helpers";
 
 const DARK = "rgb(11, 16, 32)";
 const LIGHT = "rgb(245, 247, 250)";
@@ -72,6 +72,7 @@ test("the theme switch is in the app's sidebar, not in onboarding, and both them
   const app = await fresh.newPage();
   await signUp(app, request);
   await app.goto("/dashboard");
+  await openUserMenu(app);
   const inSidebar = app.locator(".sidebar").getByRole("group", { name: "Theme" });
   await expect(inSidebar).toBeVisible();
   expect(await pageColour(app)).toBe(DARK);

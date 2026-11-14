@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { signUp } from "./helpers";
+import { openUserMenu, signUp } from "./helpers";
 
 const me = { id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", email: "boss@example.com", has_passkey: true, name: null, terms_accepted_at: "2026-01-01T00:00:00Z" };
 const other = { id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", user_id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", email: "pat@example.com", name: null, role: "member" };
@@ -67,6 +67,7 @@ test("the menu has Sign out on a phone", async ({ page }) => {
   await page.route("**/v1/orgs/acme/invites", (r) => r.fulfill({ json: [] }));
   await page.goto("/settings/members");
   await page.getByRole("button", { name: "Menu" }).click();
+  await openUserMenu(page);
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
 });
 
@@ -167,6 +168,7 @@ test("sign-out stays on the page and says so when the session was not ended", as
   await signUp(page, request);
   await page.route("**/v1/auth/sign-out", (r) => r.fulfill({ status: 500, json: { title: "x", status: 500 } }));
   await page.goto("/dashboard");
+  await openUserMenu(page);
   await page.getByRole("button", { name: "Sign out" }).first().click();
   await expect(page.getByText("Sign-out failed. Try again.").first()).toBeVisible();
   await expect(page).toHaveURL(/\/dashboard$/);
