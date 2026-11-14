@@ -32,6 +32,10 @@ const common = [
 ];
 
 const nextConfig: NextConfig = { reactStrictMode: true, output: "standalone", poweredByHeader: false,
+  // In-app addresses carry the organisation (/o/<slug>/dashboard); the pages live at the path after it (lib/org-path.ts).
+  rewrites: async () => [
+    { source: "/o/:org/:section(dashboard|findings|chat|deliveries|settings|connections|onboarding)/:rest*", destination: "/:section/:rest*" },
+  ],
   headers: async () => [
     { source: "/:path*", headers: common },
     // The consent page must not be framed (clickjacking an Approve button).

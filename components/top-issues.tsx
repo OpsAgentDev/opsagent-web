@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { Severity } from "@/components/badges";
 import { ErrorNote } from "@/components/error-note";
 import { topIssues } from "@/lib/findings";
@@ -15,7 +15,7 @@ export function IssueList({ items, label, linked = true }: { items: Issue[]; lab
       {items.map((f) => (
         <li key={f.id}>
           <Severity value={f.severity} />
-          {linked ? <Link href={`/findings/${f.id}`}>{f.title}</Link> : <span className="ov-issue-title">{f.title}</span>}
+          {linked ? <OrgLink href={`/findings/${f.id}`}>{f.title}</OrgLink> : <span className="ov-issue-title">{f.title}</span>}
           <code>{f.resource_identity}</code>
         </li>
       ))}

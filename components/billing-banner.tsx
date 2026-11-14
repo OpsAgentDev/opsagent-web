@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { loadBilling } from "@/lib/billing";
 import { useApi } from "@/lib/use-api";
 
@@ -14,24 +14,24 @@ export function BillingBanner({ org }: { org: string }) {
       {data.status === "past_due" && (
         <p role="status" className="banner warn">
           Your last payment failed. Update your card to keep OpsAgent running.{" "}
-          <Link href="/settings/billing">Manage billing</Link>
+          <OrgLink href="/settings/billing">Manage billing</OrgLink>
         </p>
       )}
       {data.enforced && data.status === "none" && (
         <p role="status" className="banner">
           {data.trial_available === false ? "Start a plan to turn on checks. " : "Start your free trial to turn on checks. "}
-          <Link href="/settings/billing">{data.trial_available === false ? "Start plan" : "Start free trial"}</Link>
+          <OrgLink href="/settings/billing">{data.trial_available === false ? "Start plan" : "Start free trial"}</OrgLink>
         </p>
       )}
       {data.enforced && READ_ONLY.has(data.status) && (
         <p role="status" className="banner warn">
-          OpsAgent is paused. Start or renew your plan to resume checks. <Link href="/settings/billing">Billing</Link>
+          OpsAgent is paused. Start or renew your plan to resume checks. <OrgLink href="/settings/billing">Billing</OrgLink>
         </p>
       )}
       {data.enforced && data.over_limit && (
         <p role="status" className="banner warn">
           You&apos;re over your plan&apos;s member or integration limit. Remove some or change plan.{" "}
-          <Link href="/settings/billing">Billing</Link>
+          <OrgLink href="/settings/billing">Billing</OrgLink>
         </p>
       )}
     </>

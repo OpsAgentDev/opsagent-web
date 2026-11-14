@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { Fragment } from "react";
 import { linkify } from "@/lib/chat";
 
@@ -11,7 +11,7 @@ function Linked({ text }: { text: string }) {
     <p style={{ whiteSpace: "pre-wrap" }}>
       {linkify(text).map((p, i) =>
         "finding" in p ? (
-          <Link key={i} href={`/findings/${p.finding}`}>view finding</Link>
+          <OrgLink key={i} href={`/findings/${p.finding}`}>view finding</OrgLink>
         ) : (
           <Fragment key={i}>{p.text}</Fragment>
         ),

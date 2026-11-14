@@ -5,6 +5,7 @@ import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type CreatedConnection } from "@/lib/api/client";
 import { loadBilling } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
+import { orgHref } from "@/lib/org-path";
 import { useApi } from "@/lib/use-api";
 
 const FAKE_ENABLED = process.env.NEXT_PUBLIC_OPSAGENT_FAKE === "1";
@@ -22,7 +23,7 @@ export default function ConnectAws() {
   const owner = org.role === "owner";
   const needsPlan = billing?.enforced && billing.status === "none";
   useEffect(() => {
-    if (needsPlan) router.replace("/settings/billing");
+    if (needsPlan) router.replace(orgHref(org.slug, "/settings/billing"));
   }, [needsPlan, router]);
 
   async function create(e: FormEvent<HTMLFormElement>) {
@@ -57,7 +58,7 @@ export default function ConnectAws() {
         }),
       );
       // The connection page polls status until verification settles.
-      router.push(`/connections/${created.id}`); // stays busy while navigating
+      router.push(orgHref(org.slug, `/connections/${created.id}`)); // stays busy while navigating
     } catch (err) {
       setError(err as Error);
       setBusy(false);

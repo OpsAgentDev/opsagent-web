@@ -7,8 +7,9 @@ import { ErrorNote } from "@/components/error-note";
 import { Onboarding } from "@/components/onboarding";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
 import { api, ApiError, unwrap } from "@/lib/api/client";
-import { preferredOrg, takePendingInvite } from "@/lib/members";
+import { preferOrg, preferredOrg, takePendingInvite } from "@/lib/members";
 import { onboardingStep, onboardingSteps } from "@/lib/onboarding";
+import { orgHref, splitOrgPath } from "@/lib/org-path";
 import { showPasskeyPrompt } from "@/lib/passkey-scope";
 import { OrgContext, SessionReloadContext, SetupContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
@@ -22,7 +23,7 @@ async function loadSession() {
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
+  const { slug, path: pathname } = splitOrgPath(usePathname());
   // The dashboard's setup checklist reports whether it is showing (null: not known yet); it carries its own passkey nudge.
   const [checklistOpen, setChecklistOpen] = useState<boolean | null>(null);
   // Onboarding, this page session: terms were just accepted, so they stay in the step count.
@@ -40,10 +41,19 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     if (token) router.replace(`/invites/${token}`);
   }, [data, router]);
 
+  // The address names the organisation (/o/<slug>/…); without one, or with one this person is not in, the
+  // preferred organisation (set by the switcher or an accepted invite) or the oldest membership is used and
+  // the address is corrected. Old addresses without the prefix (emails, bookmarks) keep working this way.
+  const org = data ? data.orgs.find((o) => o.slug === slug) ?? data.orgs.find((o) => o.slug === preferredOrg()) ?? data.orgs[0] : undefined;
+  const orgSlug = org?.slug;
+  useEffect(() => {
+    if (!orgSlug) return;
+    if (slug === orgSlug) preferOrg(orgSlug);
+    else router.replace(orgHref(orgSlug, pathname) + window.location.search);
+  }, [orgSlug, slug, pathname, router]);
+
   if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
   if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
-  // The preferred organisation (set by the switcher or an accepted invite), else the oldest membership.
-  const org = data.orgs.find((o) => o.slug === preferredOrg()) ?? data.orgs[0];
   // Client-only: this renders after the client-side session load, so localStorage is there.
   const inputs = {
     termsAccepted: !!data.me.terms_accepted_at,

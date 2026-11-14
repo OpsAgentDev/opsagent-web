@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { ApiError } from "@/lib/api/client";
 
 // Sentences for brain's billing refusals (402 on writes); other errors show brain's own text.
@@ -15,7 +15,7 @@ export function ErrorNote({ error, showCode = true }: { error?: Error | null; sh
   if (code === "not_found") {
     return (
       <p role="alert" className="error">
-        We couldn&apos;t find that. It may have been removed. <Link href="/dashboard">Back to the dashboard</Link>
+        We couldn&apos;t find that. It may have been removed. <OrgLink href="/dashboard">Back to the dashboard</OrgLink>
       </p>
     );
   }

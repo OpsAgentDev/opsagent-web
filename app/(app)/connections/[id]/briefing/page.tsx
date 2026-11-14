@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useParams } from "next/navigation";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
@@ -21,7 +21,7 @@ export default function BriefingPreview() {
     <main>
       <h1>Briefing preview</h1>
       <p className="muted">
-        Exactly what the morning briefing would send now. <Link href={`/connections/${id}`}>Back to connection</Link>
+        Exactly what the morning briefing would send now. <OrgLink href={`/connections/${id}`}>Back to connection</OrgLink>
       </p>
       <ErrorNote error={error} />
       {loading && <p className="muted" role="status">Loading…</p>}

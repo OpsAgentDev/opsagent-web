@@ -10,34 +10,41 @@ import {
 import { OrgSwitcher, type OrgChoice } from "@/components/org-switcher";
 import { SignOut } from "@/components/sign-out";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { orgHref, splitOrgPath } from "@/lib/org-path";
 import { useDismiss } from "@/lib/use-dismiss";
 
 type NavLink = { href: string; label: string; icon: ReactNode };
 
-export const APP_LINKS: NavLink[] = [
-  { href: "/dashboard", label: "Dashboard", icon: <GridIcon size={18} /> },
-  { href: "/findings", label: "Findings", icon: <FlagIcon size={18} /> },
-  { href: "/chat", label: "Ask OpsAgent", icon: <ChatSquareIcon size={18} /> },
-  { href: "/deliveries", label: "Deliveries", icon: <MailIcon size={18} /> },
-];
-export const SETTINGS_LINKS: NavLink[] = [
-  { href: "/settings/delivery", label: "Delivery settings", icon: <BellIcon size={18} /> },
-  { href: "/settings/agents", label: "Connected agents", icon: <KeyIcon size={18} /> },
-  { href: "/settings/security", label: "Security", icon: <ShieldIcon size={18} /> },
-  { href: "/settings/members", label: "Members", icon: <UsersIcon size={18} /> },
-  { href: "/settings/billing", label: "Billing", icon: <CostIcon size={18} /> },
-  { href: "/settings/ai", label: "AI", icon: <GpuIcon size={18} /> },
-  { href: "/settings/human-review", label: "Human review", icon: <CheckIcon size={18} /> },
-  { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={18} /> },
+const HOME: NavLink = { href: "/dashboard", label: "Dashboard", icon: <GridIcon size={18} /> };
+/** The sidebar's groups, each under its own label. */
+export const NAV_GROUPS: { id: string; label: string; links: NavLink[] }[] = [
+  { id: "monitoring", label: "Monitoring", links: [
+    { href: "/findings", label: "Findings", icon: <FlagIcon size={18} /> },
+    { href: "/chat", label: "Ask OpsAgent", icon: <ChatSquareIcon size={18} /> },
+    { href: "/deliveries", label: "Deliveries", icon: <MailIcon size={18} /> },
+  ] },
+  { id: "organisation", label: "Organisation", links: [
+    { href: "/settings/members", label: "Members", icon: <UsersIcon size={18} /> },
+    { href: "/settings/billing", label: "Billing", icon: <CostIcon size={18} /> },
+    { href: "/settings/delivery", label: "Delivery settings", icon: <BellIcon size={18} /> },
+    { href: "/settings/agents", label: "Connected agents", icon: <KeyIcon size={18} /> },
+    { href: "/settings/ai", label: "AI", icon: <GpuIcon size={18} /> },
+    { href: "/settings/human-review", label: "Human review", icon: <CheckIcon size={18} /> },
+  ] },
+  { id: "profile", label: "Profile", links: [
+    { href: "/settings/security", label: "Security", icon: <ShieldIcon size={18} /> },
+    { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={18} /> },
+  ] },
 ];
 
 const COLLAPSED = "opsagent.sidebar-collapsed";
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
-export function AppShell({ email, orgs, current, children }: { email: string; orgs: OrgChoice[]; current: OrgChoice; children: ReactNode }) {
+export function AppShell({ email, orgs, current, children }: { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; children: ReactNode }) {
   const [open, setOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = splitOrgPath(usePathname()).path;
+  const to = (path: string) => orgHref(current.slug, path);
   const drawer = useRef<HTMLElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   const close = () => setOpen(false);
@@ -64,33 +71,49 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
   }, [pathname, open]);
 
   const link = (l: NavLink) => (
-    <Link key={l.href} href={l.href} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined} title={collapsed ? l.label : undefined}>
+    <Link key={l.href} href={to(l.href)} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined} title={collapsed ? l.label : undefined}>
       {l.icon}
       <span>{l.label}</span>
     </Link>
   );
-  const title = [...APP_LINKS, ...SETTINGS_LINKS].find((l) => within(pathname, l.href))?.label;
+  const toggle = (
+    <button type="button" className="quiet sidebar-toggle" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="app-menu" onClick={toggleCollapsed}>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2" /><path d="M6 3v10" /></svg>
+    </button>
+  );
+  const title = [HOME, ...NAV_GROUPS.flatMap((g) => g.links)].find((l) => within(pathname, l.href))?.label;
 
   return (
     <div className="app shell" data-collapsed={collapsed || undefined}>
       {open && <div className="drawer-backdrop" aria-hidden="true" />}
       <aside id="app-menu" ref={drawer} className={open ? "sidebar open" : "sidebar"}>
         <div className="sidebar-head">
-          <Link href="/dashboard" className="brand" aria-label="OpsAgent" onClick={close}>
+          <Link href={to("/dashboard")} className="brand" aria-label="OpsAgent" onClick={close}>
             <Logo size={22} />
           </Link>
+          {!collapsed && toggle}
           <button type="button" className="quiet drawer-close" onClick={() => { close(); button.current?.focus(); }}>Close menu</button>
         </div>
         <nav ref={nav} aria-label="Main">
           {mark && <span className="nav-mark" aria-hidden="true" style={{ transform: `translateY(${mark.y}px)`, height: mark.h }} />}
-          {APP_LINKS.map(link)}
-          <p className="nav-label" id="nav-settings">Settings</p>
-          <div role="group" aria-labelledby="nav-settings">{SETTINGS_LINKS.map(link)}</div>
+          {link(HOME)}
+          {NAV_GROUPS.map((g) => (
+            <div key={g.id} role="group" aria-labelledby={`nav-${g.id}`}>
+              <p className="nav-label" id={`nav-${g.id}`}>{g.label}</p>
+              {g.links.map(link)}
+            </div>
+          ))}
         </nav>
         <div className="sidebar-foot">
           <ThemeSwitch />
-          <span className="account-email" title={email}>{email}</span>
-          <SignOut className="quiet" />
+          <div className="user-row">
+            <span className="avatar" aria-hidden="true">{email.charAt(0).toUpperCase()}</span>
+            <span className="who">
+              <span className="account-email" title={email}>{email}</span>
+              {current.role && <span className="role">{current.role.charAt(0).toUpperCase() + current.role.slice(1)}</span>}
+            </span>
+            <SignOut className="quiet" />
+          </div>
         </div>
       </aside>
       <div className="content">
@@ -98,9 +121,7 @@ export function AppShell({ email, orgs, current, children }: { email: string; or
           <button ref={button} type="button" className="menu-button" aria-expanded={open} aria-controls="app-menu" onClick={() => setOpen(!open)}>
             Menu
           </button>
-          <button type="button" className="quiet sidebar-toggle" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="app-menu" onClick={toggleCollapsed}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2" /><path d="M6 3v10" /></svg>
-          </button>
+          {collapsed && toggle}
           <OrgSwitcher orgs={orgs} current={current} />
           {title && <span className="top-title" aria-hidden="true">{title}</span>}
           <span className="account-email" title={email}>{email}</span>

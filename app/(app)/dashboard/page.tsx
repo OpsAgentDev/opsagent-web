@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { OrgLink } from "@/components/org-link";
 import { useEffect, useState } from "react";
 import { ConnectionCard } from "@/components/connection-card";
 import { ErrorNote } from "@/components/error-note";
@@ -67,7 +67,7 @@ export default function Dashboard() {
           <section className="ov-panel" aria-labelledby="fix-first-title">
             <div className="ov-head">
               <h2 className="ov-title" id="fix-first-title">Fix these first</h2>
-              <Link href="/findings">All findings</Link>
+              <OrgLink href="/findings">All findings</OrgLink>
             </div>
             <TopIssues org={org.slug} limit={5} label="Fix these first" />
           </section>
@@ -86,7 +86,7 @@ export default function Dashboard() {
       </div>
       {!!rows?.length && org.role === "owner" && (
         <p className="add-more">
-          <Link href="/onboarding/connect-aws">Connect another account</Link>
+          <OrgLink href="/onboarding/connect-aws">Connect another account</OrgLink>
         </p>
       )}
     </main>
