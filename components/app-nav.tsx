@@ -151,7 +151,6 @@ export function AppShell({ email, orgs, current, plan, children }: { email: stri
           {collapsed && toggle}
           <OrgSwitcher orgs={orgs} current={current} plan={plan} />
           {title && <span className="top-title" aria-hidden="true">{title}</span>}
-          <span className="account-email" title={email}>{email}</span>
         </header>
         {children}
       </div>

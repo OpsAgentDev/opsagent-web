@@ -26,11 +26,12 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(nav.getByRole("link")).toHaveCount(GROUPS.flatMap(([, l]) => l).length);
   for (const link of await nav.getByRole("link").all()) await expect(link.locator("svg")).toBeVisible(); // an icon on every link
 
-  // Top bar: the organisation as plain text (one organisation), the account email; no Menu button on desktop.
+  // Top bar: the organisation as plain text (one organisation); the account email is in the person's row only; no Menu button on desktop.
   const bar = page.getByRole("banner");
   await expect(bar.getByText(/^E2E \d+$/)).toBeVisible();
   await expect(bar.getByRole("button", { name: /^Organisation:/ })).toHaveCount(0);
-  await expect(bar.getByText(email)).toBeVisible();
+  await expect(bar.getByText(email)).toHaveCount(0);
+  await expect(page.locator(".user-row").getByText(email)).toBeVisible();
   const menu = bar.getByRole("button", { name: "Menu", exact: true });
   await expect(menu).toBeHidden();
   // The person's row at the foot opens a menu with the theme switch and Sign out; Escape closes it.
