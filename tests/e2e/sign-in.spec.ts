@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { codeInMail } from "./helpers";
+import { codeInMail, signUp } from "./helpers";
 
 test("sign-up page shows three options", async ({ page }) => {
   await page.goto("/sign-up");
@@ -92,5 +92,17 @@ test("a signed-in visitor on sign-in and sign-up goes to the dashboard", async (
   await page.goto("/sign-in");
   await expect(page).toHaveURL(/\/dashboard$/);
   await page.goto("/sign-up");
+  await expect(page).toHaveURL(/\/dashboard$/);
+});
+
+test("a signed-in visitor cannot press a sign-in button before being sent to the dashboard", async ({ page, request }) => {
+  await signUp(page, request);
+  // Hold the session check so the moment before the redirect can be seen.
+  await page.route("**/auth/me", async (route) => {
+    await new Promise((done) => setTimeout(done, 1500));
+    await route.continue();
+  });
+  await page.goto("/sign-in");
+  await expect(page.getByRole("button", { name: "Continue with Google" })).toBeDisabled();
   await expect(page).toHaveURL(/\/dashboard$/);
 });

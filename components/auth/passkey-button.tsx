@@ -8,7 +8,7 @@ import { isSameOrigin } from "@/lib/safe-redirect";
 import { cancelled, signInWithPasskey, supported } from "@/lib/webauthn";
 
 /** "Sign in with a passkey": a discoverable request ceremony, so no email is typed. Hidden without WebAuthn. */
-export function PasskeyButton({ returnTo }: { returnTo?: string }) {
+export function PasskeyButton({ returnTo, disabled }: { returnTo?: string; disabled?: boolean }) {
   // Decided after hydration: the server can't know whether the browser has WebAuthn.
   const [shown, setShown] = useState(false);
   useEffect(() => setShown(supported()), []);
@@ -32,7 +32,7 @@ export function PasskeyButton({ returnTo }: { returnTo?: string }) {
 
   return (
     <>
-      <button type="button" className="auth-btn primary" disabled={busy} onClick={signIn}><PasskeyIcon />Sign in with a passkey</button>
+      <button type="button" className="auth-btn primary" disabled={busy || disabled} onClick={signIn}><PasskeyIcon />Sign in with a passkey</button>
       {error ? <p role="alert" className="error">{error}</p> : null}
       <p className="auth-or">or</p>
     </>

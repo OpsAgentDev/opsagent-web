@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { useAuthStep } from "@/components/auth/use-auth-step";
+import { PasskeyButton } from "@/components/auth/passkey-button";
 import { GitHubIcon, GoogleIcon, MailIcon } from "@/components/auth/icons";
 import { api, unwrap } from "@/lib/api/client";
 import { isProviderUrl } from "@/lib/auth-errors";
@@ -12,11 +12,9 @@ type Props = {
   returnTo?: string;
   /** A provider callback's `?error=` code. */
   error?: string;
-  /** Sign-in only: the passkey button and its own "or" divider, shown first (it renders nothing without WebAuthn). */
-  passkeySlot?: ReactNode;
 };
 
-export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }: Props) {
+export function AuthOptions({ mode, returnTo, error: initialError }: Props) {
   const { busy, error, run } = useAuthStep(returnTo, initialError);
   const query = { return_to: returnTo };
   const keep = returnTo ? `?return_to=${encodeURIComponent(returnTo)}` : "";
@@ -37,7 +35,7 @@ export function AuthOptions({ mode, returnTo, error: initialError, passkeySlot }
     <div className="auth-options">
       <h1>{signIn ? "Sign in" : "Create your account"}</h1>
       {error ? <p role="alert" className="error">{error}</p> : null}
-      {signIn ? passkeySlot : null}
+      {signIn ? <PasskeyButton returnTo={returnTo} disabled={busy} /> : null}
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}><GoogleIcon />Continue with Google</button>
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}><GitHubIcon />Continue with GitHub</button>
       <Link href={`/${mode}/email${keep}`} className="auth-btn"><MailIcon />Continue with email</Link>
