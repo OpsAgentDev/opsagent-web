@@ -84,7 +84,7 @@ jobs:
           # The deploy contract in opsagent-infra's README: latest revision, replace only `image`.
           aws ecs describe-task-definition --task-definition opsagent-web --query taskDefinition |
             jq --arg image "$IMAGE" '{family, taskRoleArn, executionRoleArn, networkMode, containerDefinitions,
-              requiresCompatibilities, cpu, memory, runtimePlatform} | .containerDefinitions[0].image = $image' >taskdef.json
+              requiresCompatibilities, cpu, memory, runtimePlatform, volumes} | .containerDefinitions[0].image = $image' >taskdef.json
           arn="$(aws ecs register-task-definition --cli-input-json file://taskdef.json \
             --query taskDefinition.taskDefinitionArn --output text)"
           aws ecs update-service --cluster opsagent --service web --task-definition "$arn" \
