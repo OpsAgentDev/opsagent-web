@@ -24,6 +24,10 @@ ENV NODE_ENV=production PORT=3001 HOSTNAME=0.0.0.0
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
+# The task runs with a read-only root; Next writes only these two (image and fetch cache, revalidated
+# pages). VOLUME makes the Fargate mounts keep node's ownership.
+RUN mkdir -p .next/cache .next/server/route-cache && chown node:node .next/cache .next/server/route-cache
+VOLUME ["/app/.next/cache", "/app/.next/server/route-cache"]
 USER node
 EXPOSE 3001
 CMD ["node", "server.js"]
