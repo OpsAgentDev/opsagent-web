@@ -21,10 +21,12 @@ export function daysLeft(iso: string | null | undefined, now = Date.now()): numb
 }
 
 /** The plan line under the organisation's name; null when billing isn't set up or isn't read yet. */
-export function planLine(b: Pick<Billing, "status" | "tier" | "trial_ends_at"> | null | undefined, now = Date.now()): string | null {
+export function planLine(b: (Pick<Billing, "status" | "tier" | "trial_ends_at"> & Partial<Pick<Billing, "cancel_at_period_end">>) | null | undefined, now = Date.now()): string | null {
   if (!b) return null;
   switch (b.status) {
     case "trialing": {
+      // A cancelled trial won't carry on, so it shows its last day rather than a countdown.
+      if (b.cancel_at_period_end && b.trial_ends_at) return `Free trial · ends ${new Date(b.trial_ends_at).toLocaleDateString()}`;
       const days = daysLeft(b.trial_ends_at, now);
       if (days === null) return "Free trial";
       return `Free trial · ${days === 0 ? "last day" : `${days} ${days === 1 ? "day" : "days"} left`}`;

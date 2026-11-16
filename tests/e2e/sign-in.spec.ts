@@ -107,8 +107,8 @@ test("a signed-in visitor cannot press a sign-in button before being sent to the
   await expect(page).toHaveURL(/\/dashboard$/);
 });
 
-test("a signed-in visitor on /sign-in is told they are being taken to the dashboard", async ({ page }) => {
-  await page.route("**/v1/auth/me", (r) => r.fulfill({ json: { id: "a", email: "a@example.com", has_passkey: true, name: null } }));
+test("a signed-in visitor on /sign-in is told they are being taken to the dashboard", async ({ page, request }) => {
+  await signUp(page, request);
   // Hold the dashboard so the moment before it opens can be seen.
   await page.route("**/dashboard", () => new Promise(() => {}));
   await page.goto("/sign-in");

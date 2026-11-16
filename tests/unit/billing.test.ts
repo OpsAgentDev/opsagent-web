@@ -13,6 +13,7 @@ test("the plan line names the tier, the trial's days left, or what is wrong", ()
   expect(planLine({ status: "trialing", tier: "team", trial_ends_at: inDays(0.5) }, now)).toBe("Free trial · 1 day left");
   expect(planLine({ status: "trialing", tier: "team", trial_ends_at: inDays(-0.1) }, now)).toBe("Free trial · last day");
   expect(planLine({ status: "trialing", tier: null }, now)).toBe("Free trial");
+  expect(planLine({ status: "trialing", tier: "team", trial_ends_at: inDays(3), cancel_at_period_end: true }, now)).toMatch(/^Free trial · ends /);
   expect(planLine({ status: "active", tier: "scale" })).toBe("Scale");
   expect(planLine({ status: "active", tier: "team" })).toBe("Team");
   expect(planLine({ status: "active", tier: null })).toBeNull();
