@@ -307,10 +307,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Ends every session of the signed-in user, this one included. A session that has not been used
-         *     since this route shipped has no owner recorded yet and lasts until its own expiry.
-         */
+        /** Ends every session of the signed-in user, this one included. */
         post: operations["auth_sign_out_everywhere"];
         delete?: never;
         options?: never;
