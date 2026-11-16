@@ -109,9 +109,15 @@ test("a signed-in visitor cannot press a sign-in button before being sent to the
 
 test("a signed-in visitor on /sign-in is told they are being taken to the dashboard", async ({ page, request }) => {
   await signUp(page, request);
-  // Hold the dashboard so the moment before it opens can be seen.
-  await page.route("**/dashboard", () => new Promise(() => {}));
+  // The note shows only until the redirect lands, so the page records it in sessionStorage (kept across the redirect).
+  await page.addInitScript(() => {
+    if (location.pathname !== "/sign-in") return;
+    new MutationObserver(() => {
+      const note = document.querySelector('.auth-options [role="status"]')?.textContent;
+      if (note) sessionStorage.setItem("e2e-note", note);
+    }).observe(document, { childList: true, subtree: true });
+  });
   await page.goto("/sign-in");
-  await expect(page.getByRole("status")).toHaveText("You're already signed in. Opening your dashboard…");
-  await expect(page.getByRole("button", { name: "Continue with Google" })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/dashboard$/);
+  expect(await page.evaluate(() => sessionStorage.getItem("e2e-note"))).toBe("You're already signed in. Opening your dashboard…");
 });
