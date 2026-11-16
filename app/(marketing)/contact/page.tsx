@@ -6,7 +6,7 @@ import { TOPICS } from "@/components/marketing/contactTopics";
 
 export const metadata: Metadata = {
   title: "Contact · OpsAgent",
-  description: "Send the OpsAgent team a message. We reply by email.",
+  description: "Send the OpsAgent team a message about OpsAgent, your cloud account, pricing or security. We reply by email.",
 };
 
 export default async function Contact({ searchParams }: { searchParams: Promise<{ topic?: string | string[] }> }) {

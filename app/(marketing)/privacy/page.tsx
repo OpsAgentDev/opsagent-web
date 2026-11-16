@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy policy · OpsAgent",
-  description: "What OpsAgent stores, where it lives, who processes it, and how to have it deleted.",
+  description: "What OpsAgent stores about you and your cloud account, where it lives, who processes it, and how to have it deleted.",
 };
 
 export default function Privacy() {

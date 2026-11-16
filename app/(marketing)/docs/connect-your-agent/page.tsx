@@ -2,9 +2,9 @@ import { CopyButton } from "@/components/marketing/CopyButton";
 import { CLIENTS, MCP_URL, STDIO_BRIDGE, type Snippet } from "@/lib/agents";
 
 export const metadata = {
-  title: "Connect your agent · OpsAgent",
+  title: "Connect an MCP client · OpsAgent",
   description:
-    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any other MCP client to OpsAgent. You approve it in your browser; the agent gets read-only access to one organisation.",
+    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any MCP client to OpsAgent. You approve it in your browser; access is read-only.",
 };
 
 function Code({ s, client }: { s: Snippet; client: string }) {

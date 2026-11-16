@@ -4,7 +4,7 @@ import { SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Terms of service · OpsAgent",
-  description: "The terms for using OpsAgent, a read-only ops agent run by Binary Labs LLC.",
+  description: "The terms for using OpsAgent, a read-only ops agent for your cloud run by Binary Labs LLC. Read them before you connect an account.",
 };
 
 export default function Terms() {
