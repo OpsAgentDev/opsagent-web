@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { isAwsConsoleUrl } from "@/lib/connection-status";
 import { api, unwrap, type CreatedConnection } from "@/lib/api/client";
 import { loadBilling } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
@@ -100,7 +101,7 @@ export default function ConnectAws() {
                 <li>When it finishes, open its Outputs tab and copy the role ARN.</li>
                 <li>Paste the ARN below and verify.</li>
               </ol>
-              <a className="button" href={created.quick_create_url} target="_blank" rel="noreferrer">
+              <a className="button" href={isAwsConsoleUrl(created.quick_create_url) ? created.quick_create_url : undefined} target="_blank" rel="noreferrer">
                 Launch stack in AWS
               </a>
             </>
