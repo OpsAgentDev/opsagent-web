@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function AuthOptions({ mode, returnTo, error: initialError }: Props) {
-  const { busy, error, run } = useAuthStep(returnTo, initialError);
+  const { busy, signedIn, error, run } = useAuthStep(returnTo, initialError);
   const query = { return_to: returnTo };
   const keep = returnTo ? `?return_to=${encodeURIComponent(returnTo)}` : "";
 
@@ -31,6 +31,14 @@ export function AuthOptions({ mode, returnTo, error: initialError }: Props) {
     });
 
   const signIn = mode === "sign-in";
+  if (signedIn) {
+    return (
+      <div className="auth-options">
+        <h1>{signIn ? "Sign in" : "Create your account"}</h1>
+        <p role="status">You&apos;re already signed in. Opening your dashboard…</p>
+      </div>
+    );
+  }
   return (
     <div className="auth-options">
       <h1>{signIn ? "Sign in" : "Create your account"}</h1>

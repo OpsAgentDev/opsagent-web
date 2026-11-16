@@ -1,5 +1,7 @@
 "use client";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { CreateOrg } from "@/components/create-org";
 import { preferOrg } from "@/lib/members";
 import { orgHref } from "@/lib/org-path";
 import { useDismiss } from "@/lib/use-dismiss";
@@ -18,41 +20,53 @@ function switchOrg(slug: string) {
   window.location.assign(orgHref(slug, "/dashboard"));
 }
 
-/** The top bar's organisation name: plain text with one organisation, a button that opens the list with more. */
+/** A new organisation from the top bar: the onboarding form in a dialog; once made, the app switches to it. */
+function CreateOrgDialog({ onClose }: { onClose: () => void }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => ref.current?.showModal(), []);
+  return (
+    <dialog ref={ref} onClose={onClose} aria-label="Create organisation">
+      <CreateOrg onCreated={(o) => switchOrg(o.slug)} />
+      <button type="button" className="quiet" onClick={() => ref.current?.close()}>Cancel</button>
+    </dialog>
+  );
+}
+
+/** The top bar's organisation name: a menu to switch organisation, open its settings or create another. */
 export function OrgSwitcher({ orgs, current, plan }: { orgs: OrgChoice[]; current: OrgChoice; plan?: string | null }) {
   const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
   useDismiss(open, () => setOpen(false), root, button);
 
-  const name = (
-    <>
-      <span className="avatar" aria-hidden="true">{initials(current.name)}</span>
-      <span className="org-id">
-        <span className="org-name">{current.name}</span>
-        {plan && <span className="org-plan">{plan}</span>}
-      </span>
-    </>
-  );
-  if (orgs.length < 2) return <p className="org-switch">{name}</p>;
-
   return (
     <div className="org-switch" ref={root}>
-      <button ref={button} type="button" className="org-button" aria-label={`Organisation: ${current.name}`} aria-expanded={open} aria-controls="org-list" onClick={() => setOpen(!open)}>
-        {name}
+      <button ref={button} type="button" className="org-button" aria-label={`Organisation: ${current.name}`} aria-expanded={open} aria-controls="org-menu" onClick={() => setOpen(!open)}>
+        <span className="avatar" aria-hidden="true">{initials(current.name)}</span>
+        <span className="org-id">
+          <span className="org-name">{current.name}</span>
+          {plan && <span className="org-plan">{plan}</span>}
+        </span>
         <span className="caret" aria-hidden="true">▾</span>
       </button>
       {open && (
-        <ul id="org-list" className="org-list" aria-label="Organisations">
-          {orgs.map((o) => (
-            <li key={o.slug}>
-              <button type="button" aria-current={o.slug === current.slug ? "true" : undefined} onClick={() => (o.slug === current.slug ? setOpen(false) : switchOrg(o.slug))}>
-                {o.name}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div id="org-menu" className="org-list">
+          <ul aria-label="Organisations">
+            {orgs.map((o) => (
+              <li key={o.slug}>
+                <button type="button" aria-current={o.slug === current.slug ? "true" : undefined} onClick={() => (o.slug === current.slug ? setOpen(false) : switchOrg(o.slug))}>
+                  {o.name}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <hr />
+          <Link href={orgHref(current.slug, "/settings/members")} onClick={() => setOpen(false)}>Organisation settings</Link>
+          <button type="button" onClick={() => { setOpen(false); setCreating(true); }}>Create organisation</button>
+        </div>
       )}
+      {creating && <CreateOrgDialog onClose={() => setCreating(false)} />}
     </div>
   );
 }

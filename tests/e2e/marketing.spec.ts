@@ -281,12 +281,21 @@ test("the hero window appears on a short screen without scrolling", async ({ pag
   await expect(page.locator(".lp-dash")).toHaveCSS("opacity", "1");
 });
 
-test("the header offers the dashboard instead of Sign in once the app has been opened in this browser", async ({ page }) => {
+test("the header and the hero offer the dashboard instead of Sign in to a signed-in visitor", async ({ page }) => {
   await page.goto("/");
   const header = page.getByRole("banner");
   await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
+  // A remembered organisation alone is not enough: only the session check decides.
   await page.evaluate(() => localStorage.setItem("opsagent.org", "acme"));
+  await page.reload();
+  await expect(header.getByRole("link", { name: "Sign in" })).toBeVisible();
+  await page.route("**/v1/auth/me", (r) => r.fulfill({ json: { id: "a", email: "a@example.com", has_passkey: true, name: null } }));
   await page.reload();
   await expect(header.getByRole("link", { name: "Open dashboard" })).toHaveAttribute("href", "/o/acme/dashboard");
   await expect(header.getByRole("link", { name: "Sign in" })).toHaveCount(0);
+  await expect(page.locator("main").getByRole("link", { name: "Open dashboard" }).first()).toHaveAttribute("href", "/o/acme/dashboard");
+  // Signed in without a remembered organisation: the plain dashboard address.
+  await page.evaluate(() => localStorage.removeItem("opsagent.org"));
+  await page.reload();
+  await expect(header.getByRole("link", { name: "Open dashboard" })).toHaveAttribute("href", "/dashboard");
 });

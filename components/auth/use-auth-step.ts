@@ -11,10 +11,12 @@ export function useAuthStep(returnTo?: string, initialError?: string) {
   // Disabled until hydrated (a click before then would be lost, and a native submit would put the email in the URL)
   // and until the session check answers: a signed-in visitor is about to be sent away, so a click then does nothing.
   const [busy, setBusy] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
   // Already signed in: brain would answer the buttons with a csrf 403, so leave instead.
   useEffect(() => {
     api.GET("/auth/me").then(({ response }) => {
       if (!response.ok) return setBusy(false);
+      setSignedIn(true);
       window.location.replace(returnTo && isSameOrigin(returnTo, window.location.origin) ? returnTo : "/dashboard");
     }, () => setBusy(false));
   }, [returnTo]);
@@ -30,5 +32,5 @@ export function useAuthStep(returnTo?: string, initialError?: string) {
       setBusy(false);
     }
   }
-  return { busy, setBusy, error, setError, run };
+  return { busy, setBusy, signedIn, error, setError, run };
 }

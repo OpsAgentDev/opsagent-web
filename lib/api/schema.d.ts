@@ -1158,6 +1158,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/billing/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["billing_change_plan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2055,6 +2071,10 @@ export interface components {
         WaitlistVerifyRequest: {
             /** @description The token from the confirmation email's link. */
             token: string;
+        };
+        PlanChange: {
+            /** @description `starter`, `team` or `scale`; must be above the current tier. */
+            tier: string;
         };
     };
     responses: never;
@@ -5899,6 +5919,81 @@ export interface operations {
             };
             /** @description `bad_signature` or `bad_payload` */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    billing_change_plan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanChange"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingOut"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `not_an_upgrade` or `no_subscription` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };

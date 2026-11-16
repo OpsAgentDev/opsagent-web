@@ -6,6 +6,7 @@ import { BillingBanner } from "@/components/billing-banner";
 import { ErrorNote } from "@/components/error-note";
 import { Onboarding } from "@/components/onboarding";
 import { PasskeyPrompt } from "@/components/passkey-prompt";
+import { Upgrade } from "@/components/upgrade";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { loadBilling, planLine } from "@/lib/billing";
 import { preferOrg, preferredOrg, takePendingInvite } from "@/lib/members";
@@ -53,8 +54,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     else router.replace(orgHref(orgSlug, pathname) + window.location.search);
   }, [orgSlug, slug, pathname, router]);
 
-  // Billing is read once here: the banner and the plan line under the organisation's name both use it.
-  const billing = useApi(() => (orgSlug ? loadBilling(orgSlug) : Promise.resolve(null)), [orgSlug]).data;
+  // Billing is read once here: the banner, the plan line under the organisation's name and the Upgrade button use it.
+  const { data: billing, reload: reloadBilling } = useApi(() => (orgSlug ? loadBilling(orgSlug) : Promise.resolve(null)), [orgSlug]);
 
   if (signedOut || (!data && !error)) return <div className="app"><main className="muted">Loading…</main></div>;
   if (!data) return <div className="app"><main><ErrorNote error={error} /></main></div>;
@@ -81,7 +82,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const showPrompt = showPasskeyPrompt({ hasPasskey: data.me.has_passkey, pathname, checklistOpen });
 
   return (
-    <AppShell email={data.me.email} orgs={data.orgs} current={org} plan={planLine(billing)}>
+    <AppShell
+      email={data.me.email}
+      orgs={data.orgs}
+      current={org}
+      plan={planLine(billing)}
+      upgrade={org.role === "owner" && <Upgrade org={org.slug} billing={billing} onUpgraded={reloadBilling} />}
+    >
       <BillingBanner data={billing} />
       {showPrompt && <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
