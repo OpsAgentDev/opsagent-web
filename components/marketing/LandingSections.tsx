@@ -149,8 +149,8 @@ export function PricingPointer() {
         </dl>
         <p className="lp-fine">Per cloud account, per month. {PRICE_NOTE}</p>
         <p className="lp-review">
-          Want a person to look? Harun R. Rayhan, a DevOps and AWS consultant, reviews one finding for $99 or one
-          connected account for $499, and replies in writing. Nothing is changed in your account.{" "}
+          Want a person to look? Harun R. Rayhan, a DevOps and AWS consultant, reviews one finding for US$99 or one
+          connected account for US$499, plus tax where applicable, and replies in writing. Nothing is changed in your account.{" "}
           <Link href="/features/ai-and-review">About human review</Link>
         </p>
       </div>

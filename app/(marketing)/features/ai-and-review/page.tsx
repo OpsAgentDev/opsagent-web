@@ -4,10 +4,11 @@ import Link from "next/link";
 import { FeaturePage, FeatureSection } from "@/components/marketing/FeaturePage";
 import * as I from "@/components/marketing/landing-icons";
 import { FACTS, HEADLINE, SPECIALISMS } from "@/components/reviewer-profile";
+import { PRICE_NOTE } from "@/lib/plans";
 
 export const metadata: Metadata = {
   title: "Dashboard AI and human review · OpsAgent",
-  description: "Dashboard AI explains findings and answers questions once an owner turns it on. Or have Harun R. Rayhan review a finding ($99) or an account ($499).",
+  description: "Dashboard AI explains findings and answers questions once an owner turns it on. Or have Harun R. Rayhan review a finding (US$99) or an account (US$499), plus tax where applicable.",
 };
 
 const CREDITS: [string, string][] = [
@@ -82,7 +83,7 @@ export default function AiAndReview() {
         ))}
       </ul>
       <p className="muted">
-        Owners request a review under Settings, Human review, or from any finding.
+        Owners request a review under Settings, Human review, or from any finding. {PRICE_NOTE}
       </p>
     </FeaturePage>
   );

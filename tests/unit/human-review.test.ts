@@ -34,6 +34,7 @@ describe("human review", () => {
     const html = view(true);
     expect(html).toContain("$99");
     expect(html).toContain("$499");
+    expect(html).toContain("Prices in US dollars, plus tax where applicable.");
     // The payment sentence comes with brain's description; the card does not repeat it.
     expect(html).not.toContain("Pay securely");
   });
