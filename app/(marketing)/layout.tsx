@@ -8,7 +8,9 @@ import "./marketing.css";
 export const metadata: Metadata = {
   robots: { index: true, follow: true },
   alternates: { canonical: "./" },
-  openGraph: { type: "website", url: "./" },
+  // Setting openGraph here replaces the root opengraph-image file, so the image is named again.
+  openGraph: { type: "website", url: "./", images: ["/opengraph-image.png"] },
+  twitter: { card: "summary_large_image", images: ["/opengraph-image.png"] },
 };
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {

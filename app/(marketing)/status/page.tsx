@@ -6,7 +6,7 @@ import { statusRows, type State, type SystemStatus } from "@/lib/status";
 
 export const metadata: Metadata = {
   title: "Status · OpsAgent",
-  description: "Live status of the OpsAgent API, MCP server, scans and alert delivery.",
+  description: "Live status of the OpsAgent API, MCP server, nightly scans and alert delivery, with what is up and what is not right now.",
 };
 
 // Rebuilt at most once a minute; brain caches its own answer for 30 seconds.
