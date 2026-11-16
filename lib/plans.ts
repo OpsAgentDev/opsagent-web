@@ -7,6 +7,9 @@ export const PLANS: Plan[] = [
   { id: "scale", name: "Scale", trial: false, price: "$599", members: "Unlimited", integrations: "Unlimited", aiCredits: "15,000" },
 ];
 
+/** Stripe prices are tax-exclusive; shown under every list of plan prices. */
+export const PRICE_NOTE = "Prices in US dollars, plus tax where applicable.";
+
 export const PLAN_FEATURES = [
   ["Members", "members"],
   ["Cloud accounts", "integrations"],

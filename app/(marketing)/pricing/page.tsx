@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckIcon } from "@/components/marketing/landing-icons";
-import { PLAN_FEATURES as FEATURES, PLANS } from "@/lib/plans";
+import { PLAN_FEATURES as FEATURES, PLANS, PRICE_NOTE } from "@/lib/plans";
 import { joinCta, SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Pricing · OpsAgent",
-  description: "Flat pricing per cloud account, whatever its size: Starter $99, Team $299, Scale $599 a month. 14-day free trial on Team.",
+  description: "Flat pricing per cloud account, whatever its size: Starter US$99, Team US$299, Scale US$599 a month, plus tax where applicable. 14-day free trial on Team.",
 };
 
 export default function Pricing() {
@@ -42,6 +42,7 @@ export default function Pricing() {
           </li>
         ))}
       </ul>
+      <p className="trial-note">{PRICE_NOTE}</p>
       <section>
         <h2>Questions</h2>
         <div className="faq">

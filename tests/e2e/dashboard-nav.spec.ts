@@ -5,6 +5,8 @@ const GROUPS: [string | null, [string, string][]][] = [
   [null, [["Dashboard", "/dashboard"]]],
   ["Monitoring", [["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"]]],
 ];
+// Help opens the public pages as they are, outside the organisation.
+const HELP: [string, string][] = [["Docs", "/docs"], ["Contact", "/contact"], ["Status", "/status"]];
 
 test("app shell: sidebar with every link, current page marked, top bar, phone drawer opens and closes", async ({ page, request }) => {
   const email = await signUp(page, request);
@@ -16,9 +18,11 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
     const within = group ? nav.getByRole("group", { name: group }) : nav;
     for (const [name, href] of links) await expect(within.getByRole("link", { name, exact: true })).toHaveAttribute("href", new RegExp(`^/o/e2e-\\d+${href}$`));
   }
+  const help = nav.getByRole("group", { name: "Help" });
+  for (const [name, href] of HELP) await expect(help.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   await expect(page).toHaveURL(/\/o\/e2e-\d+\/findings$/); // the old address was corrected
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link")).toHaveCount(GROUPS.flatMap(([, l]) => l).length);
+  await expect(nav.getByRole("link")).toHaveCount(GROUPS.flatMap(([, l]) => l).length + HELP.length);
   for (const link of await nav.getByRole("link").all()) await expect(link.locator("svg")).toBeVisible(); // an icon on every link
 
   // Top bar: the organisation is a menu even with one organisation; the account email is in the person's row only; no Menu button on desktop.

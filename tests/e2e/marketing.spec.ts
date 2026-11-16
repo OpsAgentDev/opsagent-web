@@ -138,7 +138,7 @@ test("security renders and links contact for reports", async ({ page }) => {
 test("pricing shows three plans with exact prices", async ({ page }) => {
   await page.goto("/pricing");
   const main = page.locator("main");
-  for (const p of ["$99", "$299", "$599", "14-day free trial"]) await expect(main).toContainText(p);
+  for (const p of ["$99", "$299", "$599", "14-day free trial", "Prices in US dollars, plus tax where applicable."]) await expect(main).toContainText(p);
   await expect(main.getByRole("link", { name: "Join the waitlist" })).toHaveCount(3);
   await expect(main.getByRole("link", { name: "Join the waitlist" }).first()).toHaveAttribute("href", "/#waitlist");
 });

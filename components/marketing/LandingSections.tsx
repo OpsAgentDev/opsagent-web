@@ -3,6 +3,7 @@ import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { AccessLedger, AgentSession, FindingsPanel, SlackAlert, SlackBriefing } from "@/components/marketing/LandingVisuals";
 import { Live } from "@/components/marketing/Live";
 import { MCP_URL } from "@/lib/agents";
+import { PRICE_NOTE } from "@/lib/plans";
 
 /** The home page's sections below the hero, in story order. One idea each; the visuals are in LandingVisuals. */
 
@@ -146,7 +147,7 @@ export function PricingPointer() {
             </div>
           ))}
         </dl>
-        <p className="lp-fine">Per cloud account, per month.</p>
+        <p className="lp-fine">Per cloud account, per month. {PRICE_NOTE}</p>
         <p className="lp-review">
           Want a person to look? Harun R. Rayhan, a DevOps and AWS consultant, reviews one finding for $99 or one
           connected account for $499, and replies in writing. Nothing is changed in your account.{" "}
