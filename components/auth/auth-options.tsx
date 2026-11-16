@@ -43,6 +43,7 @@ export function AuthOptions({ mode, returnTo, error: initialError }: Props) {
     <div className="auth-options">
       <h1>{signIn ? "Sign in" : "Create your account"}</h1>
       {error ? <p role="alert" className="error">{error}</p> : null}
+      {initialError === "signup_closed" ? <Link href="/#waitlist" className="auth-btn primary">Add yourself to the waitlist</Link> : null}
       {signIn ? <PasskeyButton returnTo={returnTo} disabled={busy} /> : null}
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("google")}><GoogleIcon />Continue with Google</button>
       <button type="button" className="auth-btn" disabled={busy} onClick={() => provider("github")}><GitHubIcon />Continue with GitHub</button>
