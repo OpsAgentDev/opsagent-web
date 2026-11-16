@@ -124,6 +124,6 @@ test("a signed-in visitor on /sign-in is told they are being taken to the dashbo
 
 test("a refused sign-up is offered the waitlist", async ({ page }) => {
   await page.goto("/sign-in?error=signup_closed");
-  await expect(page.getByRole("alert")).toHaveText("OpsAgent is in private alpha and sign-ups are closed for this email for now.");
+  await expect(page.getByRole("main").getByRole("alert")).toHaveText("OpsAgent is in private alpha and sign-ups are closed for this email for now.");
   await expect(page.getByRole("link", { name: "Add yourself to the waitlist" })).toHaveAttribute("href", "/#waitlist");
 });
