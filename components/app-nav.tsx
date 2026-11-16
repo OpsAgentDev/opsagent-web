@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
-import { ChatSquareIcon, FlagIcon, GridIcon, MailIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
+import { ChatSquareIcon, CheckIcon, FlagIcon, GridIcon, LogIcon, MailIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
 import { OrgSwitcher, type OrgChoice } from "@/components/org-switcher";
 import { SETTINGS_TABS } from "@/components/settings-tabs";
 import { SignOut } from "@/components/sign-out";
@@ -12,7 +12,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { orgHref, splitOrgPath } from "@/lib/org-path";
 import { useDismiss } from "@/lib/use-dismiss";
 
-type NavLink = { href: string; label: string; icon: ReactNode };
+/** `site` links go to a public page as is, not inside the organisation. */
+type NavLink = { href: string; label: string; icon: ReactNode; site?: true };
 
 const HOME: NavLink = { href: "/dashboard", label: "Dashboard", icon: <GridIcon size={18} /> };
 /** The sidebar's groups, each under its own label. */
@@ -21,6 +22,11 @@ export const NAV_GROUPS: { id: string; label: string; links: NavLink[] }[] = [
     { href: "/findings", label: "Findings", icon: <FlagIcon size={18} /> },
     { href: "/chat", label: "Ask OpsAgent", icon: <ChatSquareIcon size={18} /> },
     { href: "/deliveries", label: "Deliveries", icon: <MailIcon size={18} /> },
+  ] },
+  { id: "help", label: "Help", links: [
+    { href: "/docs", label: "Docs", icon: <LogIcon size={18} />, site: true },
+    { href: "/contact", label: "Contact", icon: <MailIcon size={18} />, site: true },
+    { href: "/status", label: "Status", icon: <CheckIcon size={18} />, site: true },
   ] },
 ];
 /** The signed-in person's own pages, in the menu at the sidebar foot. */
@@ -82,7 +88,7 @@ export function AppShell({ email, orgs, current, plan, upgrade, children }: Shel
   }, [pathname, open]);
 
   const link = (l: NavLink) => (
-    <Link key={l.href} href={to(l.href)} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined} title={collapsed ? l.label : undefined}>
+    <Link key={l.href} href={l.site ? l.href : to(l.href)} onClick={close} aria-current={within(pathname, l.href) ? "page" : undefined} title={collapsed ? l.label : undefined}>
       {l.icon}
       <span>{l.label}</span>
     </Link>

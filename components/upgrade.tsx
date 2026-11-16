@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type Billing } from "@/lib/api/client";
 import { upgradePlans } from "@/lib/billing";
-import { PLAN_FEATURES, type Plan } from "@/lib/plans";
+import { PLAN_FEATURES, PRICE_NOTE, type Plan } from "@/lib/plans";
 
 type DialogProps = { org: string; plans: Plan[]; trialing: boolean; onDone: () => void; onClose: () => void };
 
@@ -46,7 +46,7 @@ function UpgradeDialog({ org, plans, trialing, onDone, onClose }: DialogProps) {
             </label>
           ))}
         </fieldset>
-        <p className="muted">{trialing ? "Your free trial carries on with the new plan." : "You pay the difference for the rest of this billing period."}</p>
+        <p className="muted">{trialing ? "Your free trial carries on with the new plan." : "You pay the difference for the rest of this billing period."} {PRICE_NOTE}</p>
         <div className="row">
           <button type="submit" disabled={busy}>Upgrade to {chosen.name}</button>
           <button type="button" className="quiet" onClick={() => ref.current?.close()}>Cancel</button>
