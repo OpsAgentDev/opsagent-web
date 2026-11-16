@@ -1,24 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckIcon } from "@/components/marketing/landing-icons";
+import { PLAN_FEATURES as FEATURES, PLANS } from "@/lib/plans";
 import { joinCta, SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
   title: "Pricing · OpsAgent",
   description: "Flat pricing per cloud account, whatever its size: Starter $99, Team $299, Scale $599 a month. 14-day free trial on Team.",
 };
-
-const PLANS = [
-  { name: "Starter", price: "$99", members: "2", integrations: "1", aiCredits: "1,000" },
-  { name: "Team", trial: true, price: "$299", members: "5", integrations: "Unlimited", aiCredits: "5,000" },
-  { name: "Scale", price: "$599", members: "Unlimited", integrations: "Unlimited", aiCredits: "15,000" },
-];
-
-const FEATURES = [
-  ["Members", "members"],
-  ["Cloud accounts", "integrations"],
-  ["AI credits per cloud account per month", "aiCredits"],
-] as const;
 
 export default function Pricing() {
   return (

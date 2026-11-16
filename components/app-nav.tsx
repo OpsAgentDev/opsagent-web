@@ -4,10 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
-import {
-  BellIcon, ChatSquareIcon, CheckIcon, CostIcon, FlagIcon, GpuIcon, GridIcon, KeyIcon, MailIcon, ShieldIcon, UserKeyIcon, UsersIcon,
-} from "@/components/marketing/landing-icons";
+import { ChatSquareIcon, FlagIcon, GridIcon, MailIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
 import { OrgSwitcher, type OrgChoice } from "@/components/org-switcher";
+import { SETTINGS_TABS } from "@/components/settings-tabs";
 import { SignOut } from "@/components/sign-out";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { orgHref, splitOrgPath } from "@/lib/org-path";
@@ -23,18 +22,11 @@ export const NAV_GROUPS: { id: string; label: string; links: NavLink[] }[] = [
     { href: "/chat", label: "Ask OpsAgent", icon: <ChatSquareIcon size={18} /> },
     { href: "/deliveries", label: "Deliveries", icon: <MailIcon size={18} /> },
   ] },
-  { id: "organisation", label: "Organisation", links: [
-    { href: "/settings/members", label: "Members", icon: <UsersIcon size={18} /> },
-    { href: "/settings/billing", label: "Billing", icon: <CostIcon size={18} /> },
-    { href: "/settings/delivery", label: "Delivery settings", icon: <BellIcon size={18} /> },
-    { href: "/settings/agents", label: "Connected agents", icon: <KeyIcon size={18} /> },
-    { href: "/settings/ai", label: "AI", icon: <GpuIcon size={18} /> },
-    { href: "/settings/human-review", label: "Human review", icon: <CheckIcon size={18} /> },
-  ] },
-  { id: "profile", label: "Profile", links: [
-    { href: "/settings/security", label: "Security", icon: <ShieldIcon size={18} /> },
-    { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={18} /> },
-  ] },
+];
+/** The signed-in person's own pages, in the menu at the sidebar foot. */
+const PROFILE: NavLink[] = [
+  { href: "/settings/security", label: "Security", icon: <ShieldIcon size={16} /> },
+  { href: "/settings/account", label: "Account", icon: <UserKeyIcon size={16} /> },
 ];
 
 const COLLAPSED = "opsagent.sidebar-collapsed";
@@ -42,8 +34,10 @@ const CLOSED = "opsagent.nav-closed";
 const Chevron = () => <svg className="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" /></svg>;
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
+type ShellProps = { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; plan?: string | null; upgrade?: ReactNode; children: ReactNode };
+
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
-export function AppShell({ email, orgs, current, plan, children }: { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; plan?: string | null; children: ReactNode }) {
+export function AppShell({ email, orgs, current, plan, upgrade, children }: ShellProps) {
   const [open, setOpen] = useState(false);
   const pathname = splitOrgPath(usePathname()).path;
   const to = (path: string) => orgHref(current.slug, path);
@@ -73,7 +67,7 @@ export function AppShell({ email, orgs, current, plan, children }: { email: stri
     try { localStorage.setItem(CLOSED, next.join(",")); } catch { /* not remembered */ }
   };
 
-  // The signed-in person's menu (theme, sign out) opens above their row.
+  // The signed-in person's menu (their pages, theme, sign out) opens above their row.
   const [userOpen, setUserOpen] = useState(false);
   const userMenu = useRef<HTMLDivElement>(null);
   const userButton = useRef<HTMLButtonElement>(null);
@@ -98,7 +92,7 @@ export function AppShell({ email, orgs, current, plan, children }: { email: stri
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="1.75" y="2.75" width="12.5" height="10.5" rx="2" /><path d="M6 3v10" /></svg>
     </button>
   );
-  const title = [HOME, ...NAV_GROUPS.flatMap((g) => g.links)].find((l) => within(pathname, l.href))?.label;
+  const title = [HOME, ...NAV_GROUPS.flatMap((g) => g.links), ...SETTINGS_TABS, ...PROFILE].find((l) => within(pathname, l.href))?.label;
 
   return (
     <div className="app shell" data-collapsed={collapsed || undefined}>
@@ -129,6 +123,12 @@ export function AppShell({ email, orgs, current, plan, children }: { email: stri
           {userOpen && (
             <div id="user-menu" ref={userMenu} className="user-menu">
               <span className="account-email" title={email}>{email}</span>
+              {PROFILE.map((l) => (
+                <Link key={l.href} href={to(l.href)} className="user-link" aria-current={within(pathname, l.href) ? "page" : undefined} onClick={() => { setUserOpen(false); close(); }}>
+                  {l.icon}
+                  {l.label}
+                </Link>
+              ))}
               <ThemeSwitch />
               <SignOut className="quiet" />
             </div>
@@ -151,6 +151,7 @@ export function AppShell({ email, orgs, current, plan, children }: { email: stri
           {collapsed && toggle}
           <OrgSwitcher orgs={orgs} current={current} plan={plan} />
           {title && <span className="top-title" aria-hidden="true">{title}</span>}
+          {upgrade}
         </header>
         {children}
       </div>

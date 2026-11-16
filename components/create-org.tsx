@@ -1,9 +1,9 @@
 "use client";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { ErrorNote } from "@/components/error-note";
-import { api, unwrap } from "@/lib/api/client";
+import { api, unwrap, type Org } from "@/lib/api/client";
 
-export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?: ReactNode }) {
+export function CreateOrg({ onCreated, intro }: { onCreated: (org: Org) => void; intro?: ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -14,8 +14,7 @@ export function CreateOrg({ onCreated, intro }: { onCreated: () => void; intro?:
     const name = String(new FormData(e.currentTarget).get("name"));
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
-      await unwrap(api.POST("/orgs", { body: { name, timezone } }));
-      onCreated();
+      onCreated(await unwrap(api.POST("/orgs", { body: { name, timezone } })));
     } catch (err) {
       setError(err as Error);
       setBusy(false);

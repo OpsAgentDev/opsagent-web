@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
-import { goToStripe, loadBilling, TIERS } from "@/lib/billing";
+import { daysLeft, goToStripe, loadBilling, TIERS } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -47,7 +47,7 @@ function BillingPage() {
   const status = data?.status;
   const subscribed = status === "trialing" || status === "active" || status === "past_due" || status === "paused";
   const noPlan = status === "none" || status === "trial_ended" || status === "canceled";
-  const days = data?.trial_ends_at ? Math.max(0, Math.ceil((Date.parse(data.trial_ends_at) - Date.now()) / 864e5)) : 0;
+  const days = daysLeft(data?.trial_ends_at) ?? 0;
   const tier = data?.tier ? TIERS[data.tier] : undefined;
   const cancelled = !!data?.cancel_at_period_end;
   const lastDay = status === "trialing" ? data?.trial_ends_at : data?.current_period_end;

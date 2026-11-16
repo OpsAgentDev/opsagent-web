@@ -40,6 +40,10 @@
 .app .org-button { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 4px 10px 4px 4px; font-weight: 600; background: transparent; border-color: var(--line); box-shadow: none; }
 .app .org-button .caret { font-size: 11px; color: var(--soft); }
 .app .org-list { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; display: grid; gap: 2px; min-width: 220px; margin: 0; padding: 6px; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.app .org-list ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.app .org-list hr { width: 100%; margin: 4px 0; border: 0; border-top: 1px solid var(--line); }
+.app .org-list > a { padding: 8px 10px; font-size: 14px; font-weight: 400; color: var(--body); text-decoration: none; border-radius: 8px; }
+.app .org-list > a:hover { color: var(--ink); background: var(--surface-2); }
 .app .org-list button { width: 100%; padding: 8px 10px; text-align: left; font-weight: 400; color: var(--body); background: transparent; border-color: transparent; box-shadow: none; }
 .app .org-list button:hover:not(:disabled) { color: var(--ink); background: var(--surface-2); border-color: transparent; }
 .app .org-list button[aria-current] { color: var(--ink); font-weight: 600; background: var(--accent-bg); }
@@ -387,4 +391,28 @@
 
 /* The plan sits under the organisation's name in the top bar. */
 .app .org-id { display: grid; min-width: 0; line-height: 1.25; text-align: left; }
-.app .org-plan { font-size: 12px; font-weight: 400; color: var(--soft); }
+.app .org-plan { font-size: 13px; font-weight: 500; color: var(--body); }
+
+/* Owners move up a tier from the top bar; the dialog features the nearest tier, the ones above it smaller. */
+.app .upgrade-button { margin-left: auto; }
+.app dialog.upgrade { width: min(480px, calc(100vw - 32px)); }
+.app .upgrade-plans { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; }
+.app .upgrade-plan { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 2px; padding: 10px 12px; font-size: 13px; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; }
+.app .upgrade-plan input { grid-row: span 3; margin-top: 3px; }
+.app .upgrade-plan:has(input:checked) { border-color: var(--accent); background: var(--accent-bg); }
+.app .upgrade-plan.featured { padding: 16px; font-size: 14px; }
+.app .upgrade-name { font-weight: 600; color: var(--ink); }
+.app .upgrade-plan.featured .upgrade-name { font-size: 18px; }
+.app .upgrade-price { font-weight: 600; color: var(--ink); }
+.app .upgrade-price span, .app .upgrade-limits { font-weight: 400; color: var(--soft); }
+
+/* Organisation settings: one tab row over the page, each tab its own address. */
+.app .settings-tabs { display: flex; flex-wrap: wrap; gap: 4px 20px; max-width: calc(var(--page) + 2 * var(--gutter)); padding: 20px var(--gutter) 0; border-bottom: 1px solid var(--line); }
+.app .settings-tabs a { padding: 6px 0 10px; font-size: 14px; color: var(--soft); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.app .settings-tabs a:hover { color: var(--ink); }
+.app .settings-tabs a[aria-current="page"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--accent); }
+.app .settings-tabs + main { padding-top: 24px; }
+
+/* The person's own pages in their menu. */
+.app .user-link { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--body); text-decoration: none; }
+.app .user-link:hover, .app .user-link[aria-current="page"] { color: var(--ink); }

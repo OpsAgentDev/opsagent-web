@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { preferredOrg } from "@/lib/members";
-import { orgHref } from "@/lib/org-path";
 import { joinCta } from "@/lib/signups";
+import { useDashboardLink } from "@/lib/use-dashboard-link";
 
 // Holds the nav links too: aria-current needs the pathname, and the panel needs the open state.
 type NavLink = { href: string; label: string };
@@ -15,10 +14,8 @@ export function MenuToggle({ features, links }: { features: NavLink[]; links: Na
   const [more, setMore] = useState(false);
   const moreButton = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  // The app remembers the organisation it last opened and forgets it on sign-out: with one remembered, the
-  // header offers the dashboard instead of Sign in. Read after hydration; a stale one just leads to sign-in.
-  const [org, setOrg] = useState<string | null>(null);
-  useEffect(() => setOrg(preferredOrg()), [pathname]);
+  // Signed in (asked after hydration): the header offers the dashboard instead of Sign in.
+  const dashboard = useDashboardLink();
   const root = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
 
@@ -85,8 +82,8 @@ export function MenuToggle({ features, links }: { features: NavLink[]; links: Na
           </div>
         </div>
         {links.map(link)}
-        {org ? (
-          <Link href={orgHref(org, "/dashboard")} className="join" onClick={close}>Open dashboard</Link>
+        {dashboard ? (
+          <Link href={dashboard} className="join" onClick={close}>Open dashboard</Link>
         ) : (
           <>
             <Link href="/sign-in" className="sign-in" onClick={close}>Sign in</Link>

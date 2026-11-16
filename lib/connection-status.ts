@@ -15,6 +15,8 @@ const REASONS: Record<string, string> = {
     "This role doesn't require OpsAgent's ExternalId, so it isn't safe to use. Create the role from the OpsAgent template.",
   account_mismatch: "This role belongs to a different AWS account from the one connected. Remove this connection and connect again.",
   access_denied: "AWS refused access to the role.",
+  revoked_at_period_end:
+    "Its role stopped working, so it was turned off before the next billing period and isn't charged. Reconnect to resume checks.",
   customer_disconnected: "",
   organisation_deleted: "",
 };
@@ -27,6 +29,10 @@ export function reasonText(reason?: string | null): string {
   if (reason.startsWith("verify_error:")) return "The last check couldn't finish. Try again in a few minutes.";
   return /^[a-z0-9_:.-]+$/.test(reason) ? "" : reason;
 }
+
+/** Lost its role: reconnecting brings it back. A connection turned off for that at the period end counts too. */
+export const canReconnect = (c: { status: string; status_reason?: string | null }) =>
+  c.status === "revoked" || (c.status === "disconnected" && c.status_reason === "revoked_at_period_end");
 
 export function connectionSentence(status: string, reason?: string | null): string | null {
   const why = reasonText(reason);

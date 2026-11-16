@@ -4,11 +4,6 @@ import { openUserMenu, signUp } from "./helpers";
 const GROUPS: [string | null, [string, string][]][] = [
   [null, [["Dashboard", "/dashboard"]]],
   ["Monitoring", [["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"]]],
-  ["Organisation", [
-    ["Members", "/settings/members"], ["Billing", "/settings/billing"], ["Delivery settings", "/settings/delivery"],
-    ["Connected agents", "/settings/agents"], ["AI", "/settings/ai"], ["Human review", "/settings/human-review"],
-  ]],
-  ["Profile", [["Security", "/settings/security"], ["Account", "/settings/account"]]],
 ];
 
 test("app shell: sidebar with every link, current page marked, top bar, phone drawer opens and closes", async ({ page, request }) => {
@@ -26,35 +21,51 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(nav.getByRole("link")).toHaveCount(GROUPS.flatMap(([, l]) => l).length);
   for (const link of await nav.getByRole("link").all()) await expect(link.locator("svg")).toBeVisible(); // an icon on every link
 
-  // Top bar: the organisation as plain text (one organisation); the account email is in the person's row only; no Menu button on desktop.
+  // Top bar: the organisation is a menu even with one organisation; the account email is in the person's row only; no Menu button on desktop.
   const bar = page.getByRole("banner");
   await expect(bar.getByText(/^E2E \d+$/)).toBeVisible();
-  await expect(bar.getByRole("button", { name: /^Organisation:/ })).toHaveCount(0);
+  const orgButton = bar.getByRole("button", { name: /^Organisation:/ });
+  await orgButton.click();
+  await expect(orgButton).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("list", { name: "Organisations" }).getByRole("button")).toHaveCount(1);
+  await expect(page.getByRole("button", { name: "Create organisation" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(orgButton).toBeFocused();
   await expect(bar.getByText(email)).toHaveCount(0);
   await expect(page.locator(".user-row").getByText(email)).toBeVisible();
   const menu = bar.getByRole("button", { name: "Menu", exact: true });
   await expect(menu).toBeHidden();
-  // The person's row at the foot opens a menu with the theme switch and Sign out; Escape closes it.
+  // The person's row at the foot opens a menu with their pages, the theme switch and Sign out; Escape closes it.
   await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
   await openUserMenu(page);
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+  for (const [name, href] of [["Security", "/settings/security"], ["Account", "/settings/account"]]) {
+    await expect(page.locator(".user-menu").getByRole("link", { name, exact: true })).toHaveAttribute("href", new RegExp(`^/o/e2e-\\d+${href}$`));
+  }
   await expect(page.locator(".user-menu").getByRole("group", { name: "Theme" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
 
   // A group folds under its label and stays folded after a reload; the page you are on stays listed.
-  const profile = nav.getByRole("group", { name: "Profile" });
-  await profile.getByRole("button", { name: "Profile" }).click();
-  await expect(profile.getByRole("link")).toHaveCount(0);
+  await page.goto("/dashboard");
+  const monitoring = nav.getByRole("group", { name: "Monitoring" });
+  await monitoring.getByRole("button", { name: "Monitoring" }).click();
+  await expect(monitoring.getByRole("link")).toHaveCount(0);
   await page.reload();
-  await expect(profile.getByRole("button", { name: "Profile" })).toHaveAttribute("aria-expanded", "false");
-  await expect(profile.getByRole("link")).toHaveCount(0);
-  await profile.getByRole("button", { name: "Profile" }).click();
-  await expect(profile.getByRole("link")).toHaveCount(2);
+  await expect(monitoring.getByRole("button", { name: "Monitoring" })).toHaveAttribute("aria-expanded", "false");
+  await expect(monitoring.getByRole("link")).toHaveCount(0);
+  await monitoring.getByRole("button", { name: "Monitoring" }).click();
+  await expect(monitoring.getByRole("link")).toHaveCount(3);
 
-  await nav.getByRole("link", { name: "Billing", exact: true }).click();
+  // Organisation settings open from the organisation menu: one page, each part a tab.
+  await orgButton.click();
+  await page.getByRole("link", { name: "Organisation settings" }).click();
+  const tabs = page.getByRole("navigation", { name: "Organisation settings" });
+  await expect(page).toHaveURL(/\/settings\/members$/);
+  await tabs.getByRole("link", { name: "Billing", exact: true }).click();
   await expect(page).toHaveURL(/\/settings\/billing$/);
-  await expect(nav.getByRole("link", { name: "Billing", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(tabs.getByRole("link", { name: "Billing", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(tabs.getByRole("link")).toHaveCount(6);
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).not.toHaveAttribute("aria-current");
 
   // The sidebar folds to its icons and back; the links keep their names and the choice survives a reload.

@@ -106,3 +106,12 @@ test("a signed-in visitor cannot press a sign-in button before being sent to the
   await expect(page.getByRole("button", { name: "Continue with Google" })).toBeDisabled();
   await expect(page).toHaveURL(/\/dashboard$/);
 });
+
+test("a signed-in visitor on /sign-in is told they are being taken to the dashboard", async ({ page }) => {
+  await page.route("**/v1/auth/me", (r) => r.fulfill({ json: { id: "a", email: "a@example.com", has_passkey: true, name: null } }));
+  // Hold the dashboard so the moment before it opens can be seen.
+  await page.route("**/dashboard", () => new Promise(() => {}));
+  await page.goto("/sign-in");
+  await expect(page.getByRole("status")).toHaveText("You're already signed in. Opening your dashboard…");
+  await expect(page.getByRole("button", { name: "Continue with Google" })).toHaveCount(0);
+});

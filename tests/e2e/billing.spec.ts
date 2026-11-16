@@ -102,3 +102,27 @@ test("someone whose trial is used is offered a plan, not another free trial", as
   await expect(page.locator("main").getByRole("button", { name: "Start free trial" })).toHaveCount(0);
   await expect(page.getByText("Start a plan to turn on checks.")).toBeVisible();
 });
+
+test("an owner on a trial sees the days left and upgrades to Scale from the top bar", async ({ page, request }) => {
+  await signUp(page, request);
+  const ends = new Date(Date.now() + 9.5 * 864e5).toISOString();
+  let billing = { status: "trialing", tier: "team", enforced: true, over_limit: false, quantity: 1, trial_ends_at: ends };
+  await page.route("**/v1/orgs/*/billing", (r) => r.fulfill({ json: billing }));
+  let asked: unknown;
+  await page.route("**/v1/orgs/*/billing/plan", (r) => {
+    asked = r.request().postDataJSON();
+    billing = { ...billing, tier: "scale" };
+    return r.fulfill({ json: billing });
+  });
+  await page.goto("/dashboard");
+  const bar = page.getByRole("banner");
+  await expect(bar.getByText("Free trial · 10 days left")).toBeVisible();
+  await bar.getByRole("button", { name: "Upgrade" }).click();
+  const dialog = page.getByRole("dialog", { name: "Upgrade your plan" });
+  await expect(dialog.getByRole("radio", { name: /Scale/ })).toBeChecked();
+  await expect(dialog.getByText("$599")).toBeVisible();
+  await dialog.getByRole("button", { name: "Upgrade to Scale" }).click();
+  await expect(dialog).toBeHidden();
+  expect(asked).toEqual({ tier: "scale" });
+  await expect(bar.getByRole("button", { name: "Upgrade" })).toHaveCount(0);
+});
