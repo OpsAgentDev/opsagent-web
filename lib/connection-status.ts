@@ -41,3 +41,13 @@ export function connectionSentence(status: string, reason?: string | null): stri
 export const scheduleText = (v?: string | null) => (!v || v === "default" ? "Organisation default" : v);
 
 export const accountText = (id?: string | null) => id || "Not known yet";
+
+/** True only for an AWS console URL; the "Launch stack" link must not go anywhere else. */
+export function isAwsConsoleUrl(url: string): boolean {
+  try {
+    const u = new URL(url);
+    return u.protocol === "https:" && (u.hostname === "console.aws.amazon.com" || u.hostname.endsWith(".console.aws.amazon.com"));
+  } catch {
+    return false;
+  }
+}

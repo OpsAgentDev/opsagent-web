@@ -23,3 +23,14 @@ describe("statusRows", () => {
     expect(states({ ...ok, deliveries: { sent_24h: 0, failed_24h: 0 } })[3]).toBe("Operational");
   });
 });
+
+describe("isAwsConsoleUrl", () => {
+  it("accepts the AWS console only", async () => {
+    const { isAwsConsoleUrl } = await import("@/lib/connection-status");
+    expect(isAwsConsoleUrl("https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?x=1")).toBe(true);
+    expect(isAwsConsoleUrl("https://us-west-2.console.aws.amazon.com/cloudformation/home")).toBe(true);
+    expect(isAwsConsoleUrl("https://console.aws.amazon.com.evil.example/")).toBe(false);
+    expect(isAwsConsoleUrl("http://console.aws.amazon.com/")).toBe(false);
+    expect(isAwsConsoleUrl("javascript:alert(1)")).toBe(false);
+  });
+});

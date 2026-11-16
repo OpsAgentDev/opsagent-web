@@ -1,6 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { isAwsConsoleUrl } from "@/lib/connection-status";
 import { api, unwrap } from "@/lib/api/client";
 
 type Props = { org: string; id: string; provider: string; onVerifying: () => void };
@@ -53,7 +54,7 @@ export function Reconnect({ org, id, provider, onVerifying }: Props) {
                 <li>Launch the stack. CloudFormation opens in a new tab with everything filled in; tick the acknowledgement and create it.</li>
                 <li>When it finishes, open its Outputs tab, copy the role ARN, paste it below and verify.</li>
               </ol>
-              <a className="button" href={link.quick_create_url} target="_blank" rel="noreferrer">
+              <a className="button" href={isAwsConsoleUrl(link.quick_create_url) ? link.quick_create_url : undefined} target="_blank" rel="noreferrer">
                 Launch stack in AWS
               </a>
             </>
