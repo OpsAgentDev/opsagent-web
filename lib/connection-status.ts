@@ -57,3 +57,7 @@ export function isAwsConsoleUrl(url: string): boolean {
     return false;
   }
 }
+
+/** A connection removed before it ever connected has nothing to show: no findings, no history. */
+export const neverConnected = (c: { status: string; first_connected_at?: string | null }) =>
+  c.status === "disconnected" && !c.first_connected_at;
