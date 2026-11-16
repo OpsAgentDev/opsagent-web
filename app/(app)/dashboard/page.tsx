@@ -1,5 +1,6 @@
 "use client";
 import { OrgLink } from "@/components/org-link";
+import { neverConnected } from "@/lib/connection-status";
 import { useEffect, useState } from "react";
 import { ConnectionCard } from "@/components/connection-card";
 import { ErrorNote } from "@/components/error-note";
@@ -18,7 +19,7 @@ type Scans = { history?: ScanHistory; error?: Error };
 
 /** Connections with each one's finished scans; a failed scan read stays on its own card. */
 async function loadDashboard(org: string) {
-  const connections = await unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org } } }));
+  const connections = (await unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org } } }))).filter((c) => !neverConnected(c));
   const scans = await Promise.all(
     connections.map((c) => scanHistory(org, c.id).then((history): Scans => ({ history }), (error: Error): Scans => ({ error }))),
   );

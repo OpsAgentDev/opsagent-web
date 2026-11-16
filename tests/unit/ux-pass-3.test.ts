@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { canReconnect, connectionSentence, reasonText } from "@/lib/connection-status";
+import { canReconnect, connectionSentence, neverConnected, reasonText } from "@/lib/connection-status";
 
 describe("a connection turned off at the period end", () => {
   test("says why in plain words and offers Reconnect", () => {
@@ -10,4 +10,10 @@ describe("a connection turned off at the period end", () => {
     expect(canReconnect({ status: "disconnected", status_reason: "customer_disconnected" })).toBe(false);
     expect(canReconnect({ status: "connected" })).toBe(false);
   });
+});
+
+test("only a connection removed before it ever connected is hidden from the dashboard", () => {
+  expect(neverConnected({ status: "disconnected", first_connected_at: null })).toBe(true);
+  expect(neverConnected({ status: "disconnected", first_connected_at: "2026-10-29T14:38:04Z" })).toBe(false);
+  expect(neverConnected({ status: "pending", first_connected_at: null })).toBe(false);
 });
