@@ -241,6 +241,16 @@
               }
             }
           },
+          "403": {
+            "description": "`fresh_sign_in_required`: the sign-in is older than 15 minutes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "409": {
             "description": "`last_owner`: the only owner of an organisation",
             "content": {
@@ -412,6 +422,15 @@
                 }
               }
             }
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
           }
         }
       }
@@ -501,6 +520,16 @@
             }
           },
           "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "`fresh_sign_in_required`: the sign-in is older than 15 minutes",
             "content": {
               "application/json": {
                 "schema": {
@@ -620,6 +649,15 @@
               }
             }
           },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "503": {
             "content": {
               "application/json": {
@@ -699,6 +737,15 @@
               }
             }
           },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "503": {
             "content": {
               "application/json": {
@@ -719,6 +766,27 @@
         "operationId": "auth_sign_out",
         "responses": {
           "204": {}
+        }
+      }
+    },
+    "/auth/sign-out/everywhere": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Ends every session of the signed-in user, this one included.",
+        "operationId": "auth_sign_out_everywhere",
+        "responses": {
+          "204": {},
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1984,6 +2052,112 @@
           },
           "409": {
             "description": "`already_subscribed`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orgs/{org}/billing/plan": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "operationId": "billing_plan",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Organisation slug.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "The billing view on the new tier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingOut"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Billing required, or a trial or plan limit reached",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "`no_subscription` or `not_an_upgrade`",
             "content": {
               "application/json": {
                 "schema": {
@@ -5103,101 +5277,6 @@
           }
         }
       }
-    },
-    "/orgs/{org}/billing/plan": {
-      "post": {
-        "tags": [
-          "billing"
-        ],
-        "operationId": "billing_change_plan",
-        "parameters": [
-          {
-            "name": "org",
-            "in": "path",
-            "description": "Organisation slug.",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlanChange"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BillingOut"
-                }
-              }
-            }
-          },
-          "403": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "`not_an_upgrade` or `no_subscription`",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "502": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
-          "503": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -7407,6 +7486,18 @@
           }
         }
       },
+      "PlanIn": {
+        "type": "object",
+        "required": [
+          "tier"
+        ],
+        "properties": {
+          "tier": {
+            "type": "string",
+            "description": "`starter`, `team` or `scale`; higher than the current tier."
+          }
+        }
+      },
       "Problem": {
         "type": "object",
         "description": "The wire shape of every error (`application/problem+json`).",
@@ -7928,18 +8019,6 @@
           "token": {
             "type": "string",
             "description": "The token from the confirmation email's link."
-          }
-        }
-      },
-      "PlanChange": {
-        "type": "object",
-        "required": [
-          "tier"
-        ],
-        "properties": {
-          "tier": {
-            "type": "string",
-            "description": "`starter`, `team` or `scale`; must be above the current tier."
           }
         }
       }

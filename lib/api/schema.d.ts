@@ -298,6 +298,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/sign-out/everywhere": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ends every session of the signed-in user, this one included. */
+        post: operations["auth_sign_out_everywhere"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/contact": {
         parameters: {
             query?: never;
@@ -516,6 +533,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["billing_checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{org}/billing/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["billing_plan"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1152,22 +1185,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["billing_stripe_webhook"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/orgs/{org}/billing/plan": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["billing_change_plan"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1896,6 +1913,10 @@ export interface components {
             last_used_at?: string | null;
             name: string;
         };
+        PlanIn: {
+            /** @description `starter`, `team` or `scale`; higher than the current tier. */
+            tier: string;
+        };
         /** @description The wire shape of every error (`application/problem+json`). */
         Problem: {
             /** @description Stable machine-readable code, e.g. `not_found`, `validation`, `rate_limited`, `csrf`. */
@@ -2071,10 +2092,6 @@ export interface components {
         WaitlistVerifyRequest: {
             /** @description The token from the confirmation email's link. */
             token: string;
-        };
-        PlanChange: {
-            /** @description `starter`, `team` or `scale`; must be above the current tier. */
-            tier: string;
         };
     };
     responses: never;
@@ -2294,6 +2311,15 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            /** @description `fresh_sign_in_required`: the sign-in is older than 15 minutes */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description `last_owner`: the only owner of an organisation */
             409: {
                 headers: {
@@ -2444,6 +2470,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
         };
     };
     auth_register_finish: {
@@ -2521,6 +2555,15 @@ export interface operations {
                 };
             };
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `fresh_sign_in_required`: the sign-in is older than 15 minutes */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2608,6 +2651,14 @@ export interface operations {
                     "application/json": components["schemas"]["AuthorizeUrl"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2661,6 +2712,14 @@ export interface operations {
                     "application/json": components["schemas"]["AuthorizeUrl"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             503: {
                 headers: {
                     [name: string]: unknown;
@@ -2685,6 +2744,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    auth_sign_out_everywhere: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
             };
         };
     };
@@ -3686,6 +3770,91 @@ export interface operations {
                 };
             };
             /** @description `already_subscribed` */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    billing_plan: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlanIn"];
+            };
+        };
+        responses: {
+            /** @description The billing view on the new tier */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BillingOut"];
+                };
+            };
+            /** @description Billing required, or a trial or plan limit reached */
+            402: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `no_subscription` or `not_an_upgrade` */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -5919,81 +6088,6 @@ export interface operations {
             };
             /** @description `bad_signature` or `bad_payload` */
             400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-        };
-    };
-    billing_change_plan: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Organisation slug. */
-                org: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PlanChange"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BillingOut"];
-                };
-            };
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            /** @description `not_an_upgrade` or `no_subscription` */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
-            502: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -2,6 +2,7 @@
 import { useContext, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
+import { forgetChoices } from "@/lib/members";
 import { SessionReloadContext } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 import { addPasskey, cancelled, supported } from "@/lib/webauthn";
@@ -26,6 +27,13 @@ export default function Security() {
     }
     setBusy(false);
   }
+
+  // Ends every session of this person, this one included, then loads the home page.
+  const signOutEverywhere = () => act(async () => {
+    await unwrap(api.POST("/auth/sign-out/everywhere"));
+    forgetChoices();
+    window.location.assign("/"); // a full load, so nothing of the ended session stays on the page
+  });
 
   const remove = (id: string) => act(() => unwrap(api.DELETE("/auth/passkeys/{id}", { params: { path: { id } } })));
 
@@ -68,6 +76,11 @@ export default function Security() {
         ) : (
           <span className="muted">This browser can&apos;t create passkeys.</span>
         )}
+      </p>
+      <h2>Sessions</h2>
+      <p className="muted">Sign out of OpsAgent on every browser and device, including this one. Use it if you lost a device or think someone else is signed in.</p>
+      <p>
+        <button type="button" disabled={busy} onClick={signOutEverywhere}>Sign out everywhere</button>
       </p>
     </main>
   );
