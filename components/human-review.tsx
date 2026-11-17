@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap, type Connection, type HumanReviews } from "@/lib/api/client";
 import { goToStripe } from "@/lib/billing";
+import { PRICE_NOTE } from "@/lib/plans";
 
 export const price = (cents: number) => `$${(cents / 100).toLocaleString("en-US")}`;
 export const CONFIRM = "Pay securely with Stripe. Harun replies within 1 business day.";
@@ -104,6 +105,7 @@ export function HumanReviewView(p: {
           </article>
         ))}
       </div>
+      <p className="muted">{PRICE_NOTE}</p>
       {p.owner ? (
         <ReviewForm org={p.org} connections={p.connections} onSent={p.onSent} />
       ) : (
