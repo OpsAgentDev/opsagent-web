@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  connectionLabel,
   isOwner,
+  pickable,
   liveRecipients,
   isSlackUrl,
   newRecipientBody,
@@ -74,5 +76,18 @@ describe("isOwner", () => {
     expect(isOwner("owner")).toBe(true);
     expect(isOwner("member")).toBe(false);
     expect(isOwner(undefined)).toBe(false);
+  });
+});
+
+describe("removed connections", () => {
+  const live = { id: "a", display_name: "OpsAgent PROD", status: "connected" };
+  const gone = { id: "b", display_name: "OpsAgent PROD", status: "disconnected" };
+  it("are named with (removed) so old rows stay apart from the live one", () => {
+    expect(connectionLabel(live)).toBe("OpsAgent PROD");
+    expect(connectionLabel(gone)).toBe("OpsAgent PROD (removed)");
+    expect(connectionLabel({ id: "c", display_name: null, status: "disconnected" })).toBe("c (removed)");
+  });
+  it("cannot be picked for a filter or a recipient", () => {
+    expect(pickable([live, gone])).toEqual([live]);
   });
 });

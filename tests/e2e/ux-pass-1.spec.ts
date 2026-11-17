@@ -99,9 +99,14 @@ test("deliveries explain an empty list", async ({ page, request }) => {
   await expect(page.getByText("Nothing sent yet. Briefings and alerts appear here once a scan has run.")).toBeVisible();
 });
 
-test("an unknown page shows the branded 404 with a way back", async ({ page }) => {
+test("an unknown page shows the branded 404 with a way back", async ({ page, request }) => {
   await page.goto("/no-such-page");
   await expect(page.getByRole("heading", { name: "This page doesn't exist" })).toBeVisible();
+  // Signed out: home is the way back; there is no dashboard to go to.
+  await expect(page.getByRole("link", { name: "Back to home" })).toHaveClass(/primary/);
+  await expect(page.getByRole("link", { name: "Go to your dashboard" })).toHaveCount(0);
+  await signUp(page, request);
+  await page.goto("/no-such-page");
   await page.getByRole("link", { name: "Go to your dashboard" }).click();
-  await expect(page).toHaveURL(/\/(dashboard|sign-in)$/);
+  await expect(page).toHaveURL(/\/o\/[^/]+\/dashboard$/);
 });

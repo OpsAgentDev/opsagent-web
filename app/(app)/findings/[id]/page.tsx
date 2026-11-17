@@ -6,6 +6,7 @@ import { ErrorNote } from "@/components/error-note";
 import { ExplainPanel } from "@/components/explain-panel";
 import { FindingReviewButton } from "@/components/human-review-dialog";
 import { api, unwrap } from "@/lib/api/client";
+import { eventText } from "@/lib/findings";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -54,10 +55,7 @@ export default function FindingPage() {
                 {f.events.map((e, i) => (
                   <tr key={i}>
                     <td>{when(e.created_at)}</td>
-                    <td>{e.event_type}</td>
-                    <td className="muted">
-                      {e.from_severity && e.to_severity ? `${e.from_severity} → ${e.to_severity}` : ""}
-                    </td>
+                    <td>{eventText(e)}</td>
                   </tr>
                 ))}
               </tbody>

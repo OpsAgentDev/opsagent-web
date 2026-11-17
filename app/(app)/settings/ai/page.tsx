@@ -7,6 +7,7 @@ import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type AiStatus } from "@/lib/api/client";
 import { backupServing, formatCredits, STYLES, TURN_ON_NOTICE } from "@/lib/ai";
 import { goToStripe } from "@/lib/billing";
+import { PRICE_NOTE } from "@/lib/plans";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -80,7 +81,7 @@ function AiSettings() {
               <p>{TURN_ON_NOTICE}</p>
               <label className="row">
                 <input type="checkbox" checked={s.enabled} disabled={busy} onChange={(e) => toggle(e.target.checked)} />
-                Dashboard AI on
+                Turn on Dashboard AI
               </label>
               {s.state !== "ai_disabled" && <AiStateNote code={s.state} role={org.role} />}
             </section>
@@ -95,7 +96,10 @@ function AiSettings() {
             </>
           )}
           {owner && s.topup_available && (
-            <button type="button" className="fit" disabled={busy} onClick={buy}>Buy 1,000 credits for $15</button>
+            <>
+              <button type="button" className="fit" disabled={busy} onClick={buy}>Buy 1,000 credits for $15</button>
+              <p className="muted">{PRICE_NOTE}</p>
+            </>
           )}
           {owner && <ByokForm org={org.slug} s={s} onChanged={reload} />}
         </>

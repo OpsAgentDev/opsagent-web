@@ -75,6 +75,7 @@ export default function ConnectAws() {
       ) : !created ? (
         <form className="stack" onSubmit={create}>
           <p>Name this account so you can tell it apart later, for example production. Next you create a read-only role in AWS; OpsAgent never gets keys to your account.</p>
+          <p className="muted">Each cloud account is billed on your plan. The trial covers one.</p>
           {FAKE_ENABLED && (
             <fieldset className="row">
               <legend>Provider</legend>

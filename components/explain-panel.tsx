@@ -5,6 +5,7 @@ import { AiStateNote } from "@/components/ai-state-note";
 import { ErrorNote } from "@/components/error-note";
 import { api, ApiError, unwrap, type Explanation } from "@/lib/api/client";
 import { AI_LABEL, stateNote } from "@/lib/ai";
+import { useApi } from "@/lib/use-api";
 
 type Props = { org: string; id: string; role: string; cached: Explanation | null };
 
@@ -17,6 +18,9 @@ export function ExplainPanel({ org, id, role, cached }: Props) {
   const [note, setNote] = useState("");
   const [reported, setReported] = useState(false);
   const path = { params: { path: { org, id } } };
+  // With AI off the button could only fail, so its next step shows instead.
+  const ai = useApi(() => unwrap(api.GET("/orgs/{org}/ai", { params: { path: { org } } })), [org]);
+  const off = !explanation && ai.data?.state === "ai_disabled";
 
   async function act(call: () => Promise<void>) {
     setBusy(true);
@@ -36,7 +40,7 @@ export function ExplainPanel({ org, id, role, cached }: Props) {
       setReported(true);
     });
 
-  const code = error instanceof ApiError ? error.code : undefined;
+  const code = error instanceof ApiError ? error.code : off ? "ai_disabled" : undefined;
   return (
     <section className="stack">
       <h2>Explanation</h2>
@@ -59,7 +63,7 @@ export function ExplainPanel({ org, id, role, cached }: Props) {
             <button type="button" className="fit" onClick={() => setReporting(true)}>Report a wrong explanation</button>
           )}
         </>
-      ) : (
+      ) : off ? null : (
         <button type="button" className="primary fit" disabled={busy} onClick={explain}>
           {busy ? "Explaining…" : "Explain this finding"}
         </button>

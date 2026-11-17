@@ -20,6 +20,9 @@ export function daysLeft(iso: string | null | undefined, now = Date.now()): numb
   return iso ? Math.max(0, Math.ceil((Date.parse(iso) - now) / 864e5)) : null;
 }
 
+/** "3 days left", "1 day left", "last day". */
+export const daysLeftText = (days: number) => (days === 0 ? "last day" : `${days} ${days === 1 ? "day" : "days"} left`);
+
 /** The plan line under the organisation's name; null when billing isn't set up or isn't read yet. */
 export function planLine(b: (Pick<Billing, "status" | "tier" | "trial_ends_at"> & Partial<Pick<Billing, "cancel_at_period_end">>) | null | undefined, now = Date.now()): string | null {
   if (!b) return null;
@@ -29,7 +32,7 @@ export function planLine(b: (Pick<Billing, "status" | "tier" | "trial_ends_at"> 
       if (b.cancel_at_period_end && b.trial_ends_at) return `Free trial · ends ${new Date(b.trial_ends_at).toLocaleDateString()}`;
       const days = daysLeft(b.trial_ends_at, now);
       if (days === null) return "Free trial";
-      return `Free trial · ${days === 0 ? "last day" : `${days} ${days === 1 ? "day" : "days"} left`}`;
+      return `Free trial · ${daysLeftText(days)}`;
     }
     case "active": return (b.tier && TIERS[b.tier]) || null;
     case "past_due": return "Payment failed";

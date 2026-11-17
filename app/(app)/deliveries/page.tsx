@@ -5,7 +5,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Pager, useCursors } from "@/components/pager";
 import { api, unwrap } from "@/lib/api/client";
 import { DELIVERY_KINDS } from "@/lib/api/enums";
-import { deliveryStatusText } from "@/lib/delivery";
+import { connectionLabel, deliveryStatusText, pickable } from "@/lib/delivery";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -28,7 +28,7 @@ export default function Deliveries() {
     return unwrap(api.GET("/orgs/{org}/deliveries", { params: { path: { org: org.slug }, query } }));
   }, [org.slug, connection, kind, cursor]);
 
-  const names = new Map(connections.data?.map((c) => [c.id, c.display_name ?? c.id]));
+  const names = new Map(connections.data?.map((c) => [c.id, connectionLabel(c)]));
 
   return (
     <main>
@@ -38,7 +38,7 @@ export default function Deliveries() {
           Connection
           <select value={connection} onChange={(e) => pager.filter(setConnection)(e.target.value)}>
             <option value="">all</option>
-            {connections.data?.map((c) => (
+            {pickable(connections.data ?? []).map((c) => (
               <option key={c.id} value={c.id}>
                 {c.display_name ?? c.id}
               </option>

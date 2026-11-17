@@ -8,7 +8,7 @@ import {
   type Member,
   type Recipient,
 } from "@/lib/api/client";
-import { liveRecipients, newRecipientBody } from "@/lib/delivery";
+import { connectionLabel, liveRecipients, newRecipientBody, pickable } from "@/lib/delivery";
 import { useApi } from "@/lib/use-api";
 
 type Props = {
@@ -33,7 +33,7 @@ export function Recipients({ owner, org, connections, members }: Props) {
       ),
     [org],
   );
-  const names = new Map(connections.map((c) => [c.id, c.display_name ?? c.id]));
+  const names = new Map(connections.map((c) => [c.id, connectionLabel(c)]));
   const scope = (r: Recipient) =>
     r.connection_id
       ? (names.get(r.connection_id) ?? r.connection_id)
@@ -166,7 +166,7 @@ export function Recipients({ owner, org, connections, members }: Props) {
             Deliveries for
             <select name="connection_id">
               <option value="">All connections</option>
-              {connections.map((c) => (
+              {pickable(connections).map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.display_name ?? c.id}
                 </option>

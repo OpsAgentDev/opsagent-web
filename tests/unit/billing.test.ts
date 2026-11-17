@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { planLine, upgradePlans } from "@/lib/billing";
+import { daysLeftText, planLine, upgradePlans } from "@/lib/billing";
 
 const now = Date.parse("2026-11-16T12:00:00Z");
 const inDays = (d: number) => new Date(now + d * 864e5).toISOString();
@@ -31,4 +31,10 @@ test("an upgrade is offered only to a running, enforced plan below Scale, neares
   for (const status of ["none", "past_due", "paused", "canceled", "trial_ended"]) expect(ids({ status, tier: "team", enforced: true })).toEqual([]);
   expect(ids({ status: "active", tier: null, enforced: true })).toEqual([]);
   expect(ids(null)).toEqual([]);
+});
+
+test("days left are counted in words", () => {
+  expect(daysLeftText(2)).toBe("2 days left");
+  expect(daysLeftText(1)).toBe("1 day left");
+  expect(daysLeftText(0)).toBe("last day");
 });

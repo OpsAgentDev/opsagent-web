@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { accountText, connectionSentence, reasonText, scheduleText } from "@/lib/connection-status";
 import { deliveryStatusText } from "@/lib/delivery";
-import { findingsSummary } from "@/lib/findings";
+import { eventText, findingsSummary } from "@/lib/findings";
 import { showPasskeyPrompt } from "@/lib/passkey-scope";
 import { openTotal } from "@/lib/scan";
 
@@ -99,5 +99,14 @@ describe("connection reasons", () => {
     expect(reasonText("constructor")).toBe("");
     expect(reasonText("Missing ec2:Describe")).toBe("Missing ec2:Describe");
     expect(reasonText(null)).toBe("");
+  });
+});
+
+describe("eventText", () => {
+  it("reads a repeat sighting and a severity change in words", () => {
+    expect(eventText({ event_type: "seen", from_severity: "high", to_severity: "high" })).toBe("Seen again");
+    expect(eventText({ event_type: "seen", from_severity: null, to_severity: null })).toBe("Seen again");
+    expect(eventText({ event_type: "seen", from_severity: "high", to_severity: "critical" })).toBe("Severity high → critical");
+    expect(eventText({ event_type: "resolved" })).toBe("resolved");
   });
 });

@@ -1,37 +1,24 @@
 "use client";
 import { OrgLink } from "@/components/org-link";
-import { neverConnected } from "@/lib/connection-status";
 import { useEffect, useState } from "react";
-import { ConnectionCard } from "@/components/connection-card";
+import { CloudAccounts, loadAccounts } from "@/components/cloud-accounts";
 import { ErrorNote } from "@/components/error-note";
 import { OverviewTiles } from "@/components/overview-tiles";
 import { Skeleton } from "@/components/skeleton";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { TopIssues } from "@/components/top-issues";
 import { TrendChart } from "@/components/trend-chart";
-import { api, unwrap } from "@/lib/api/client";
 import { useOrg, useSetup } from "@/lib/org";
-import { greeting, overview, scanHistory, sinceLast, trendSeries, type ScanHistory } from "@/lib/scan";
+import { greeting, overview, sinceLast, trendSeries } from "@/lib/scan";
 import { isSkipped, setSkipped } from "@/lib/setup-skip";
 import { useApi } from "@/lib/use-api";
-
-type Scans = { history?: ScanHistory; error?: Error };
-
-/** Connections with each one's finished scans; a failed scan read stays on its own card. */
-async function loadDashboard(org: string) {
-  const connections = (await unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org } } }))).filter((c) => !neverConnected(c));
-  const scans = await Promise.all(
-    connections.map((c) => scanHistory(org, c.id).then((history): Scans => ({ history }), (error: Error): Scans => ({ error }))),
-  );
-  return connections.map((c, i) => ({ c, ...scans[i] }));
-}
 
 const when = (at: string) => new Date(at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 export default function Dashboard() {
   const org = useOrg();
   const { hasPasskey, reloadSession } = useSetup();
-  const { data: rows, error } = useApi(() => loadDashboard(org.slug), [org.slug]);
+  const { data: rows, error } = useApi(() => loadAccounts(org.slug), [org.slug]);
   const [skipped, setSkippedState] = useState(false);
   useEffect(() => setSkippedState(isSkipped(org.slug)), [org.slug]);
   const toggleSkip = (v: boolean) => { setSkipped(org.slug, v); setSkippedState(v); };
@@ -81,14 +68,11 @@ export default function Dashboard() {
         </p>
       )}
       <ErrorNote error={error} />
-      {!!rows?.length && <h2>Cloud accounts</h2>}
-      <div className="cards accounts">
-        {rows?.map((r) => <ConnectionCard key={r.c.id} c={r.c} several={rows.length > 1} latest={r.history} error={r.error} />)}
-      </div>
-      {!!rows?.length && org.role === "owner" && (
-        <p className="add-more">
-          <OrgLink href="/onboarding/connect-aws">Connect another account</OrgLink>
-        </p>
+      {!!rows?.length && (
+        <>
+          <h2>Cloud accounts</h2>
+          <CloudAccounts rows={rows} role={org.role} />
+        </>
       )}
     </main>
   );
