@@ -4,8 +4,8 @@ import type { Billing } from "@/lib/api/client";
 
 const READ_ONLY = new Set(["paused", "canceled", "trial_ended"]);
 
-/** Billing notices above every app page. Silent when billing isn't set up or can't be read. */
-export function BillingBanner({ data }: { data: Billing | null | undefined }) {
+/** Billing notices above every app page. Silent when billing isn't set up or can't be read. `onBilling`: the Billing page offers the start itself. */
+export function BillingBanner({ data, onBilling }: { data: Billing | null | undefined; onBilling?: boolean }) {
   if (!data) return null;
   return (
     <>
@@ -15,7 +15,7 @@ export function BillingBanner({ data }: { data: Billing | null | undefined }) {
           <OrgLink href="/settings/billing">Manage billing</OrgLink>
         </p>
       )}
-      {data.enforced && data.status === "none" && (
+      {data.enforced && data.status === "none" && !onBilling && (
         <p role="status" className="banner">
           {data.trial_available === false ? "Start a plan to turn on checks. " : "Start your free trial to turn on checks. "}
           <OrgLink href="/settings/billing">{data.trial_available === false ? "Start plan" : "Start free trial"}</OrgLink>

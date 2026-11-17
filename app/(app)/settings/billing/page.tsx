@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
-import { daysLeft, daysLeftText, goToStripe, loadBilling, TIERS } from "@/lib/billing";
+import { accountsLine, daysLeft, daysLeftText, goToStripe, loadBilling, TIERS } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -14,6 +14,11 @@ function BillingPage() {
   const org = useOrg();
   const returned = useSearchParams().get("status");
   const { data, error, reload } = useApi(() => loadBilling(org.slug), [org.slug]);
+  // Billing counts at least one account while subscribed, so "none connected yet" is read from the connections.
+  const { data: connections, loading: counting } = useApi(
+    () => unwrap(api.GET("/orgs/{org}/connections", { params: { path: { org: org.slug } } })),
+    [org.slug],
+  );
   const [actionError, setActionError] = useState<Error | null>(null);
   const [busy, setBusy] = useState(false);
   const [polls, setPolls] = useState(0);
@@ -69,11 +74,7 @@ function BillingPage() {
               won&apos;t be charged again.
             </p>
           )}
-          {tier && n > 0 && (
-            <p>
-              {n} cloud {n === 1 ? "account" : "accounts"} billed on {tier}
-            </p>
-          )}
+          {tier && n > 0 && !counting && <p>{accountsLine(tier, n, connections?.filter((c) => c.first_connected_at).length)}</p>}
           {data.limits && (
             <p className="muted">{/* The trial gets 1,000 whatever the tier. */}
               {(status === "trialing" ? 1000 : data.limits.ai_credits).toLocaleString("en-US")} AI credits per cloud account each period</p>

@@ -15,6 +15,12 @@ export async function loadBilling(org: string): Promise<Billing | null> {
 
 export const TIERS: Record<string, string> = { starter: "Starter", team: "Team", scale: "Scale" };
 
+/** The Billing line for what is billed; `connected` is how many cloud accounts ever connected (unknown: the count alone). */
+export const accountsLine = (tier: string, n: number, connected?: number) =>
+  connected === 0
+    ? `No cloud account connected yet. ${tier} is billed per connected cloud account.`
+    : `${n} cloud ${n === 1 ? "account" : "accounts"} billed on ${tier}`;
+
 /** Whole days until `iso` (0 on the last day); null without a date. */
 export function daysLeft(iso: string | null | undefined, now = Date.now()): number | null {
   return iso ? Math.max(0, Math.ceil((Date.parse(iso) - now) / 864e5)) : null;

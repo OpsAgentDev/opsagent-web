@@ -89,7 +89,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       plan={planLine(billing)}
       upgrade={org.role === "owner" && <Upgrade org={org.slug} billing={billing} onUpgraded={reloadBilling} />}
     >
-      <BillingBanner data={billing} />
+      <BillingBanner data={billing} onBilling={pathname === "/settings/billing"} />
       {showPrompt && <PasskeyPrompt onAdded={reload} />}
       <SessionReloadContext.Provider value={reload}>
         <SetupContext.Provider value={{ hasPasskey: data.me.has_passkey, reloadSession: reload, setChecklistOpen }}>
