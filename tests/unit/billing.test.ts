@@ -1,5 +1,8 @@
 import { expect, test } from "vitest";
-import { daysLeftText, planLine, upgradePlans } from "@/lib/billing";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { BillingBanner } from "@/components/billing-banner";
+import { accountsLine, daysLeftText, planLine, upgradePlans } from "@/lib/billing";
 
 const now = Date.parse("2026-11-16T12:00:00Z");
 const inDays = (d: number) => new Date(now + d * 864e5).toISOString();
@@ -37,4 +40,19 @@ test("days left are counted in words", () => {
   expect(daysLeftText(2)).toBe("2 days left");
   expect(daysLeftText(1)).toBe("1 day left");
   expect(daysLeftText(0)).toBe("last day");
+});
+
+test("the billed line says so when no cloud account is connected yet", () => {
+  expect(accountsLine("Team", 1, 0)).toBe("No cloud account connected yet. Team is billed per connected cloud account.");
+  expect(accountsLine("Team", 1, 1)).toBe("1 cloud account billed on Team");
+  expect(accountsLine("Scale", 3, 3)).toBe("3 cloud accounts billed on Scale");
+  expect(accountsLine("Team", 1)).toBe("1 cloud account billed on Team"); // connections unreadable
+});
+
+test("the start banner is not shown on the Billing page; the other notices are", () => {
+  const banner = (status: string, onBilling: boolean) =>
+    renderToStaticMarkup(createElement(BillingBanner, { onBilling, data: { status, enforced: true, over_limit: false, quantity: 0, cancel_at_period_end: false, trial_available: true } }));
+  expect(banner("none", false)).toContain("Start your free trial to turn on checks.");
+  expect(banner("none", true)).toBe("");
+  expect(banner("trial_ended", true)).toContain("OpsAgent is paused.");
 });

@@ -21,13 +21,15 @@ test("submit waits for the Turnstile token, which reaches the request body", asy
     await route.continue();
   });
   await page.goto("/sign-in/email");
-  await page.getByLabel("Email").fill(`e2e-turnstile-${Date.now()}@example.com`);
+  const address = `e2e-turnstile-${Date.now()}@example.com`;
+  await page.getByLabel("Email").fill(address);
   const submit = page.getByRole("button", { name: "Send link and code" });
   await expect(submit).toBeDisabled();
   // The widget renders after hydration; wait for the stub to be asked for it.
   await page.waitForFunction(() => typeof (window as unknown as { __give?: unknown }).__give === "function");
   await page.evaluate(() => (window as unknown as { __give: () => void }).__give());
   await expect(submit).toBeEnabled();
+  await expect(page.getByLabel("Email")).toHaveValue(address); // typed before the check finished: still there
   await submit.click();
   await expect(page.getByLabel("Code")).toBeVisible();
   expect(body?.turnstile_token).toBe("stub-token");

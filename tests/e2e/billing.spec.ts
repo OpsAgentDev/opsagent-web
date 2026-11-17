@@ -37,7 +37,9 @@ test("trialing shows days left, connections line and Manage billing", async ({ p
   seed("trialing", ", trial_ends_at = now() + interval '9 days 12 hours', current_period_end = now() + interval '10 days'");
   await page.goto("/settings/billing");
   await expect(page.getByText("Trial: 10 days left")).toBeVisible();
-  await expect(page.getByText("3 cloud accounts billed on Team")).toBeVisible();
+  // Nothing is connected in this organisation, whatever the billed count says.
+  await expect(page.getByText("No cloud account connected yet. Team is billed per connected cloud account.")).toBeVisible();
+  await expect(page.getByText(/billed on Team/)).toHaveCount(0);
   await expect(page.getByText("1,000 AI credits per cloud account each period")).toBeVisible();
   await expect(page.getByRole("button", { name: "Manage billing" })).toBeVisible();
 });
@@ -76,6 +78,11 @@ test("a new organisation is invited to start a trial, not told it is paused", as
   await page.goto("/dashboard");
   await expect(page.getByText("Start your free trial to turn on checks.")).toBeVisible();
   await expect(page.getByText("OpsAgent is paused.")).toHaveCount(0);
+  // Billing carries the trial panel itself, so the banner would only link to its own page.
+  await page.goto("/settings/billing");
+  await expect(page.locator("main").getByRole("button", { name: "Start free trial" })).toBeVisible();
+  await expect(page.getByText("Start your free trial to turn on checks.")).toHaveCount(0);
+  await page.goto("/dashboard");
 
   status = "trial_ended";
   await page.reload();
@@ -100,7 +107,7 @@ test("someone whose trial is used is offered a plan, not another free trial", as
   await expect(page.getByText("Your free trial has been used.")).toBeVisible();
   await expect(page.locator("main").getByRole("button", { name: "Start plan" })).toBeVisible();
   await expect(page.locator("main").getByRole("button", { name: "Start free trial" })).toHaveCount(0);
-  await expect(page.getByText("Start a plan to turn on checks.")).toBeVisible();
+  await expect(page.getByText("Start a plan to turn on checks.")).toHaveCount(0);
 });
 
 test("an owner on a trial sees the days left and upgrades to Scale from the top bar", async ({ page, request }) => {
