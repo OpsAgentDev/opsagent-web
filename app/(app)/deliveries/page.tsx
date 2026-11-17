@@ -74,7 +74,7 @@ export default function Deliveries() {
               <td>{d.kind}</td>
               <td className="muted">{d.connection_id ? (names.get(d.connection_id) ?? d.connection_id) : "organisation"}</td>
               <td>{d.channel}</td>
-              <td><Status value={d.status} label={deliveryStatusText(d.status)} /></td>
+              <td><Status value={d.status} label={deliveryStatusText(d.status, d.fallback_reason)} /></td>
               <td>{d.attempts}</td>
               <td>{when(d.sent_at)}</td>
             </tr>

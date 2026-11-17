@@ -59,10 +59,17 @@ export function isSlackUrl(url: string): boolean {
 const DELIVERY_STATUS: Record<string, string> = {
   sent: "Sent",
   failed: "Failed",
-  fallback_email: "Sent by email (Slack not connected)",
+  fallback_email: "Sent by email instead of Slack",
   skipped: "Skipped",
   pending: "Waiting",
 };
 
-/** Human text for a delivery status; a status brain adds later shows as is. */
-export const deliveryStatusText = (s: string) => DELIVERY_STATUS[s] ?? s;
+const FALLBACK_REASON: Record<string, string> = {
+  slack_not_connected: "Sent by email (Slack not connected)",
+  no_channel: "Sent by email (no Slack channel set for this connection)",
+  slack_failed: "Sent by email (Slack post failed)",
+};
+
+/** Human text for a delivery status; an email fallback says why when brain recorded it. A status brain adds later shows as is. */
+export const deliveryStatusText = (s: string, fallbackReason?: string | null) =>
+  (s === "fallback_email" && fallbackReason && FALLBACK_REASON[fallbackReason]) || DELIVERY_STATUS[s] || s;
