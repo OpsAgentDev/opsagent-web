@@ -1455,6 +1455,11 @@ export interface components {
             connection_id?: string | null;
             /** Format: date-time */
             created_at: string;
+            /**
+             * @description Why a `fallback_email` row went by email: `slack_not_connected`, `no_channel` or
+             *     `slack_failed`. Null on other rows and on rows from before reasons were kept.
+             */
+            fallback_reason?: string | null;
             /** Format: uuid */
             id: string;
             /** @description `briefing`, `weekly`, `alert` or `notice`. */
@@ -1794,6 +1799,11 @@ export interface components {
                 connection_id?: string | null;
                 /** Format: date-time */
                 created_at: string;
+                /**
+                 * @description Why a `fallback_email` row went by email: `slack_not_connected`, `no_channel` or
+                 *     `slack_failed`. Null on other rows and on rows from before reasons were kept.
+                 */
+                fallback_reason?: string | null;
                 /** Format: uuid */
                 id: string;
                 /** @description `briefing`, `weekly`, `alert` or `notice`. */

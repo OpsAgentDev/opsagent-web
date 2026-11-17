@@ -57,7 +57,15 @@ describe("deliveryStatusText", () => {
   it("maps known statuses and passes unknown through", () => {
     expect(deliveryStatusText("sent")).toBe("Sent");
     expect(deliveryStatusText("failed")).toBe("Failed");
-    expect(deliveryStatusText("fallback_email")).toBe("Sent by email (Slack not connected)");
+    expect(deliveryStatusText("fallback_email")).toBe("Sent by email instead of Slack");
+    expect(deliveryStatusText("fallback_email", null)).toBe("Sent by email instead of Slack");
+    expect(deliveryStatusText("fallback_email", "slack_not_connected")).toBe("Sent by email (Slack not connected)");
+    expect(deliveryStatusText("fallback_email", "no_channel")).toBe(
+      "Sent by email (no Slack channel set for this connection)",
+    );
+    expect(deliveryStatusText("fallback_email", "slack_failed")).toBe("Sent by email (Slack post failed)");
+    expect(deliveryStatusText("fallback_email", "later_reason")).toBe("Sent by email instead of Slack");
+    expect(deliveryStatusText("sent", "slack_failed")).toBe("Sent");
     expect(deliveryStatusText("skipped")).toBe("Skipped");
     expect(deliveryStatusText("pending")).toBe("Waiting");
     expect(deliveryStatusText("weird")).toBe("weird");
