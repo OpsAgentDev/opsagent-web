@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
-import { daysLeft, goToStripe, loadBilling, TIERS } from "@/lib/billing";
+import { daysLeft, daysLeftText, goToStripe, loadBilling, TIERS } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -62,7 +62,7 @@ function BillingPage() {
       {waiting && <p className="muted" role="status">Confirming your plan…</p>}
       {data && (
         <section className="stack">
-          {status === "trialing" && !cancelled && <p>Trial: {days} days left</p>}
+          {status === "trialing" && !cancelled && <p>Trial: {daysLeftText(days)}</p>}
           {cancelled && lastDay && (
             <p>
               Cancelled. Your {status === "trialing" ? "trial" : "plan"} ends {new Date(lastDay).toLocaleDateString()} and you

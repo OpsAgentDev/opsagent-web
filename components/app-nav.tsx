@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Logo } from "@/components/brand/Logo";
-import { ChatSquareIcon, CheckIcon, FlagIcon, GridIcon, LogIcon, MailIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
+import { ChatSquareIcon, CheckIcon, CloudIcon, FlagIcon, GridIcon, LogIcon, MailIcon, ShieldIcon, UserKeyIcon } from "@/components/marketing/landing-icons";
 import { OrgSwitcher, type OrgChoice } from "@/components/org-switcher";
 import { SETTINGS_TABS } from "@/components/settings-tabs";
 import { SignOut } from "@/components/sign-out";
@@ -22,9 +22,10 @@ export const NAV_GROUPS: { id: string; label: string; links: NavLink[] }[] = [
     { href: "/findings", label: "Findings", icon: <FlagIcon size={18} /> },
     { href: "/chat", label: "Ask OpsAgent", icon: <ChatSquareIcon size={18} /> },
     { href: "/deliveries", label: "Deliveries", icon: <MailIcon size={18} /> },
+    { href: "/connections", label: "Cloud accounts", icon: <CloudIcon size={18} /> },
   ] },
   { id: "help", label: "Help", links: [
-    { href: "/docs", label: "Docs", icon: <LogIcon size={18} />, site: true },
+    { href: "/docs/connect-your-agent", label: "Docs", icon: <LogIcon size={18} />, site: true },
     { href: "/contact", label: "Contact", icon: <MailIcon size={18} />, site: true },
     { href: "/status", label: "Status", icon: <CheckIcon size={18} />, site: true },
   ] },

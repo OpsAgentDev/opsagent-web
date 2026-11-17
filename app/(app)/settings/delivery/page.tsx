@@ -4,7 +4,7 @@ import { Recipients } from "@/components/recipients";
 import { SlackSettings } from "@/components/slack-settings";
 import { UrgentAlerts } from "@/components/urgent-alerts";
 import { api, unwrap } from "@/lib/api/client";
-import { isOwner } from "@/lib/delivery";
+import { isOwner, pickable } from "@/lib/delivery";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -26,7 +26,7 @@ export default function DeliverySettings() {
   );
   const owner = isOwner(org.role);
   // Removed connections take no alerts or channels; recipients keep the full list to name old rows.
-  const live = data?.connections.filter((c) => c.status !== "disconnected") ?? [];
+  const live = pickable(data?.connections ?? []);
 
   return (
     <main>

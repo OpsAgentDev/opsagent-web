@@ -10,6 +10,13 @@ export function liveRecipients<T extends { unsubscribed_at?: string | null }>(
   return items.filter((r) => !r.unsubscribed_at);
 }
 
+/** A connection's name in delivery lists; a removed one keeps its rows but says so. */
+export const connectionLabel = (c: { id: string; display_name?: string | null; status: string }) =>
+  `${c.display_name ?? c.id}${c.status === "disconnected" ? " (removed)" : ""}`;
+
+/** Connections a new filter or recipient can pick: removed ones are left out. */
+export const pickable = <T extends { status: string }>(cs: T[]): T[] => cs.filter((c) => c.status !== "disconnected");
+
 /** Delivery settings are owner-managed; brain returns 403 to members, so the UI hides the controls. */
 export const isOwner = (role?: string | null) => role === "owner";
 

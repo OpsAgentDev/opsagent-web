@@ -13,6 +13,12 @@ export function findingsSummary(items: { severity: string }[], opts: { more: boo
   return `${items.length} ${noun} · ${n("critical")} critical · ${n("high")} high`;
 }
 
+/** A finding event as a person reads it: a severity change, "Seen again", or brain's event name. */
+export function eventText(e: { event_type: string; from_severity?: string | null; to_severity?: string | null }): string {
+  if (e.from_severity && e.to_severity && e.from_severity !== e.to_severity) return `Severity ${e.from_severity} → ${e.to_severity}`;
+  return e.event_type === "seen" ? "Seen again" : e.event_type;
+}
+
 /**
  * Up to `limit` open critical, then high, findings of one connection, or of every connected account when none is named.
  * Brain lists oldest first within a severity.

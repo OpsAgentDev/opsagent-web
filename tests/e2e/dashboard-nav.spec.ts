@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
-import { openUserMenu, signUp } from "./helpers";
+import { connectNoisy, openUserMenu, signUp, sql } from "./helpers";
 
 const GROUPS: [string | null, [string, string][]][] = [
   [null, [["Dashboard", "/dashboard"]]],
-  ["Monitoring", [["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"]]],
+  ["Monitoring", [["Findings", "/findings"], ["Ask OpsAgent", "/chat"], ["Deliveries", "/deliveries"], ["Cloud accounts", "/connections"]]],
 ];
 // Help opens the public pages as they are, outside the organisation.
-const HELP: [string, string][] = [["Docs", "/docs"], ["Contact", "/contact"], ["Status", "/status"]];
+const HELP: [string, string][] = [["Docs", "/docs/connect-your-agent"], ["Contact", "/contact"], ["Status", "/status"]];
 
 test("app shell: sidebar with every link, current page marked, top bar, phone drawer opens and closes", async ({ page, request }) => {
   const email = await signUp(page, request);
@@ -59,7 +59,7 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(monitoring.getByRole("button", { name: "Monitoring" })).toHaveAttribute("aria-expanded", "false");
   await expect(monitoring.getByRole("link")).toHaveCount(0);
   await monitoring.getByRole("button", { name: "Monitoring" }).click();
-  await expect(monitoring.getByRole("link")).toHaveCount(3);
+  await expect(monitoring.getByRole("link")).toHaveCount(4);
 
   // Organisation settings open from the organisation menu: one page, each part a tab.
   await orgButton.click();
@@ -110,4 +110,21 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await nav.getByRole("link", { name: "Deliveries", exact: true }).click();
   await expect(page).toHaveURL(/\/deliveries$/);
   await expect(nav).toBeHidden();
+});
+
+test("Cloud accounts lists the organisation's accounts; a removed one is marked and not offered as a filter", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/connections");
+  await expect(page.getByRole("heading", { name: "Cloud accounts", level: 1 })).toBeVisible();
+  await page.getByRole("link", { name: "Connect an account" }).click();
+  await expect(page.getByText("Each cloud account is billed on your plan. The trial covers one.")).toBeVisible();
+
+  const id = await connectNoisy(page);
+  await page.goto("/connections");
+  await expect(page.locator(".cards.accounts").getByText("noisy")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Connect another account" })).toBeVisible();
+
+  sql(`UPDATE connections SET status = 'disconnected' WHERE id = '${id}'`);
+  await page.goto("/deliveries");
+  await expect(page.getByLabel("Connection").locator("option")).toHaveText(["all"]);
 });

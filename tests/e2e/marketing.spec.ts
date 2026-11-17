@@ -299,3 +299,9 @@ test("the header and the hero offer the dashboard instead of Sign in to a signed
   await page.reload();
   await expect(header.getByRole("link", { name: "Open dashboard" })).toHaveAttribute("href", "/dashboard");
 });
+
+test("/docs redirects permanently to the docs page", async ({ request }) => {
+  const res = await request.get("/docs", { maxRedirects: 0 });
+  expect(res.status()).toBe(308);
+  expect(res.headers().location).toBe("/docs/connect-your-agent");
+});

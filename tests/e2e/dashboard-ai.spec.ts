@@ -17,13 +17,13 @@ test("owner turns on AI after reading the notice", async ({ page, request }) => 
   await signUp(page, request);
   await page.goto("/settings/ai");
   await expect(page.getByText(NOTICE)).toBeVisible();
-  const toggle = page.getByLabel("Dashboard AI on");
+  const toggle = page.getByLabel("Turn on Dashboard AI");
   await expect(toggle).not.toBeChecked();
   await toggle.click(); // controlled: it flips once brain answers
   await expect(toggle).toBeChecked();
   await expect(page.getByText("Provider: Anthropic, on OpsAgent's key")).toBeVisible();
   await page.reload();
-  await expect(page.getByLabel("Dashboard AI on")).toBeChecked();
+  await expect(page.getByLabel("Turn on Dashboard AI")).toBeChecked();
   await expect(page.getByText(/^Resets on /)).toBeVisible();
 });
 
@@ -54,6 +54,20 @@ test("explain a finding shows label and cached text on reload", async ({ page, r
   await page.getByLabel("What is wrong?").fill("It names the wrong service.");
   await page.getByRole("button", { name: "Send report" }).click();
   await expect(page.getByText("Thanks. We'll look at it.")).toBeVisible();
+});
+
+test("with AI off a finding offers Turn on Dashboard AI instead of the explain button", async ({ page, request }) => {
+  await signUp(page, request);
+  await connectNoisy(page);
+  await page.goto("/findings");
+  const link = page.locator("tbody tr a").first();
+  await expect(async () => {
+    await page.reload();
+    await expect(link).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 60_000 });
+  await link.click();
+  await expect(page.getByRole("link", { name: "Turn on Dashboard AI" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Explain this finding" })).toHaveCount(0);
 });
 
 test("quota reached state", async ({ page, request }) => {
@@ -146,7 +160,7 @@ test("member sees ask-an-owner", async ({ page, request }) => {
   sql(`UPDATE members SET role = 'member' WHERE organisation_id = ${NEWEST_ORG}`);
   await page.goto("/settings/ai");
   await expect(page.getByText("Ask an owner to turn on Dashboard AI")).toBeVisible();
-  await expect(page.getByLabel("Dashboard AI on")).toHaveCount(0);
+  await expect(page.getByLabel("Turn on Dashboard AI")).toHaveCount(0);
   await expect(page.getByLabel("API key")).toHaveCount(0);
 });
 

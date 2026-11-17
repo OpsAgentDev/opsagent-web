@@ -35,6 +35,8 @@ const common = [
 
 const nextConfig: NextConfig = { reactStrictMode: true, output: "standalone", poweredByHeader: false,
   // In-app addresses carry the organisation (/o/<slug>/dashboard); the pages live at the path after it (lib/org-path.ts).
+  // Docs has one page so far; /docs is its address in links and memory.
+  redirects: async () => [{ source: "/docs", destination: "/docs/connect-your-agent", permanent: true }],
   rewrites: async () => [
     { source: "/o/:org/:section(dashboard|findings|chat|deliveries|settings|connections|onboarding)/:rest*", destination: "/:section/:rest*" },
   ],
