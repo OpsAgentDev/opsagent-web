@@ -59,7 +59,7 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await expect(monitoring.getByRole("button", { name: "Monitoring" })).toHaveAttribute("aria-expanded", "false");
   await expect(monitoring.getByRole("link")).toHaveCount(0);
   await monitoring.getByRole("button", { name: "Monitoring" }).click();
-  await expect(monitoring.getByRole("link")).toHaveCount(3);
+  await expect(monitoring.getByRole("link")).toHaveCount(4);
 
   // Organisation settings open from the organisation menu: one page, each part a tab.
   await orgButton.click();
