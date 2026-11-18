@@ -11,7 +11,7 @@ export default function Terms() {
   return (
     <main className="page">
       <h1>Terms of service</h1>
-      <p className="lead">Last updated 9 November 2026</p>
+      <p className="lead">Last updated 18 November 2026</p>
       <p>
         These terms are between you and Binary Labs LLC, which runs OpsAgent. By using OpsAgent you agree to them. If
         you use it for a company, you agree for that company. Our <Link href="/privacy">privacy policy</Link> says how
@@ -81,7 +81,7 @@ export default function Terms() {
       </section>
       <section>
         <h2>Governing law</h2>
-        <p>These terms are governed by the laws of the State where Binary Labs LLC is registered.</p>
+        <p>These terms are governed by the laws of the State of Wyoming, USA. Disputes go to the state or federal courts in Wyoming.</p>
       </section>
       <section>
         <h2>Changes and contact</h2>
