@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import { api, ApiError } from "@/lib/api/client";
 import { authMessage, messageFor } from "@/lib/auth-errors";
 import { log } from "@/lib/log";
@@ -16,7 +17,8 @@ export function useAuthStep(returnTo?: string, initialError?: string) {
   useEffect(() => {
     api.GET("/auth/me").then(({ response }) => {
       if (!response.ok) return setBusy(false);
-      setSignedIn(true);
+      // Paint the note before leaving: without the flush a fast redirect unloads the page first.
+      flushSync(() => setSignedIn(true));
       window.location.replace(returnTo && isSameOrigin(returnTo, window.location.origin) ? returnTo : "/dashboard");
     }, () => setBusy(false));
   }, [returnTo]);
