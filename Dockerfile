@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-# NEXT_PUBLIC_* is inlined at build time: Railway passes service variables as build args.
+# NEXT_PUBLIC_* is inlined at build time: the deploy workflow passes them as build args.
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 # Public site key for Cloudflare Turnstile; optional (unset = no widget).
