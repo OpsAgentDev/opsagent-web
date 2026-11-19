@@ -1,5 +1,7 @@
 /** Build-time switch (NEXT_PUBLIC_GA_ID=G-...): Google Analytics on the public pages, loaded only after the visitor accepts. Unset: no banner and nothing loads. */
-export const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "";
+export const gaId = (raw: string | undefined) => (/^G-[A-Z0-9]{4,20}$/.test(raw ?? "") ? (raw as string) : "");
+/** Empty unless the build value is a GA4 Measurement ID; anything else leaves analytics off. */
+export const GA_ID = gaId(process.env.NEXT_PUBLIC_GA_ID);
 
 export const CONSENT_KEY = "analytics-consent";
 /** Fired by the footer's "Cookie settings" to show the banner again. */

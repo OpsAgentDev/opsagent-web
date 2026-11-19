@@ -18,6 +18,17 @@ export function Analytics() {
     window.addEventListener(CONSENT_OPEN_EVENT, reopen);
     return () => window.removeEventListener(CONSENT_OPEN_EVENT, reopen);
   }, []);
+  // Google's standard start-up, run here rather than as an inline script built from the ID.
+  useEffect(() => {
+    if (consent !== "granted") return;
+    const w = window as unknown as { dataLayer?: unknown[] };
+    const layer = (w.dataLayer ??= []);
+    // gtag.js reads the `arguments` object itself, not an array.
+    // eslint-disable-next-line prefer-rest-params, @typescript-eslint/no-unused-vars
+    function gtag(..._: unknown[]) { layer.push(arguments); }
+    gtag("js", new Date());
+    gtag("config", GA_ID);
+  }, [consent]);
   if (!GA_ID || consent === "unknown") return null;
 
   const answer = (choice: Consent) => {
@@ -38,12 +49,7 @@ export function Analytics() {
   return (
     <>
       {consent === "granted" ? (
-        <>
-          <Script src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`} strategy="afterInteractive" />
-          <Script id="ga-init" strategy="afterInteractive">
-            {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GA_ID)});`}
-          </Script>
-        </>
+        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
       ) : null}
       {consent === null || open ? (
         <section className="cookie-banner" aria-label="Cookies">
