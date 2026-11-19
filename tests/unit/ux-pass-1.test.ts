@@ -129,3 +129,13 @@ describe("eventText", () => {
     expect(eventText({ event_type: "resolved" })).toBe("resolved");
   });
 });
+
+describe("last verification", () => {
+  it("is in plain words, and an unknown code is shown as it is", async () => {
+    const { outcomeText } = await import("@/lib/connection-status");
+    expect(outcomeText("access_denied")).toBe("AWS refused access");
+    expect(outcomeText("connected")).toBe("Connected");
+    expect(outcomeText("something_new")).toBe("something_new");
+    expect(outcomeText("constructor")).toBe("constructor");
+  });
+});

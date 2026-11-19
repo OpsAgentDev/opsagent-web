@@ -6,7 +6,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Reconnect } from "@/components/reconnect";
 import { RemoveConnection } from "@/components/remove-connection";
 import { api, unwrap, type Connection } from "@/lib/api/client";
-import { canReconnect } from "@/lib/connection-status";
+import { canReconnect, outcomeText } from "@/lib/connection-status";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -18,7 +18,7 @@ function LastVerification({ v }: { v: NonNullable<Connection["last_verification"
     <section>
       <h2>Last verification</h2>
       <p>
-        {v.outcome} at {new Date(v.at).toLocaleString()}
+        {outcomeText(v.outcome)}, {new Date(v.at).toLocaleString()}
       </p>
       {v.missing_grants.length > 0 && <p>Missing permissions: {v.missing_grants.join(", ")}</p>}
       {v.extra_grants.length > 0 && <p>Permissions beyond the template: {v.extra_grants.join(", ")}</p>}
