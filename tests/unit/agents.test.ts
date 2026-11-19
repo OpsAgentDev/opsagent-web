@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { agentsScopeNote, CLAUDE_COMMAND, CLIENTS, cursorDeeplink, kindLabel, STDIO_BRIDGE, vscodeDeeplink } from "@/lib/agents";
+import { accessLabel, agentsScopeNote, CLAUDE_COMMAND, CLIENTS, cursorDeeplink, kindLabel, STDIO_BRIDGE, vscodeDeeplink } from "@/lib/agents";
 import { isOwner } from "@/lib/delivery";
 
 describe("agents", () => {
@@ -11,6 +11,11 @@ describe("agents", () => {
   it("member_sees_only_own_rows_message", () => {
     expect(agentsScopeNote("member")).toMatch(/only the agents you connected/);
     expect(agentsScopeNote("owner")).toBeNull();
+  });
+  it("labels access, and a missing scopes list is read-only", () => {
+    expect(accessLabel(["opsagent.read"])).toBe("Read");
+    expect(accessLabel(["opsagent.read", "opsagent.write"])).toBe("Read and changes");
+    expect(accessLabel(undefined)).toBe("Read");
   });
   it("docs page strings are exact", () => {
     expect(CLAUDE_COMMAND).toBe("claude mcp add --transport http opsagent https://brain.opsagent.dev/mcp");

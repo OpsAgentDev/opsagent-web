@@ -135,6 +135,10 @@ export const STDIO_BRIDGE = json({ mcpServers: { opsagent: { command: "npx", arg
 export const KIND_LABELS: Record<string, string> = { dynamic: "Registered client", metadata_document: "Published client" };
 export const kindLabel = (kind: string) => KIND_LABELS[kind] ?? kind;
 
+/** A brain older than the write scope sends no `scopes`; that is read-only. */
+export const hasWrite = (scopes?: string[] | null) => scopes?.includes("opsagent.write") ?? false;
+export const accessLabel = (scopes?: string[] | null) => (hasWrite(scopes) ? "Read and changes" : "Read");
+
 /** Brain lists every grant to owners and only their own to members; say so. */
 export function agentsScopeNote(role?: string | null): string | null {
   return role === "owner" ? null : "You see only the agents you connected. An owner sees all of them.";
