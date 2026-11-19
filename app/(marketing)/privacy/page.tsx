@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { GA_ID } from "@/lib/analytics";
 
 export const metadata: Metadata = {
   title: "Privacy policy · OpsAgent",
@@ -61,6 +62,12 @@ export default function Privacy() {
           <li>Resend: sending sign-in and briefing email.</li>
           <li>Slack: delivering briefings, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
+          {GA_ID ? (
+            <li>
+              Google Analytics: counting visits to the public pages of opsagent.dev, only after you accept its cookies.
+              It is never loaded in the signed-in app.
+            </li>
+          ) : null}
           <li>
             Anthropic: Dashboard AI explanations and chat, only after an owner of your organisation turns Dashboard AI
             on. OpsAgent sends the details of the findings and resources you ask about. Anthropic does not train on this
@@ -79,7 +86,11 @@ export default function Privacy() {
         <h2>Cookies</h2>
         <p>
           OpsAgent uses only first-party cookies needed to sign you in and to approve agent connections. No advertising
-          or tracking cookies. Your browser also
+          cookies.{" "}
+          {GA_ID
+            ? "On the public pages, Google Analytics sets its cookies only if you accept them in the banner; change your answer any time with \"Cookie settings\" at the foot of the page."
+            : "No tracking cookies."}{" "}
+          Your browser also
           remembers, in its local storage, if you dismissed the passkey suggestion.
         </p>
       </section>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettings } from "@/components/marketing/Analytics";
 import { FooterBadges } from "@/components/marketing/FooterBadges";
 import { NAV } from "@/components/marketing/SiteHeader";
 import { ThemeSwitch } from "@/components/theme-switch";
@@ -11,6 +12,7 @@ export function SiteFooter() {
         {[...NAV, { href: "/privacy", label: "Privacy" }, { href: "/terms", label: "Terms" }, { href: "/status", label: "Status" }].map((l) => (
           <Link key={l.href} href={l.href}>{l.label}</Link>
         ))}
+        <CookieSettings />
       </nav>
       <ThemeSwitch />
       <FooterBadges />
