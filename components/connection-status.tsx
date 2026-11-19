@@ -28,10 +28,11 @@ export function ConnectionFacts({ c }: { c: Connection }) {
   );
 }
 
-/** Next actions: scan now (when the account can be read), preview the briefing, go to the findings. */
+/** Next actions: scan now (when the account can be read), preview the briefing, go to the findings. None before the first verification. */
 export function ConnectionActions({ c, canScan, onScan, started }: { c: Connection; canScan: boolean; onScan: () => void; started: boolean }) {
   // A removed connection can be neither scanned nor briefed; its old findings stay readable.
   const removed = c.status === "disconnected";
+  if (c.status === "pending" || c.status === "verifying") return null;
   return (
     <div className="row">
       {!removed && <button type="button" onClick={onScan} disabled={!canScan}>Scan now</button>}

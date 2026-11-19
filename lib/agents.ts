@@ -137,6 +137,14 @@ export const kindLabel = (kind: string) => KIND_LABELS[kind] ?? kind;
 
 /** A brain older than the write scope sends no `scopes`; that is read-only. */
 export const hasWrite = (scopes?: string[] | null) => scopes?.includes("opsagent.write") ?? false;
+/**
+ * Only an owner may let an agent make changes. Brain says so per organisation as `role` or `owner`;
+ * a brain older than that sends neither, and the member is then treated as an owner.
+ */
+export function ownsOrg(o?: object | null): boolean {
+  const { role, owner } = (o ?? {}) as { role?: string | null; owner?: boolean | null };
+  return role != null ? role === "owner" : owner !== false;
+}
 export const accessLabel = (scopes?: string[] | null) => (hasWrite(scopes) ? "Read and changes" : "Read");
 
 /** Brain lists every grant to owners and only their own to members; say so. */
