@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { TrialPanel } from "@/components/trial-panel";
 import { api, unwrap } from "@/lib/api/client";
-import { accountsLine, daysLeft, daysLeftText, goToStripe, loadBilling, TIERS } from "@/lib/billing";
+import { accountsLine, checkoutOffers, daysLeft, daysLeftText, goToStripe, hadSubscription, loadBilling, PAID_AT_ONCE, TIERS } from "@/lib/billing";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -45,7 +45,7 @@ function BillingPage() {
     }
   }
   const path = { params: { path: { org: org.slug } } };
-  const checkout = () => go(() => unwrap(api.POST("/orgs/{org}/billing/checkout", { ...path, body: {} })));
+  const checkout = (tier: string) => go(() => unwrap(api.POST("/orgs/{org}/billing/checkout", { ...path, body: { tier } })));
   const portal = () => go(() => unwrap(api.POST("/orgs/{org}/billing/portal", path)));
 
   const owner = org.role === "owner";
@@ -83,14 +83,21 @@ function BillingPage() {
             <p className="muted">Renews {new Date(data.current_period_end).toLocaleDateString()}</p>
           )}
           {!owner && <p className="muted">{noPlan ? "Only an owner can start a plan." : "Only an owner can change the plan."}</p>}
-          {owner && noPlan && <TrialPanel available={data.trial_available !== false} />}
-          {owner && subscribed && (
-            <button type="button" className="fit" disabled={busy} onClick={portal}>Manage billing</button>
-          )}
+          {owner && noPlan && <TrialPanel available={status === "none" && data.trial_available !== false} />}
           {owner && !subscribed && (
-            <button type="button" className="primary fit" disabled={busy} onClick={checkout}>
-              {status === "none" && data.trial_available !== false ? "Start free trial" : "Start plan"}
-            </button>
+            <>
+              <div className="row">
+                {checkoutOffers(data).map((o, i) => (
+                  <button key={o.tier} type="button" className={i ? undefined : "primary"} disabled={busy} onClick={() => checkout(o.tier)}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              <p className="muted">{PAID_AT_ONCE}</p>
+            </>
+          )}
+          {owner && hadSubscription(data) && (
+            <button type="button" className="fit" disabled={busy} onClick={portal}>Manage billing</button>
           )}
         </section>
       )}

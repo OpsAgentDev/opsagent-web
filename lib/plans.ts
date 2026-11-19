@@ -12,6 +12,6 @@ export const PRICE_NOTE = "Prices in US dollars, plus tax where applicable.";
 
 export const PLAN_FEATURES = [
   ["Members", "members"],
-  ["Cloud accounts", "integrations"],
+  ["Slack workspaces", "integrations"],
   ["AI credits per cloud account per month", "aiCredits"],
 ] as const;

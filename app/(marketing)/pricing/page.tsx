@@ -42,6 +42,7 @@ export default function Pricing() {
           </li>
         ))}
       </ul>
+      <p className="trial-note">Every plan covers any number of cloud accounts; each connected account is billed at the plan&apos;s price.</p>
       <p className="trial-note">{PRICE_NOTE}</p>
       <section>
         <h2>Questions</h2>
@@ -60,7 +61,10 @@ export default function Pricing() {
           </div>
           <div>
             <h3>Can I cancel?</h3>
-            <p>Yes. Your history stays readable for 30 days.</p>
+            <p>
+              Yes. After a cancel or an ended trial your data stays until you delete the organisation. A deleted organisation is erased from the
+              live database after 30 days and leaves the nightly backups within 30 days more.
+            </p>
           </div>
         </div>
       </section>

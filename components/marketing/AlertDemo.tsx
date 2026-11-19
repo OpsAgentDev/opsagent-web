@@ -102,7 +102,7 @@ const FINDINGS: { sev: "bad" | "warn"; label: string; check: string; title: Reac
   { sev: "bad", label: "Critical", check: "Public exposure", title: <>Database <code>prod-db</code> snapshot left public</> },
   { sev: "warn", label: "Needs attention", check: "IAM", title: <>2 keys of <code>ci-deploy</code> unused for 180 days</> },
   { sev: "warn", label: "Needs attention", check: "Backups", title: <>No backup plan covers <code>orders-db</code></> },
-  { sev: "warn", label: "Needs attention", check: "Cost", title: <>Load balancer <code>lb-staging</code> idle for 30 days</> },
+  { sev: "warn", label: "Needs attention", check: "Cost", title: <>Volume <code>staging-data</code> is not attached to anything</> },
   { sev: "warn", label: "Needs attention", check: "Certificates", title: <>Certificate for <code>api.example.com</code> expires in 12 days</> },
 ];
 

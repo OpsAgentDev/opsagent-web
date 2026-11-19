@@ -26,7 +26,7 @@ export default function Privacy() {
           <li>Findings, and the evidence behind them.</li>
           <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
-          <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries, which you can view.</li>
+          <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries. Ask through the <Link href="/contact">contact form</Link> for a copy.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
           <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>
         </ul>
@@ -97,8 +97,10 @@ export default function Privacy() {
       <section>
         <h2>Your choices</h2>
         <p>
-          Ask through the <Link href="/contact">contact form</Link> and we will delete your account and your
-          organisation&apos;s data within 30 days. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
+          After a cancel or an ended trial your data stays until you delete the organisation, which an owner does
+          under Settings, Account, or by asking through the <Link href="/contact">contact form</Link>; you can delete your own account there too. A deleted
+          organisation is erased from the live database after 30 days and leaves the nightly backups within 30 days
+          more. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
           days. Disconnecting a cloud account stops OpsAgent using its role at once.
         </p>
         <p>If an incident on our side affects your data, we tell you within 72 hours of confirming it.</p>
