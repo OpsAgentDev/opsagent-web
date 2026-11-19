@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accessLabel, agentsScopeNote, CLAUDE_COMMAND, CLIENTS, cursorDeeplink, kindLabel, STDIO_BRIDGE, vscodeDeeplink } from "@/lib/agents";
+import { accessLabel, agentsScopeNote, ownsOrg, CLAUDE_COMMAND, CLIENTS, cursorDeeplink, kindLabel, STDIO_BRIDGE, vscodeDeeplink } from "@/lib/agents";
 import { isOwner } from "@/lib/delivery";
 
 describe("agents", () => {
@@ -16,6 +16,14 @@ describe("agents", () => {
     expect(accessLabel(["opsagent.read"])).toBe("Read");
     expect(accessLabel(["opsagent.read", "opsagent.write"])).toBe("Read and changes");
     expect(accessLabel(undefined)).toBe("Read");
+  });
+  it("reads the owner from either field name, and a missing one is an owner", () => {
+    expect(ownsOrg({ slug: "a", name: "A", role: "owner" })).toBe(true);
+    expect(ownsOrg({ slug: "a", name: "A", role: "member" })).toBe(false);
+    expect(ownsOrg({ slug: "a", name: "A", owner: true })).toBe(true);
+    expect(ownsOrg({ slug: "a", name: "A", owner: false })).toBe(false);
+    expect(ownsOrg({ slug: "a", name: "A" })).toBe(true);
+    expect(ownsOrg(undefined)).toBe(true);
   });
   it("docs page strings are exact", () => {
     expect(CLAUDE_COMMAND).toBe("claude mcp add --transport http opsagent https://brain.opsagent.dev/mcp");

@@ -35,6 +35,10 @@ export default function ConnectYourAgent() {
         <li>Start a scan.</li>
         <li>When you approve changes: accept, snooze or reopen findings, and connect a cloud account.</li>
       </ul>
+      <p>
+        To let your agent make changes, tick &apos;Let this agent make changes&apos; when you approve it. To change this later,
+        revoke it under Settings &gt; Connected agents and connect it again.
+      </p>
       <p>Sign-up, the Terms, the card and Slack stay in your browser.</p>
       <div className="code-panel">
         <div className="code-panel-head">

@@ -5903,6 +5903,13 @@
       "ConsentDecision": {
         "type": "object",
         "properties": {
+          "allow_changes": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for."
+          },
           "deny": {
             "type": [
               "boolean",

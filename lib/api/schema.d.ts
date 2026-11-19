@@ -1394,6 +1394,8 @@ export interface components {
             urgent_alerts?: boolean | null;
         };
         ConsentDecision: {
+            /** @description `true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for. */
+            allow_changes?: boolean | null;
             deny?: boolean | null;
             /** @description Slug of the organisation to grant access to; required unless `deny`. */
             organisation?: string | null;
