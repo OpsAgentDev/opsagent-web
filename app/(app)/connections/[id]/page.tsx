@@ -63,8 +63,8 @@ export default function ConnectionPage() {
       <ConnectionFacts c={c} />
       {c.last_verification && <LastVerification v={c.last_verification} />}
       <ConnectionActions c={c} canScan={SCANNABLE.has(c.status) && !scanning} onScan={scanNow} started={!!scan.started} />
-      {org.role === "owner" && canReconnect(c) && (
-        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} />
+      {org.role === "owner" && (canReconnect(c) || c.status === "pending") && (
+        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} pending={c.status === "pending"} />
       )}
       {org.role === "owner" && c.status !== "disconnected" && (
         <RemoveConnection
