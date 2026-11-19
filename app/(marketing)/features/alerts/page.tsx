@@ -60,8 +60,10 @@ export default function Alerts() {
       </FeatureSection>
       <FeatureSection Icon={I.MailIcon} title="Weekly report">
         <p>
-          Every Monday, by email and in Slack: spend changes and anomalies with dollar amounts, one recommended cost
-          action, the change in your posture score, IAM changes, backup status and the certificate calendar.
+          Every Monday, by email and in Slack: your posture score, how many IAM findings are open and how many opened
+          or were resolved that week, how many backup issues are open, the certificates with an open finding, and up to
+          ten open critical and high findings waiting for your decision. In a connection&apos;s first week it is a
+          count of findings by severity instead.
         </p>
       </FeatureSection>
       <FeatureSection Icon={I.ChatSquareIcon} title="Where it goes">

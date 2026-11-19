@@ -49,7 +49,7 @@ export default function HowItWorks() {
           <span className="step-badge"><I.SunIcon size={22} /></span>
           <div className="step-card">
             <h2>Morning briefing and weekly report</h2>
-            <p>Exceptions only, in Slack and email. Skipped when nothing changed.</p>
+            <p>The briefing lists exceptions only and is skipped when nothing changed. The weekly report comes every Monday, by email and in Slack.</p>
           </div>
         </li>
         <li>

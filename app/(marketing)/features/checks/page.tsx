@@ -13,8 +13,8 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Idle resources and cost anomalies",
     Icon: I.CostIcon,
-    looks: "Unattached volumes, unused addresses, idle load balancers, running machines under 5% CPU for a week, and days when spend jumps above its 7 and 30-day baselines.",
-    evidence: "Billing data, the resource and its usage metrics, with dollar amounts.",
+    looks: "Unattached volumes, unused addresses and days when spend jumps above its 7 and 30-day baselines.",
+    evidence: "The volume or address itself. For a spend jump, the day's spend and its baselines, in dollars.",
     runs: NIGHTLY,
   },
   {
@@ -41,21 +41,21 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Certificate expiry",
     Icon: I.CertIcon,
-    looks: "Certificates close to expiring, managed renewals that failed, certificates attached to nothing, and endpoints serving a different certificate.",
-    evidence: "The certificate list, days to expiry and the endpoints that use them.",
+    looks: "Certificates close to expiring, managed renewals that failed and certificates attached to nothing.",
+    evidence: "The certificate list, days to expiry and what each certificate is attached to.",
     runs: NIGHTLY,
   },
   {
     title: "Logging and detection gaps",
     Icon: I.LogIcon,
-    looks: "Audit logging that is off or not writing, threat detection switched off in a region, and log groups with no retention limit, with their estimated cost.",
+    looks: "Audit logging that is off or not writing, threat detection switched off in a region, and log groups with no retention limit.",
     evidence: "Audit trail status, threat detection per region and log retention settings.",
     runs: "Every 15 minutes for the audit trail; everything nightly",
   },
   {
     title: "Idle GPUs and stuck training jobs",
     Icon: I.GpuIcon,
-    looks: "GPU machines under 5% use for a day, and training jobs running far longer than usual or over 24 hours.",
+    looks: "GPU machines under 5% use for a day, and training jobs running far longer than usual or over 24 hours. The idle-GPU part needs the CloudWatch agent with NVIDIA metrics on the machine.",
     evidence: "GPU machines, their 24-hour use, and training job history.",
     runs: NIGHTLY,
   },

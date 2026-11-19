@@ -54,6 +54,23 @@ export function upgradePlans(b: Pick<Billing, "status" | "tier" | "enforced"> | 
   return at < 0 ? [] : PLANS.slice(at + 1);
 }
 
+/** The plans Billing offers an owner without a subscription, Team first: the trial is Team's only, and only on a first subscription. */
+export function checkoutOffers(b: Pick<Billing, "status" | "trial_available">): { tier: string; label: string }[] {
+  const trial = b.status === "none" && b.trial_available !== false;
+  return [
+    { tier: "team", label: trial ? "Start free trial" : "Start plan" },
+    { tier: "starter", label: "Choose Starter" },
+    { tier: "scale", label: "Choose Scale" },
+  ];
+}
+
+const price = (id: string) => `US${PLANS.find((p) => p.id === id)!.price}`;
+/** Shown beside "Choose Starter" and "Choose Scale". */
+export const PAID_AT_ONCE = `Starter is ${price("starter")} and Scale is ${price("scale")} a month per connected cloud account, plus tax where applicable. Both start paid at once, with no free trial.`;
+
+/** Invoices live in the Stripe portal, so it is offered once the organisation has ever had a subscription (a trial counts). */
+export const hadSubscription = (b: Pick<Billing, "status">) => b.status !== "none";
+
 /** Navigates to a Stripe-hosted page; refuses any other URL. */
 export function goToStripe(url: string): void {
   const u = new URL(url);
