@@ -7,7 +7,7 @@ import { MCP_URL } from "@/lib/agents";
 
 export const metadata: Metadata = {
   title: "Connect your agent · OpsAgent",
-  description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. Your agent reads findings and evidence, read-only, for one organisation you approve.",
+  description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. Your agent reads findings and evidence for one organisation you approve, and changes nothing unless you allow it.",
 };
 
 export default function Agents() {
@@ -30,10 +30,11 @@ export default function Agents() {
           runs an MCP server, so your agent can look up your findings when you ask it.
         </p>
       </FeatureSection>
-      <FeatureSection Icon={I.NoWriteIcon} title="What your agent can read">
+      <FeatureSection Icon={I.NoWriteIcon} title="What your agent can do">
         <p>
-          Findings and the evidence behind them, resources, connections, scans and cost anomalies. Every tool is
-          read-only: nothing your agent asks for can change your cloud.
+          Read findings and the evidence behind them, resources, connections, scans and cost anomalies, and start a
+          scan. If you approve changes when you connect it, your agent can also accept, snooze or reopen findings and
+          connect a cloud account. Nothing your agent asks for can change your cloud.
         </p>
         <p>
           Access covers one organisation, the one you pick when you approve. Your agent uses its own model; OpsAgent

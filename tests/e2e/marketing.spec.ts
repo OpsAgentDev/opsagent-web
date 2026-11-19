@@ -17,7 +17,7 @@ const NAV = [...FEATURES, ...LINKS];
 const FEATURE_PAGES = [
   { path: "/features/alerts", h1: "Alerts and briefings", section: "Urgent alerts" },
   { path: "/features/checks", h1: "What it checks", section: "The ten checks" },
-  { path: "/features/agents", h1: "Connect your agent", section: "What your agent can read" },
+  { path: "/features/agents", h1: "Connect your agent", section: "What your agent can do" },
   { path: "/features/ai-and-review", h1: "Dashboard AI and human review", section: "Human review" },
 ];
 

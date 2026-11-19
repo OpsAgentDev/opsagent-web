@@ -47,6 +47,18 @@ export function connectionSentence(status: string, reason?: string | null): stri
   return s && why && (status === "revoked" || status === "disconnected") ? `${s} ${why}` : (s ?? null);
 }
 
+const OUTCOMES: Record<string, string> = {
+  connected: "Connected",
+  degraded: "Connected, some permissions missing",
+  blocked: "The role could not be used",
+  access_denied: "AWS refused access",
+  revoked: "Access was lost",
+  error: "The check could not finish",
+};
+
+/** The last verification's result in plain words; a code we don't know is shown as it is. */
+export const outcomeText = (outcome: string) => (Object.hasOwn(OUTCOMES, outcome) ? OUTCOMES[outcome] : undefined) ?? outcome;
+
 /** `default` (or nothing) means the organisation's schedule; a custom time stays as is. */
 export const scheduleText = (v?: string | null) => (!v || v === "default" ? "Organisation default" : v);
 
