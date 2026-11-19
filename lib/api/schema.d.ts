@@ -1215,6 +1215,8 @@ export interface components {
             /** Format: date-time */
             last_used_at?: string | null;
             member_email: string;
+            /** @description `["opsagent.read"]` (read only) or `["opsagent.read", "opsagent.write"]` (read and changes). */
+            scopes: string[];
         };
         AiKeyOut: {
             /** @description The custom endpoint's host; null on the style's official URL. */
@@ -1415,6 +1417,12 @@ export interface components {
              */
             publisher?: string | null;
             redirect_uri: string;
+            /**
+             * @description What the client asks for: `["opsagent.read"]`, or `["opsagent.read", "opsagent.write"]`
+             *     when it also wants to accept, snooze and reopen findings and connect cloud accounts.
+             *     Approving grants exactly these.
+             */
+            scopes: string[];
             /** @description Always false: dynamic and metadata-document clients are unverified. */
             verified: boolean;
         };
@@ -1560,6 +1568,8 @@ export interface components {
             title: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description The finding's page in the dashboard, to hand to a person. */
+            url: string;
             variant: string;
         };
         HumanReviewCreated: {
@@ -1839,6 +1849,8 @@ export interface components {
                 title: string;
                 /** Format: date-time */
                 updated_at: string;
+                /** @description The finding's page in the dashboard, to hand to a person. */
+                url: string;
                 variant: string;
             }[];
             /** @description Pass as `cursor` to get the next page; null on the last page. */
@@ -3457,6 +3469,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description `ai_provider_outage` */
             502: {
                 headers: {
@@ -3576,6 +3596,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description `ai_key_failing` or `ai_provider_outage` */
             502: {
                 headers: {
@@ -3619,6 +3647,14 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

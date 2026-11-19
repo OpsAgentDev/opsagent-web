@@ -4,7 +4,7 @@ import { CLIENTS, MCP_URL, STDIO_BRIDGE, type Snippet } from "@/lib/agents";
 export const metadata = {
   title: "Connect an MCP client · OpsAgent",
   description:
-    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any MCP client to OpsAgent. You approve it in your browser; access is read-only.",
+    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any MCP client to OpsAgent. You approve it in your browser; access is read-only unless you approve changes.",
 };
 
 function Code({ s, client }: { s: Snippet; client: string }) {
@@ -27,8 +27,15 @@ export default function ConnectYourAgent() {
       <h1>Connect your agent</h1>
       <p className="lead">
         OpsAgent speaks MCP, so any AI tool that supports remote MCP servers can read your findings. You sign in and
-        approve the connection in your browser; the agent gets read-only access to one organisation.
+        approve the connection in your browser; the agent gets access to one organisation, read-only unless you approve changes.
       </p>
+      <h2>What your agent can do</h2>
+      <ul>
+        <li>Read your connections, findings, evidence and scans.</li>
+        <li>Start a scan.</li>
+        <li>When you approve changes: accept, snooze or reopen findings, and connect a cloud account.</li>
+      </ul>
+      <p>Sign-up, the Terms, the card and Slack stay in your browser.</p>
       <div className="code-panel">
         <div className="code-panel-head">
           <span>MCP URL</span>
