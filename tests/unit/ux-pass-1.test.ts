@@ -102,6 +102,17 @@ describe("connection reasons", () => {
     expect(reasonText("verify_error:timeout")).toMatch(/couldn't finish/);
   });
 
+  it("says what to check when AWS refused a role that never connected, and leaves the rest alone", () => {
+    expect(connectionSentence("pending", "access_denied")).toBe(
+      "AWS refused access to this role. Check that the stack finished and that you pasted its RoleArn output, then verify again.",
+    );
+    expect(connectionSentence("pending")).toBe("Waiting to be verified.");
+    expect(connectionSentence("pending", "some_new_code")).toBe("Waiting to be verified.");
+    expect(connectionSentence("verifying", "access_denied")).toBe("Checking the role. This usually takes under a minute.");
+    expect(connectionSentence("degraded", "access_denied")).toBe("AWS refused access to the role.");
+    expect(reasonText("access_denied")).toBe("AWS refused access to the role.");
+  });
+
   it("hides unknown codes and keeps real sentences", () => {
     expect(reasonText("some_new_code")).toBe("");
     expect(reasonText("constructor")).toBe("");

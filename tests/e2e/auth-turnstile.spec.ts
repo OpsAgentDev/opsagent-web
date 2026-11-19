@@ -34,3 +34,22 @@ test("submit waits for the Turnstile token, which reaches the request body", asy
   await expect(page.getByLabel("Code")).toBeVisible();
   expect(body?.turnstile_token).toBe("stub-token");
 });
+
+test("a check that has not loaded after 10 seconds is said under the button, until it arrives", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as unknown as Record<string, unknown>).turnstile = {
+      render: (_el: unknown, opts: { callback: (t: string) => void }) => {
+        (window as unknown as Record<string, unknown>).__give = () => opts.callback("stub-token");
+        return "w1";
+      },
+      reset: () => {}, remove: () => {},
+    };
+  });
+  await page.goto("/sign-up/email");
+  const notice = page.getByRole("status").filter({ hasText: "The security check did not load. Reload the page, or turn off content blockers for this site." });
+  await expect(page.getByRole("button", { name: "Send link and code" })).toBeDisabled();
+  await expect(notice).toHaveCount(0);
+  await expect(notice).toBeVisible({ timeout: 20_000 }); // real time: the wait is 10 seconds
+  await page.evaluate(() => (window as unknown as { __give: () => void }).__give());
+  await expect(notice).toHaveCount(0);
+});

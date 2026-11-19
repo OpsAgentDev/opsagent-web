@@ -21,6 +21,8 @@ const REASONS: Record<string, string> = {
   organisation_deleted: "",
 };
 
+const PENDING_REFUSED = "AWS refused access to this role. Check that the stack finished and that you pasted its RoleArn output, then verify again.";
+
 /** A customer-readable reason. Codes we don't know are hidden; text that is already a sentence passes through. */
 export function reasonText(reason?: string | null): string {
   if (!reason) return "";
@@ -38,6 +40,8 @@ export function connectionSentence(status: string, reason?: string | null): stri
   const why = reasonText(reason);
   if (status === "degraded") return why || "Some checks can't read this account right now.";
   if (status === "blocked") return why || "OpsAgent couldn't use this role. Check it was created from the OpsAgent template.";
+  // Refused before it ever connected: say what to check, not just that it is waiting.
+  if (status === "pending" && reason === "access_denied") return PENDING_REFUSED;
   const s = SENTENCES[status];
   // Keep the reason brain gives for a lost connection beside the plain sentence.
   return s && why && (status === "revoked" || status === "disconnected") ? `${s} ${why}` : (s ?? null);

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { CodeInput } from "@/components/auth/code-input";
 import { MailIcon } from "@/components/auth/icons";
 import { Turnstile } from "@/components/auth/turnstile";
@@ -8,7 +8,7 @@ import { useAuthStep } from "@/components/auth/use-auth-step";
 import { api, unwrap } from "@/lib/api/client";
 import { cleanName } from "@/lib/person-name";
 import { isSameOrigin } from "@/lib/safe-redirect";
-import { submitDisabled, TURNSTILE_SITE_KEY } from "@/lib/turnstile";
+import { CHECK_NOT_LOADED, submitDisabled, TURNSTILE_SITE_KEY, watchCheck } from "@/lib/turnstile";
 
 type Props = { mode: "sign-up" | "sign-in"; returnTo?: string };
 
@@ -20,6 +20,8 @@ export function EmailForm({ mode, returnTo }: Props) {
   const [token, setToken] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState(0); // a Turnstile token is single use: reset after every request
   const [codeKey, setCodeKey] = useState(0); // remounts (clears and refocuses) the code input
+  const [checkLate, setCheckLate] = useState(false);
+  useEffect(() => watchCheck(TURNSTILE_SITE_KEY, token, setCheckLate), [token]);
   const signUp = mode === "sign-up";
   const back = `/${mode}${returnTo ? `?return_to=${encodeURIComponent(returnTo)}` : ""}`;
   const blocked = submitDisabled({ busy, siteKey: TURNSTILE_SITE_KEY, token });
@@ -102,6 +104,7 @@ export function EmailForm({ mode, returnTo }: Props) {
         </label>
         {widget}
         <button type="submit" className={signUp ? "auth-btn primary" : "auth-btn"} disabled={blocked}><MailIcon />Send link and code</button>
+        {checkLate ? <p role="status" className="auth-note">{CHECK_NOT_LOADED}</p> : null}
       </form>
       <Link href={back} className="auth-link">Back to all options</Link>
     </div>
