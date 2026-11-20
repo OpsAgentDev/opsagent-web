@@ -37,6 +37,10 @@ export function reasonText(reason?: string | null): string {
 export const canReconnect = (c: { status: string; status_reason?: string | null }) =>
   c.status === "revoked" || (c.status === "disconnected" && c.status_reason === "revoked_at_period_end");
 
+/** The owner's launch-and-verify block: `finish` a connection never verified, `reconnect` one that lost its role, or none. */
+export const launchBlock = (c: { status: string; status_reason?: string | null }): "finish" | "reconnect" | null =>
+  c.status === "pending" ? "finish" : canReconnect(c) ? "reconnect" : null;
+
 export function connectionSentence(status: string, reason?: string | null): string | null {
   const why = reasonText(reason);
   if (status === "degraded") return why || "Some checks can't read this account right now.";

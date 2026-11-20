@@ -6,7 +6,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Reconnect } from "@/components/reconnect";
 import { RemoveConnection } from "@/components/remove-connection";
 import { api, unwrap, type Connection } from "@/lib/api/client";
-import { canReconnect, outcomeText } from "@/lib/connection-status";
+import { launchBlock, outcomeText } from "@/lib/connection-status";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -66,8 +66,8 @@ export default function ConnectionPage() {
       )}
       {c.last_verification && <LastVerification v={c.last_verification} />}
       <ConnectionActions c={c} canScan={SCANNABLE.has(c.status) && !scanning} onScan={scanNow} started={!!scan.started} />
-      {org.role === "owner" && (canReconnect(c) || c.status === "pending") && (
-        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} pending={c.status === "pending"} />
+      {org.role === "owner" && launchBlock(c) && (
+        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} pending={launchBlock(c) === "finish"} />
       )}
       {org.role === "owner" && c.status !== "disconnected" && (
         <RemoveConnection
