@@ -76,6 +76,7 @@ export default function ConnectAws() {
         <form className="stack" onSubmit={create}>
           <p>Name this account so you can tell it apart later, for example production. Next you create a read-only role in AWS; OpsAgent never gets keys to your account.</p>
           <p className="muted">Each cloud account is billed on your plan. The trial covers one.</p>
+          <p className="muted">Each full scan makes one AWS Cost Explorer request in your account, which AWS bills at about US$0.01.</p>
           {FAKE_ENABLED && (
             <fieldset className="row">
               <legend>Provider</legend>

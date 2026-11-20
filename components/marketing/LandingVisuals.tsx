@@ -140,7 +140,7 @@ const ACCESS: { ok: boolean; what: string }[] = [
   { ok: false, what: "Secret values" },
 ];
 
-/** A plain-words summary of what the read-only role allows; the exceptions live on the Security page. */
+/** A plain-words summary of what the read-only role allows; the full list lives on the Security page. */
 export function AccessLedger({ foot }: { foot: ReactNode }) {
   return (
     <figure className="lp-frame lp-ledger" aria-label="What the OpsAgent role can and cannot do">

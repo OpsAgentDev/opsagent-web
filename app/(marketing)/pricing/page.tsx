@@ -63,7 +63,7 @@ export default function Pricing() {
             <h3>Can I cancel?</h3>
             <p>
               Yes. After a cancel or an ended trial your data stays until you delete the organisation. A deleted organisation is erased from the
-              live database after 30 days and leaves the nightly backups within 30 days more.
+              live database after 30 days and leaves the nightly backups within 40 days.
             </p>
           </div>
         </div>

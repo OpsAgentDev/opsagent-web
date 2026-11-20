@@ -59,7 +59,7 @@ export default function AccountSettings() {
         <section className="card stack">
           <h2>Delete {org.name}</h2>
           <p>
-            Checks stop and the subscription is cancelled now. Findings and history are kept for 30 days, then erased; they leave the nightly backups within 30 days more.
+            Checks stop and the subscription is cancelled now. Findings and history are kept for 30 days, then erased; they leave the nightly backups within 40 days.
             Delete the OpsAgent CloudFormation stack in each AWS account afterwards to remove OpsAgent&apos;s access.
           </p>
           <p><button type="button" className="danger" onClick={() => open("org")}>Delete organisation</button></p>

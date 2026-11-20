@@ -11,7 +11,7 @@ export default function Terms() {
   return (
     <main className="page">
       <h1>Terms of service</h1>
-      <p className="lead">Last updated 19 November 2026</p>
+      <p className="lead">Last updated 20 November 2026</p>
       <p>
         These terms are between you and Binary Labs LLC, which runs OpsAgent. By using OpsAgent you agree to them. If
         you use it for a company, you agree for that company. Our <Link href="/privacy">privacy policy</Link> says how

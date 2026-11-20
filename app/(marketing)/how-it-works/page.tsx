@@ -18,8 +18,8 @@ export default function HowItWorks() {
           <div className="step-card">
             <h2>Connect read-only</h2>
             <p>
-              You create one role in your cloud account in one click. It can list and describe resources and read
-              billing and security findings. It cannot read your stored data or change anything, with a few opt-in exceptions listed on the Security page. AWS is the first supported
+              You create one role in your cloud account in one click. It can list and describe your resources and read
+              your cost totals. It cannot read your stored data or change anything. Everything it can read is listed on the Security page. AWS is the first supported
               provider.
             </p>
           </div>

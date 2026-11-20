@@ -62,7 +62,7 @@ export function ReadOnly() {
         <p className="lp-more"><Link href="/how-it-works">See how it works</Link></p>
       </div>
       <AccessLedger
-        foot={<>Three scoped reads are the exceptions. They are listed on the <Link href="/security">Security page</Link>.</>}
+        foot={<>Everything the role can read is listed on the <Link href="/security">Security page</Link>.</>}
       />
     </section>
   );

@@ -12,7 +12,7 @@ export default function Privacy() {
   return (
     <main className="page">
       <h1>Privacy policy</h1>
-      <p className="lead">Last updated 19 November 2026</p>
+      <p className="lead">Last updated 20 November 2026</p>
       <p>
         OpsAgent is run by Binary Labs LLC. This page says what we store when you use it, why, and what you can ask
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
@@ -32,8 +32,8 @@ export default function Privacy() {
           {HUMAN_REVIEW && <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>}
         </ul>
         <p>
-          OpsAgent connects through a read-only role you create. It cannot read your stored data (objects, database
-          rows, secret values). The few scoped reads it can make are listed on the <Link href="/security">security page</Link>.
+          OpsAgent connects through a read-only role you create. It cannot read object contents, database
+          rows, secret or parameter values, log events or function code. What it can read is listed on the <Link href="/security">security page</Link>.
         </p>
       </section>
       <section>
@@ -50,7 +50,8 @@ export default function Privacy() {
           kept there too, in a storage bucket Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
         </p>
         <p>
-          Evidence excerpts are stripped of secret-shaped strings and common personal data before they are stored.
+          Evidence excerpts are stripped of secret-shaped strings and email addresses before they are stored, and so
+          are resource names and tags. Beyond that, resource names and identifiers are stored as your cloud reports them.
           Evidence and inventory snapshots expire after 90 days. Findings are kept while your organisation exists.
         </p>
       </section>
@@ -71,8 +72,8 @@ export default function Privacy() {
           ) : null}
           <li>
             Anthropic: Dashboard AI explanations and chat, only after an owner of your organisation turns Dashboard AI
-            on. OpsAgent sends the details of the findings and resources you ask about. Anthropic does not train on this
-            data.
+            on. OpsAgent sends the AI the findings and resources it looks up to answer you, which can include lists across
+            your organisation. Anthropic does not train on this data.
           </li>
           <li>
             OpenAI: the backup model provider for Dashboard AI on OpsAgent&apos;s key, used the same way as Anthropic.
@@ -100,8 +101,7 @@ export default function Privacy() {
         <p>
           After a cancel or an ended trial your data stays until you delete the organisation, which an owner does
           under Settings, Account, or by asking through the <Link href="/contact">contact form</Link>; you can delete your own account there too. A deleted
-          organisation is erased from the live database after 30 days and leaves the nightly backups within 30 days
-          more. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
+          organisation is erased from the live database after 30 days and leaves the nightly backups within 40 days. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
           days. Disconnecting a cloud account stops OpsAgent using its role at once.
         </p>
         <p>If an incident on our side affects your data, we tell you within 72 hours of confirming it.</p>
