@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GA_ID } from "@/lib/analytics";
+import { HUMAN_REVIEW } from "@/lib/human-review";
 
 export const metadata: Metadata = {
   title: "Privacy policy · OpsAgent",
@@ -28,7 +29,7 @@ export default function Privacy() {
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
           <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries. Ask through the <Link href="/contact">contact form</Link> for a copy.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
-          <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>
+          {HUMAN_REVIEW && <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>}
         </ul>
         <p>
           OpsAgent connects through a read-only role you create. It cannot read your stored data (objects, database

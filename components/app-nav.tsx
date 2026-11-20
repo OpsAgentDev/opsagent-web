@@ -41,10 +41,10 @@ const CLOSED = "opsagent.nav-closed";
 const Chevron = () => <svg className="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" /></svg>;
 const within = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
-type ShellProps = { email: string; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; plan?: string | null; upgrade?: ReactNode; children: ReactNode };
+type ShellProps = { email: string; name?: string | null; orgs: OrgChoice[]; current: OrgChoice & { role?: string }; plan?: string | null; upgrade?: ReactNode; children: ReactNode };
 
 /** The signed-in frame: a left sidebar (a drawer on phones), a top bar with the organisation switcher, then the page. */
-export function AppShell({ email, orgs, current, plan, upgrade, children }: ShellProps) {
+export function AppShell({ email, name, orgs, current, plan, upgrade, children }: ShellProps) {
   const [open, setOpen] = useState(false);
   const pathname = splitOrgPath(usePathname()).path;
   const to = (path: string) => orgHref(current.slug, path);
@@ -129,6 +129,7 @@ export function AppShell({ email, orgs, current, plan, upgrade, children }: Shel
         <div className="sidebar-foot">
           {userOpen && (
             <div id="user-menu" ref={userMenu} className="user-menu">
+              {name && <strong>{name}</strong>}
               <span className="account-email" title={email}>{email}</span>
               {PROFILE.map((l) => (
                 <Link key={l.href} href={to(l.href)} className="user-link" aria-current={within(pathname, l.href) ? "page" : undefined} onClick={() => { setUserOpen(false); close(); }}>

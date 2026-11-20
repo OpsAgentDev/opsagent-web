@@ -7,6 +7,7 @@ import { ExplainPanel } from "@/components/explain-panel";
 import { FindingReviewButton } from "@/components/human-review-dialog";
 import { api, unwrap } from "@/lib/api/client";
 import { eventText } from "@/lib/findings";
+import { HUMAN_REVIEW } from "@/lib/human-review";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -34,7 +35,7 @@ export default function FindingPage() {
           {f.summary && <p>{f.summary}</p>}
           {f.next_step && <p><strong>Next step:</strong> {f.next_step}</p>}
           <ExplainPanel org={org.slug} id={f.id} role={org.role} cached={f.explanation ?? null} />
-          <FindingReviewButton org={org.slug} findingId={f.id} role={org.role} />
+          {HUMAN_REVIEW && <FindingReviewButton org={org.slug} findingId={f.id} role={org.role} />}
           <section>
             <h2>Evidence</h2>
             {f.evidence.length === 0 && <p className="muted">No evidence kept for this finding.</p>}

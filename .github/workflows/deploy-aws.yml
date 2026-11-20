@@ -67,6 +67,7 @@ jobs:
           API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
           TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
           SIGNUPS_OPEN: ${{ vars.NEXT_PUBLIC_SIGNUPS_OPEN }}
+          HUMAN_REVIEW: ${{ vars.NEXT_PUBLIC_HUMAN_REVIEW }}
           GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
         run: |
           registry="$(aws sts get-caller-identity --query Account --output text).dkr.ecr.$AWS_REGION.amazonaws.com"
@@ -77,6 +78,7 @@ jobs:
             docker build -t "$image" --build-arg NEXT_PUBLIC_API_BASE_URL="$API_BASE_URL" \
               --build-arg NEXT_PUBLIC_TURNSTILE_SITE_KEY="$TURNSTILE_SITE_KEY" \
               --build-arg NEXT_PUBLIC_SIGNUPS_OPEN="$SIGNUPS_OPEN" \
+              --build-arg NEXT_PUBLIC_HUMAN_REVIEW="$HUMAN_REVIEW" \
               --build-arg NEXT_PUBLIC_GA_ID="$GA_ID" .
             docker push "$image"
           fi

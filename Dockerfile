@@ -13,6 +13,9 @@ ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 # Sign-ups switch: "true" swaps the waitlist for the free-trial sign-up (default off).
 ARG NEXT_PUBLIC_SIGNUPS_OPEN
 ENV NEXT_PUBLIC_SIGNUPS_OPEN=$NEXT_PUBLIC_SIGNUPS_OPEN
+# Human review switch: "true" shows human review (default off: hidden everywhere).
+ARG NEXT_PUBLIC_HUMAN_REVIEW
+ENV NEXT_PUBLIC_HUMAN_REVIEW=$NEXT_PUBLIC_HUMAN_REVIEW
 # Empty: no Google Analytics and no cookie banner.
 ARG NEXT_PUBLIC_GA_ID
 ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID

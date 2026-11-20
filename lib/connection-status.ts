@@ -17,6 +17,7 @@ const REASONS: Record<string, string> = {
   access_denied: "AWS refused access to the role.",
   revoked_at_period_end:
     "Its role stopped working, so it was turned off before the next billing period and isn't charged. Reconnect to resume checks.",
+  scans_failing: "The last three nightly scans could not finish, so findings may be out of date. We are looking into it.",
   customer_disconnected: "",
   organisation_deleted: "",
 };

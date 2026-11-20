@@ -61,3 +61,37 @@ test("a deleted account lands on the home page", async ({ page }) => {
   await page.getByRole("dialog").getByRole("button", { name: "Delete my account" }).click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test("your name is prefilled, saved through PATCH /auth/me, and a refusal shows brain's words", async ({ page }) => {
+  await mock(page);
+  let name: string | null = "Ada";
+  const sent: unknown[] = [];
+  let refuse = false;
+  // Brain main may not have this route yet: the page's request is what is checked here.
+  await page.route("**/v1/auth/me", (r) => {
+    if (r.request().method() === "GET") return r.fulfill({ json: { ...me, name } });
+    if (r.request().method() !== "PATCH") return r.fallback();
+    sent.push(r.request().postDataJSON());
+    if (refuse) return r.fulfill(problem(422, "invalid_name", "That name can't be used."));
+    name = (r.request().postDataJSON() as { name: string }).name;
+    return r.fulfill({ json: { ...me, name } });
+  });
+  await page.goto("/settings/account");
+  const field = page.getByLabel("Your name");
+  await expect(field).toHaveValue("Ada");
+  await expect(page.getByText("Sign-in email: boss@example.com")).toBeVisible();
+  await expect(page.getByRole("link", { name: "contact form" })).toHaveAttribute("href", "/contact");
+  await field.fill("  Ada Lovelace ");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByText("Name saved.")).toBeVisible();
+  expect(sent).toEqual([{ name: "Ada Lovelace" }]);
+  // The account menu reads the session again and shows the new name.
+  await page.getByRole("button", { name: /^Account: / }).click();
+  await expect(page.locator("#user-menu").getByText("Ada Lovelace")).toBeVisible();
+  await page.keyboard.press("Escape");
+  refuse = true;
+  await field.fill("Grace");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "That name can't be used." })).toBeVisible();
+  await expect(page.getByText("Name saved.")).toHaveCount(0);
+});

@@ -89,7 +89,7 @@ export interface paths {
         delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["auth_update_me"];
         trace?: never;
     };
     "/auth/me/terms": {
@@ -2084,6 +2084,10 @@ export interface components {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
             url: string;
         };
+        UpdateMeRequest: {
+            /** @description The person's name: 1 to 80 characters without control characters. */
+            name: string;
+        };
         Verification: {
             assume_with_ok?: boolean | null;
             assume_without_denied?: boolean | null;
@@ -2354,6 +2358,46 @@ export interface operations {
                 };
             };
             /** @description `confirm_mismatch`: the email was not typed exactly */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_update_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The name is not usable: 1 to 80 characters without control characters */
             422: {
                 headers: {
                     [name: string]: unknown;
