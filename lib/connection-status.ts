@@ -41,6 +41,24 @@ export const canReconnect = (c: { status: string; status_reason?: string | null 
 export const launchBlock = (c: { status: string; status_reason?: string | null }): "finish" | "reconnect" | null =>
   c.status === "pending" ? "finish" : canReconnect(c) ? "reconnect" : null;
 
+const UPDATE_STACK = "To switch, update the stack in your AWS console with the current template.";
+
+/**
+ * What a newer AWS read role would add for a connection made from an older template (the
+ * current one is version 3), or null. The connection works as it is: the Aurora cluster
+ * snapshot check starts once the role allows its one extra read. Public disk snapshots are
+ * checked on every version. Brain treats a missing version as 1.
+ */
+export function newerRoleNote(c: { provider: string; status: string; template_version?: string | null }): string | null {
+  if (c.provider !== "aws" || c.status === "disconnected") return null;
+  const version = c.template_version ?? "1";
+  if (version === "1")
+    return `A newer, narrower read role is available. It allows only what OpsAgent reads, including the read that checks Aurora cluster snapshots for public sharing. This connection keeps working as it is. ${UPDATE_STACK}`;
+  if (version === "2")
+    return `A newer read role is available. It adds the read that lets OpsAgent check Aurora cluster snapshots for public sharing. This connection keeps working without it, and that check starts once the role has it. ${UPDATE_STACK}`;
+  return null;
+}
+
 export function connectionSentence(status: string, reason?: string | null): string | null {
   const why = reasonText(reason);
   if (status === "degraded") return why || "Some checks can't read this account right now.";

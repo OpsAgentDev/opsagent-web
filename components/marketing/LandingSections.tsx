@@ -69,7 +69,7 @@ export function ReadOnly() {
 }
 
 const RHYTHM = [
-  ["Every 15 minutes", "Urgent exposures are checked day and night: public RDS instance snapshots, public databases, open admin ports and audit logging."],
+  ["Every 15 minutes", "Urgent exposures are checked day and night: public RDS, Aurora and disk snapshots, public databases, open admin ports and audit logging."],
   ["When it is urgent", "One alert in Slack, or by email if Slack is not connected. Owners can switch alerts off per connection."],
   ["Every morning", "One short briefing, exceptions only. It is skipped when nothing changed."],
   ["Every Monday", "A weekly report, by email and in Slack."],
