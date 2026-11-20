@@ -27,7 +27,7 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Public exposure",
     Icon: I.GlobeIcon,
-    looks: "Public RDS instance snapshots, public Aurora cluster snapshots, public disk (EBS) snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet. Connections made from an older role template keep working but need the current template for the Aurora and disk snapshot checks, which start once the role allows them.",
+    looks: "Public RDS instance snapshots, public Aurora cluster snapshots, public disk (EBS) snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet. Connections made from an older role template keep working but need the current template for the Aurora cluster snapshot check, which starts once the role allows it.",
     evidence: "Public-access settings and the firewall rules that allow the traffic.",
     runs: "Every 15 minutes for snapshots (RDS instance, Aurora cluster and disk), databases and open ports; everything nightly",
   },

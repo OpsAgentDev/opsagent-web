@@ -45,17 +45,17 @@ const UPDATE_STACK = "To switch, update the stack in your AWS console with the c
 
 /**
  * What a newer AWS read role would add for a connection made from an older template (the
- * current one is version 3), or null. The connection works as it is: the Aurora cluster and
- * disk snapshot checks start once the role allows the two snapshot reads. Brain treats a
- * missing version as 1.
+ * current one is version 3), or null. The connection works as it is: the Aurora cluster
+ * snapshot check starts once the role allows its one extra read. Public disk snapshots are
+ * checked on every version. Brain treats a missing version as 1.
  */
 export function newerRoleNote(c: { provider: string; status: string; template_version?: string | null }): string | null {
   if (c.provider !== "aws" || c.status === "disconnected") return null;
   const version = c.template_version ?? "1";
   if (version === "1")
-    return `A newer, narrower read role is available. It allows only what OpsAgent reads, including the two reads that check Aurora cluster and disk snapshots for public sharing. This connection keeps working as it is. ${UPDATE_STACK}`;
+    return `A newer, narrower read role is available. It allows only what OpsAgent reads, including the read that checks Aurora cluster snapshots for public sharing. This connection keeps working as it is. ${UPDATE_STACK}`;
   if (version === "2")
-    return `A newer read role is available. It adds the two reads that let OpsAgent check Aurora cluster and disk snapshots for public sharing. This connection keeps working without them, and those checks start once the role has them. ${UPDATE_STACK}`;
+    return `A newer read role is available. It adds the read that lets OpsAgent check Aurora cluster snapshots for public sharing. This connection keeps working without it, and that check starts once the role has it. ${UPDATE_STACK}`;
   return null;
 }
 
