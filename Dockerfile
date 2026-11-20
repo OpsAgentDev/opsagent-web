@@ -7,7 +7,8 @@ COPY . .
 # NEXT_PUBLIC_* is inlined at build time: the deploy workflow passes them as build args.
 ARG NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
-# Public site key for Cloudflare Turnstile; optional (unset = no widget).
+# Public site key for Cloudflare Turnstile (widget "OpsAgent forms", Binary Labs account); optional
+# (unset = no widget). Images are tagged by commit, so a new key only ships with a new commit.
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 # Sign-ups switch: "true" swaps the waitlist for the free-trial sign-up (default off).
