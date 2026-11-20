@@ -12,8 +12,8 @@ describe("consent", () => {
     expect(consentWarnings(codex)).toEqual(["Published by chatgpt.com. Only approve if you trust this site.", LOOPBACK_WARNING]);
   });
   it("single_org_preselected", () => {
-    expect(defaultOrg([{ slug: "a", name: "A" }])).toBe("a");
-    expect(defaultOrg([{ slug: "a", name: "A" }, { slug: "b", name: "B" }])).toBe("");
+    expect(defaultOrg([{ slug: "a", name: "A", role: "owner" }])).toBe("a");
+    expect(defaultOrg([{ slug: "a", name: "A", role: "owner" }, { slug: "b", name: "B", role: "member" }])).toBe("");
   });
   it("returns to the consent request after sign-in", () => {
     expect(decodeURIComponent(signInUrl("r1").split("return_to=")[1] ?? "")).toBe("/oauth/consent?request_id=r1");

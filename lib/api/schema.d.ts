@@ -89,7 +89,51 @@ export interface paths {
         delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
+        /** Changes the signed-in user's name; nothing else is changeable here. */
         patch: operations["auth_update_me"];
+        trace?: never;
+    };
+    "/auth/me/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mails a 6-digit code to the new address; `POST /auth/me/email/confirm` with it makes the
+         *     change. 202 whether or not the address already signs in to another account (that address
+         *     then gets a notice instead of a code). The code works once, for 15 minutes; 5 requests per
+         *     user per hour, and the sign-in mail caps per address, per client IP and overall.
+         */
+        post: operations["auth_request_email_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me/email/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moves the account to the address the code was mailed to. This session stays; the user's
+         *     other sessions end, and the old address is told. 10 attempts per user per 15 minutes and
+         *     20 per day; the fifth wrong code disables it.
+         */
+        post: operations["auth_confirm_email_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/auth/me/terms": {
@@ -875,7 +919,8 @@ export interface paths {
         put?: never;
         /**
          * Owner only. Allowed while the organisation is read-only: it is paid separately. 502
-         *     `billing_unavailable` when Stripe fails.
+         *     `billing_unavailable` when Stripe fails. 404 `not_found` while human review is switched off
+         *     (`HUMAN_REVIEW_ENABLED`); existing requests stay listed.
          */
         post: operations["human-reviews_create"];
         delete?: never;
@@ -1394,7 +1439,10 @@ export interface components {
             urgent_alerts?: boolean | null;
         };
         ConsentDecision: {
-            /** @description `true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for. */
+            /**
+             * @description `true` grants `opsagent.read opsagent.write` (owners only, else 403 `forbidden`), `false`
+             *     grants `opsagent.read`. Absent grants what the client asked for, without write for a member.
+             */
             allow_changes?: boolean | null;
             deny?: boolean | null;
             /** @description Slug of the organisation to grant access to; required unless `deny`. */
@@ -1402,6 +1450,8 @@ export interface components {
         };
         ConsentOrganisation: {
             name: string;
+            /** @description The caller's role there: `owner` or `member`. Only an owner may send `allow_changes: true`. */
+            role: string;
             slug: string;
         };
         ConsentRedirect: {
@@ -1422,7 +1472,7 @@ export interface components {
             /**
              * @description What the client asks for: `["opsagent.read"]`, or `["opsagent.read", "opsagent.write"]`
              *     when it also wants to accept, snooze and reopen findings and connect cloud accounts.
-             *     Approving grants exactly these.
+             *     The member chooses what is granted with `allow_changes`, whatever is asked for here.
              */
             scopes: string[];
             /** @description Always false: dynamic and metadata-document clients are unverified. */
@@ -1494,6 +1544,14 @@ export interface components {
             next_step: string;
             /** @description Always `disconnected`. */
             status: string;
+        };
+        EmailChangeConfirm: {
+            /** @description The 6-digit code mailed to the new address; spaces are ignored. */
+            code: string;
+        };
+        EmailChangeRequest: {
+            /** @description The new sign-in address. */
+            email: string;
         };
         EvidenceItem: {
             /** Format: date-time */
@@ -1716,6 +1774,13 @@ export interface components {
              * @description When the user agreed to the Terms and the Privacy Policy; null until they do.
              */
             terms_accepted_at?: string | null;
+        };
+        MePatch: {
+            /**
+             * @description The new display name: 1 to 80 characters after trimming, no control characters (the
+             *     sign-up rules).
+             */
+            name: string;
         };
         Member: {
             email: string;
@@ -2084,10 +2149,6 @@ export interface components {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
             url: string;
         };
-        UpdateMeRequest: {
-            /** @description The person's name: 1 to 80 characters without control characters. */
-            name: string;
-        };
         Verification: {
             assume_with_ok?: boolean | null;
             assume_without_denied?: boolean | null;
@@ -2377,7 +2438,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateMeRequest"];
+                "application/json": components["schemas"]["MePatch"];
             };
         };
         responses: {
@@ -2397,8 +2458,121 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description The name is not usable: 1 to 80 characters without control characters */
+            /** @description `validation`: not a usable name */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_request_email_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description A code was mailed if the address is free */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `fresh_sign_in_required`: the sign-in is older than 15 minutes */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `validation`: not an email address; `email_unchanged`: already the sign-in email; `email_not_allowed`: the domain is not open for sign-up */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_confirm_email_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailChangeConfirm"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `email_taken`: another account took the address meanwhile */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `code_invalid`: wrong, used, expired or disabled */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3555,15 +3729,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4397,15 +4562,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Disconnected"];
-                };
-            };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
                 };
             };
             403: {
@@ -5437,15 +5593,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
             };
             403: {
                 headers: {
