@@ -69,7 +69,7 @@ test("app shell: sidebar with every link, current page marked, top bar, phone dr
   await tabs.getByRole("link", { name: "Billing", exact: true }).click();
   await expect(page).toHaveURL(/\/settings\/billing$/);
   await expect(tabs.getByRole("link", { name: "Billing", exact: true })).toHaveAttribute("aria-current", "page");
-  await expect(tabs.getByRole("link")).toHaveCount(6);
+  await expect(tabs.getByRole("link")).toHaveCount(7); // the signed-in owner also has Audit log
   await expect(nav.getByRole("link", { name: "Findings", exact: true })).not.toHaveAttribute("aria-current");
 
   // The sidebar folds to its icons and back; the links keep their names and the choice survives a reload.
