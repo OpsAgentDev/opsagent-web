@@ -6,11 +6,14 @@ import type { NextConfig } from "next";
 // nonces if a script-injection finding ever makes that worth giving up static rendering.
 const brain = new URL(process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000").origin;
 // Cloudflare Web Analytics is injected at the edge: its script and its beacon endpoint.
-const connectSrc = ["'self'", brain, "https://cloudflareinsights.com"].join(" ");
+// Google Analytics only when it is built in (NEXT_PUBLIC_GA_ID); it loads after the visitor accepts.
+const ga = Boolean(process.env.NEXT_PUBLIC_GA_ID);
+const gaConnect = ga ? ["https://*.google-analytics.com", "https://*.analytics.google.com", "https://*.googletagmanager.com"] : [];
+const connectSrc = ["'self'", brain, "https://cloudflareinsights.com", ...gaConnect].join(" ");
 const csp = [
   "default-src 'self'",
   // `next dev` evaluates modules for fast refresh; production never gets 'unsafe-eval'.
-  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://static.cloudflareinsights.com`,
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"} https://challenges.cloudflare.com https://static.cloudflareinsights.com${ga ? " https://www.googletagmanager.com" : ""}`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https:",

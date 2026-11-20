@@ -37,6 +37,7 @@ export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:$BRAIN_PORT W
   OPSAGENT_CONNECTORS=fake OPSAGENT_MODEL_PROVIDER=fake MAILER_SMTP_URL=smtp://localhost:1025 \
   OPSAGENT_KEK="${OPSAGENT_KEK:-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=}" \
   SLACK_CLIENT_ID=e2e-slack-client SLACK_CLIENT_SECRET=e2e-slack-secret LOG_LEVEL=info \
+  HUMAN_REVIEW_ENABLED=true \
   STRIPE_SECRET_KEY=sk_test_e2e_unused STRIPE_API_BASE=http://127.0.0.1:9 # GET billing needs a key; nothing reaches Stripe
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
 
@@ -51,6 +52,8 @@ export BRAIN_DIR APP_ENV=development APP_BASE_URL=http://localhost:$BRAIN_PORT W
 pids+=($!)
 
 export NEXT_PUBLIC_API_BASE_URL=http://localhost:$BRAIN_PORT NEXT_PUBLIC_OPSAGENT_FAKE=1
+# Human review is hidden by default; the suite runs with it on (web here, brain above) so its specs keep covering it.
+export NEXT_PUBLIC_HUMAN_REVIEW=true
 # Unset by default (no widget). E2E_TURNSTILE_SITE_KEY=any-value builds the widget in; only auth-turnstile.spec.ts is meant for that run.
 export NEXT_PUBLIC_TURNSTILE_SITE_KEY="${E2E_TURNSTILE_SITE_KEY:-}"
 npm run build

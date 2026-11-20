@@ -17,9 +17,12 @@ const REASONS: Record<string, string> = {
   access_denied: "AWS refused access to the role.",
   revoked_at_period_end:
     "Its role stopped working, so it was turned off before the next billing period and isn't charged. Reconnect to resume checks.",
+  scans_failing: "The last three nightly scans could not finish, so findings may be out of date. We are looking into it.",
   customer_disconnected: "",
   organisation_deleted: "",
 };
+
+const PENDING_REFUSED = "AWS refused access to this role. Check that the stack finished and that you pasted its RoleArn output, then verify again.";
 
 /** A customer-readable reason. Codes we don't know are hidden; text that is already a sentence passes through. */
 export function reasonText(reason?: string | null): string {
@@ -38,10 +41,24 @@ export function connectionSentence(status: string, reason?: string | null): stri
   const why = reasonText(reason);
   if (status === "degraded") return why || "Some checks can't read this account right now.";
   if (status === "blocked") return why || "OpsAgent couldn't use this role. Check it was created from the OpsAgent template.";
+  // Refused before it ever connected: say what to check, not just that it is waiting.
+  if (status === "pending" && reason === "access_denied") return PENDING_REFUSED;
   const s = SENTENCES[status];
   // Keep the reason brain gives for a lost connection beside the plain sentence.
   return s && why && (status === "revoked" || status === "disconnected") ? `${s} ${why}` : (s ?? null);
 }
+
+const OUTCOMES: Record<string, string> = {
+  connected: "Connected",
+  degraded: "Connected, some permissions missing",
+  blocked: "The role could not be used",
+  access_denied: "AWS refused access",
+  revoked: "Access was lost",
+  error: "The check could not finish",
+};
+
+/** The last verification's result in plain words; a code we don't know is shown as it is. */
+export const outcomeText = (outcome: string) => (Object.hasOwn(OUTCOMES, outcome) ? OUTCOMES[outcome] : undefined) ?? outcome;
 
 /** `default` (or nothing) means the organisation's schedule; a custom time stays as is. */
 export const scheduleText = (v?: string | null) => (!v || v === "default" ? "Organisation default" : v);

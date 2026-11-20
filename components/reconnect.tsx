@@ -4,11 +4,14 @@ import { ErrorNote } from "@/components/error-note";
 import { isAwsConsoleUrl } from "@/lib/connection-status";
 import { api, unwrap } from "@/lib/api/client";
 
-type Props = { org: string; id: string; provider: string; onVerifying: () => void };
+type Props = { org: string; id: string; provider: string; onVerifying: () => void; pending?: boolean };
 type Link = { quick_create_url?: string | null; stack_name: string };
 
-/** Owner action on a connection that lost access: launch the role again and verify. The connection and its findings stay. */
-export function Reconnect({ org, id, provider, onVerifying }: Props) {
+/**
+ * Owner action on a connection that lost access: launch the role again and verify. The connection and its findings stay.
+ * `pending`: not verified yet, so its stack is already launched and only the verify form is shown.
+ */
+export function Reconnect({ org, id, provider, onVerifying, pending = false }: Props) {
   const [link, setLink] = useState<Link | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -39,15 +42,15 @@ export function Reconnect({ org, id, provider, onVerifying }: Props) {
 
   return (
     <section>
-      <h2>Reconnect</h2>
-      {!link ? (
+      <h2>{pending ? "Verify the role" : "Reconnect"}</h2>
+      {!link && !pending ? (
         <>
           <p>Give OpsAgent read-only access again. Your findings, history and settings for this account are kept.</p>
           <button type="button" disabled={busy} onClick={start}>Reconnect</button>
         </>
       ) : (
         <form className="stack" onSubmit={verify}>
-          {link.quick_create_url && (
+          {link?.quick_create_url && (
             <>
               <ol className="how">
                 <li>In AWS CloudFormation, delete the stack <code>{link.stack_name}</code> if it still exists. A new one cannot be created beside it.</li>

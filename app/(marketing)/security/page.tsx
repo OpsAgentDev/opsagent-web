@@ -4,7 +4,7 @@ import * as I from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
   title: "Security · OpsAgent",
-  description: "OpsAgent is read-only by design: a role you create, no write access, it cannot read your stored data or change anything, except a few scoped reads you opt into.",
+  description: "OpsAgent is read-only by design: a role you create, no write access, and no way to read object contents, database rows, secret values or log events.",
 };
 
 export default function Security() {
@@ -26,24 +26,54 @@ export default function Security() {
         <div>
           <h2>What it reads, and what it can&apos;t</h2>
           <p>Watch scans read the same read-only data as the nightly scan, every 15 minutes, and never change anything.</p>
-          <p>
-            It cannot read your stored data (objects, database rows, secret values) or change anything. The role has no
-            write permissions at all, so OpsAgent cannot change, stop or delete anything. Three scoped reads are the
-            exceptions:
-          </p>
+          <p>The role can read only what OpsAgent&apos;s checks use:</p>
           <ul className="bullets">
             <li>
-              Function and task-definition configuration. It carries environment values, which OpsAgent strips before
-              storing, logging or checking anything.
+              Compute and network: your instances, volumes, snapshots, Elastic IP addresses, security groups and
+              network interfaces, your load balancers, and the list of regions.
+            </li>
+            <li>Databases: database instances and clusters, their snapshots, and who each RDS instance snapshot is shared with.</li>
+            <li>
+              Storage: bucket names, their regions, their public-access settings and whether a bucket&apos;s policy
+              makes it public.
             </li>
             <li>
-              Log events, only from log groups you tag <code>opsagent:logs=allow</code>.
+              Identity: the credential report (which users have a password, MFA and access keys, and when each was
+              last used; never the passwords or keys themselves), the policies attached to users, and whether the
+              roles your backups use are allowed to restore.
             </li>
             <li>
-              Terraform state files, only when the drift check ships and you turn it on and name the bucket and prefix. State files can
-              contain secrets, so name only the prefix you want checked.
+              Logging and threat detection: your CloudTrail trails and whether they are logging, whether GuardDuty is
+              on, and log group names and settings.
+            </li>
+            <li>
+              Backups and certificates: backup plans, what they cover, backup jobs and vaults; certificates and their
+              expiry dates.
+            </li>
+            <li>
+              Usage and cost: CloudWatch metrics such as CPU and GPU use, the list of SageMaker training jobs, and
+              your daily cost per service.
+            </li>
+            <li>
+              Itself: the account ID, and its own role and policies, so OpsAgent can check the role still matches the
+              template.
             </li>
           </ul>
+          <p>
+            It cannot read object contents, database rows, secret or parameter values, log events or function code.
+            The role does not grant any of these, and it explicitly denies reading objects, secrets, parameters, table
+            items and function code. The role has no write permissions at all, so OpsAgent cannot change, stop or
+            delete anything.
+          </p>
+          <p>
+            One read is optional: Terraform state files. The template has a setting that lets the role read state
+            files under one bucket and prefix you name. It is off unless you fill it in, and OpsAgent does not read
+            state files today. State files can contain secrets, so name only the prefix you want checked.
+          </p>
+          <p>
+            Each full scan (the nightly one, or one you start yourself) makes one AWS Cost Explorer request in your
+            account, which AWS bills at about US$0.01. Watch scans make none.
+          </p>
         </div>
       </section>
       <section className="sec-row">
@@ -70,9 +100,10 @@ export default function Security() {
         <div>
           <h2>AI and your data</h2>
           <p>
-            Dashboard AI is off until an owner turns it on. Only then does OpsAgent send the details of the findings and
-            resources you ask about to Anthropic, or to the AI provider or endpoint an owner configures, to generate
-            answers. Anthropic does not train on this data.
+            Dashboard AI is off until an owner turns it on. Only then does OpsAgent send the AI the findings and
+            resources it looks up to answer you, which can include lists across your organisation. They go to
+            Anthropic, to OpenAI as the backup provider, or to the AI provider or endpoint an owner configures.
+            Anthropic does not train on this data.
           </p>
           <p>
             Agents you connect over MCP use their own model. MCP traffic never touches OpsAgent&apos;s model key.

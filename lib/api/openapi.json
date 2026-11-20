@@ -272,6 +272,52 @@
             }
           }
         }
+      },
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "operationId": "auth_update_me",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Me"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The name is not usable: 1 to 80 characters without control characters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/auth/me/terms": {
@@ -1632,6 +1678,15 @@
               }
             }
           },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "502": {
             "description": "`ai_provider_outage`",
             "content": {
@@ -1786,6 +1841,15 @@
               }
             }
           },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
           "502": {
             "description": "`ai_key_failing` or `ai_provider_outage`",
             "content": {
@@ -1849,6 +1913,15 @@
             }
           },
           "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -5308,6 +5381,7 @@
           "client_name",
           "client_kind",
           "member_email",
+          "scopes",
           "created_at"
         ],
         "properties": {
@@ -5335,6 +5409,13 @@
           },
           "member_email": {
             "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "`[\"opsagent.read\"]` (read only) or `[\"opsagent.read\", \"opsagent.write\"]` (read and changes)."
           }
         }
       },
@@ -5868,6 +5949,13 @@
       "ConsentDecision": {
         "type": "object",
         "properties": {
+          "allow_changes": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "`true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for."
+          },
           "deny": {
             "type": [
               "boolean",
@@ -5917,6 +6005,7 @@
           "redirect_uri",
           "verified",
           "loopback",
+          "scopes",
           "organisations"
         ],
         "properties": {
@@ -5942,6 +6031,13 @@
           },
           "redirect_uri": {
             "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What the client asks for: `[\"opsagent.read\"]`, or `[\"opsagent.read\", \"opsagent.write\"]`\nwhen it also wants to accept, snooze and reopen findings and connect cloud accounts.\nApproving grants exactly these."
           },
           "verified": {
             "type": "boolean",
@@ -6365,6 +6461,7 @@
           "severity",
           "status",
           "title",
+          "url",
           "created_at",
           "updated_at"
         ],
@@ -6407,6 +6504,10 @@
           "updated_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "url": {
+            "type": "string",
+            "description": "The finding's page in the dashboard, to hand to a person."
           },
           "variant": {
             "type": "string"
@@ -7198,6 +7299,7 @@
                 "severity",
                 "status",
                 "title",
+                "url",
                 "created_at",
                 "updated_at"
               ],
@@ -7240,6 +7342,10 @@
                 "updated_at": {
                   "type": "string",
                   "format": "date-time"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The finding's page in the dashboard, to hand to a person."
                 },
                 "variant": {
                   "type": "string"
@@ -7920,6 +8026,18 @@
           "url": {
             "type": "string",
             "description": "The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`."
+          }
+        }
+      },
+      "UpdateMeRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The person's name: 1 to 80 characters without control characters."
           }
         }
       },

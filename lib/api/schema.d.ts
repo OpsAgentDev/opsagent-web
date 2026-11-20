@@ -89,7 +89,7 @@ export interface paths {
         delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["auth_update_me"];
         trace?: never;
     };
     "/auth/me/terms": {
@@ -1215,6 +1215,8 @@ export interface components {
             /** Format: date-time */
             last_used_at?: string | null;
             member_email: string;
+            /** @description `["opsagent.read"]` (read only) or `["opsagent.read", "opsagent.write"]` (read and changes). */
+            scopes: string[];
         };
         AiKeyOut: {
             /** @description The custom endpoint's host; null on the style's official URL. */
@@ -1392,6 +1394,8 @@ export interface components {
             urgent_alerts?: boolean | null;
         };
         ConsentDecision: {
+            /** @description `true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for. */
+            allow_changes?: boolean | null;
             deny?: boolean | null;
             /** @description Slug of the organisation to grant access to; required unless `deny`. */
             organisation?: string | null;
@@ -1415,6 +1419,12 @@ export interface components {
              */
             publisher?: string | null;
             redirect_uri: string;
+            /**
+             * @description What the client asks for: `["opsagent.read"]`, or `["opsagent.read", "opsagent.write"]`
+             *     when it also wants to accept, snooze and reopen findings and connect cloud accounts.
+             *     Approving grants exactly these.
+             */
+            scopes: string[];
             /** @description Always false: dynamic and metadata-document clients are unverified. */
             verified: boolean;
         };
@@ -1560,6 +1570,8 @@ export interface components {
             title: string;
             /** Format: date-time */
             updated_at: string;
+            /** @description The finding's page in the dashboard, to hand to a person. */
+            url: string;
             variant: string;
         };
         HumanReviewCreated: {
@@ -1839,6 +1851,8 @@ export interface components {
                 title: string;
                 /** Format: date-time */
                 updated_at: string;
+                /** @description The finding's page in the dashboard, to hand to a person. */
+                url: string;
                 variant: string;
             }[];
             /** @description Pass as `cursor` to get the next page; null on the last page. */
@@ -2069,6 +2083,10 @@ export interface components {
         TopupUrl: {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
             url: string;
+        };
+        UpdateMeRequest: {
+            /** @description The person's name: 1 to 80 characters without control characters. */
+            name: string;
         };
         Verification: {
             assume_with_ok?: boolean | null;
@@ -2340,6 +2358,46 @@ export interface operations {
                 };
             };
             /** @description `confirm_mismatch`: the email was not typed exactly */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_update_me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMeRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description The name is not usable: 1 to 80 characters without control characters */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3457,6 +3515,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description `ai_provider_outage` */
             502: {
                 headers: {
@@ -3576,6 +3642,14 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
             /** @description `ai_key_failing` or `ai_provider_outage` */
             502: {
                 headers: {
@@ -3619,6 +3693,14 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

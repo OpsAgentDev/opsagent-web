@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { MenuToggle } from "@/components/marketing/MenuToggle";
+import { aiPageTitle } from "@/lib/human-review";
 
 type NavLink = { href: string; label: string };
 /** Under the "Features" dropdown (flat under a "Features" label in the phone menu). */
@@ -9,7 +10,7 @@ export const FEATURES: NavLink[] = [
   { href: "/features/alerts", label: "Alerts and briefings" },
   { href: "/features/checks", label: "What it checks" },
   { href: "/features/agents", label: "Connect your agent" },
-  { href: "/features/ai-and-review", label: "Dashboard AI and human review" },
+  { href: "/features/ai-and-review", label: aiPageTitle() },
 ];
 /** Plain links in the bar, after the dropdown. */
 export const LINKS: NavLink[] = [

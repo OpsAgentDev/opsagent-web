@@ -38,6 +38,9 @@ describe("connection text", () => {
     expect(connectionSentence("connected")).toMatch(/every night/);
     expect(connectionSentence("degraded", "Missing ec2:Describe")).toBe("Missing ec2:Describe");
     expect(connectionSentence("degraded")).toBe("Some checks can't read this account right now.");
+    expect(connectionSentence("degraded", "scans_failing")).toBe(
+      "The last three nightly scans could not finish, so findings may be out of date. We are looking into it.",
+    );
     expect(connectionSentence("revoked")).toMatch(/Reconnect/);
     expect(connectionSentence("disconnected")).toBe("This connection is turned off.");
     expect(connectionSentence("wibble")).toBeNull();
@@ -102,6 +105,17 @@ describe("connection reasons", () => {
     expect(reasonText("verify_error:timeout")).toMatch(/couldn't finish/);
   });
 
+  it("says what to check when AWS refused a role that never connected, and leaves the rest alone", () => {
+    expect(connectionSentence("pending", "access_denied")).toBe(
+      "AWS refused access to this role. Check that the stack finished and that you pasted its RoleArn output, then verify again.",
+    );
+    expect(connectionSentence("pending")).toBe("Waiting to be verified.");
+    expect(connectionSentence("pending", "some_new_code")).toBe("Waiting to be verified.");
+    expect(connectionSentence("verifying", "access_denied")).toBe("Checking the role. This usually takes under a minute.");
+    expect(connectionSentence("degraded", "access_denied")).toBe("AWS refused access to the role.");
+    expect(reasonText("access_denied")).toBe("AWS refused access to the role.");
+  });
+
   it("hides unknown codes and keeps real sentences", () => {
     expect(reasonText("some_new_code")).toBe("");
     expect(reasonText("constructor")).toBe("");
@@ -116,5 +130,15 @@ describe("eventText", () => {
     expect(eventText({ event_type: "seen", from_severity: null, to_severity: null })).toBe("Seen again");
     expect(eventText({ event_type: "seen", from_severity: "high", to_severity: "critical" })).toBe("Severity high → critical");
     expect(eventText({ event_type: "resolved" })).toBe("resolved");
+  });
+});
+
+describe("last verification", () => {
+  it("is in plain words, and an unknown code is shown as it is", async () => {
+    const { outcomeText } = await import("@/lib/connection-status");
+    expect(outcomeText("access_denied")).toBe("AWS refused access");
+    expect(outcomeText("connected")).toBe("Connected");
+    expect(outcomeText("something_new")).toBe("something_new");
+    expect(outcomeText("constructor")).toBe("constructor");
   });
 });

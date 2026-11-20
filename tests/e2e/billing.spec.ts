@@ -38,7 +38,7 @@ test("trialing shows days left, connections line and Manage billing", async ({ p
   await page.goto("/settings/billing");
   await expect(page.getByText("Trial: 10 days left")).toBeVisible();
   // Nothing is connected in this organisation, whatever the billed count says.
-  await expect(page.getByText("No cloud account connected yet. Team is billed per connected cloud account.")).toBeVisible();
+  await expect(page.getByText("No cloud account connected yet. Team is billed per connected cloud account, with a minimum of one.")).toBeVisible();
   await expect(page.getByText(/billed on Team/)).toHaveCount(0);
   await expect(page.getByText("1,000 AI credits per cloud account each period")).toBeVisible();
   await expect(page.getByRole("button", { name: "Manage billing" })).toBeVisible();
@@ -132,4 +132,35 @@ test("an owner on a trial sees the days left and upgrades to Scale from the top 
   await expect(dialog).toBeHidden();
   expect(asked).toEqual({ tier: "scale" });
   await expect(bar.getByRole("button", { name: "Upgrade" })).toHaveCount(0);
+});
+
+test("with no plan an owner picks any plan, and checkout is asked for that tier", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.goto("/settings/billing");
+  const main = page.locator("main");
+  await expect(main.getByText("Starter is US$99 and Scale is US$599 a month per connected cloud account, plus tax where applicable. Both start paid at once, with no free trial.")).toBeVisible();
+  // Brain is stubbed and the redirect refused, so each click stays on the page and only the request is checked.
+  let asked: unknown;
+  await page.route("**/v1/orgs/*/billing/checkout", (r) => {
+    asked = r.request().postDataJSON();
+    return r.fulfill({ json: { url: "https://evil.example/pay" } });
+  });
+  for (const [name, tier] of [["Choose Starter", "starter"], ["Choose Scale", "scale"], ["Start free trial", "team"]]) {
+    asked = undefined;
+    await main.getByRole("button", { name }).click();
+    await expect.poll(() => asked).toEqual({ tier });
+    await expect(main.getByRole("button", { name })).toBeEnabled();
+  }
+});
+
+test("a cancelled organisation still reaches its invoices, and can buy any plan without a trial", async ({ page, request }) => {
+  await signUp(page, request);
+  await page.route("**/v1/orgs/*/billing", (r) =>
+    r.fulfill({ json: { status: "canceled", tier: "team", enforced: true, over_limit: false, quantity: 0, cancel_at_period_end: false, trial_available: true } }));
+  await page.goto("/settings/billing");
+  const main = page.locator("main");
+  await expect(main.getByRole("button", { name: "Manage billing" })).toBeVisible();
+  for (const name of ["Start plan", "Choose Starter", "Choose Scale"]) await expect(main.getByRole("button", { name })).toBeVisible();
+  await expect(main.getByRole("button", { name: "Start free trial" })).toHaveCount(0);
+  await expect(main.getByText("14-day free trial on the Team plan")).toHaveCount(0);
 });

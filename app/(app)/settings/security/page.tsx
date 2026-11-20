@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useContext, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
@@ -78,7 +79,7 @@ export default function Security() {
         )}
       </p>
       <h2>Sessions</h2>
-      <p className="muted">Sign out of OpsAgent on every browser and device, including this one. Use it if you lost a device or think someone else is signed in.</p>
+      <p className="muted">Sign out of OpsAgent on every browser and device, including this one. Use it if you lost a device or think someone else is signed in. It does not disconnect AI agents: revoke those in <Link href="/settings/agents">Connected agents</Link>.</p>
       <p>
         <button type="button" disabled={busy} onClick={signOutEverywhere}>Sign out everywhere</button>
       </p>

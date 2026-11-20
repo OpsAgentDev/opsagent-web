@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { BillingBanner } from "@/components/billing-banner";
-import { accountsLine, daysLeftText, planLine, upgradePlans } from "@/lib/billing";
+import { accountsLine, checkoutOffers, daysLeftText, hadSubscription, PAID_AT_ONCE, planLine, upgradePlans } from "@/lib/billing";
 
 const now = Date.parse("2026-11-16T12:00:00Z");
 const inDays = (d: number) => new Date(now + d * 864e5).toISOString();
@@ -43,7 +43,7 @@ test("days left are counted in words", () => {
 });
 
 test("the billed line says so when no cloud account is connected yet", () => {
-  expect(accountsLine("Team", 1, 0)).toBe("No cloud account connected yet. Team is billed per connected cloud account.");
+  expect(accountsLine("Team", 1, 0)).toBe("No cloud account connected yet. Team is billed per connected cloud account, with a minimum of one.");
   expect(accountsLine("Team", 1, 1)).toBe("1 cloud account billed on Team");
   expect(accountsLine("Scale", 3, 3)).toBe("3 cloud accounts billed on Scale");
   expect(accountsLine("Team", 1)).toBe("1 cloud account billed on Team"); // connections unreadable
@@ -55,4 +55,18 @@ test("the start banner is not shown on the Billing page; the other notices are",
   expect(banner("none", false)).toContain("Start your free trial to turn on checks.");
   expect(banner("none", true)).toBe("");
   expect(banner("trial_ended", true)).toContain("OpsAgent is paused.");
+});
+
+test("without a subscription all three plans are offered; only a first Team subscription is a free trial", () => {
+  const offers = (status: string, trial_available: boolean) => checkoutOffers({ status, trial_available }).map((o) => [o.tier, o.label]);
+  const paid = [["starter", "Choose Starter"], ["scale", "Choose Scale"]];
+  expect(offers("none", true)).toEqual([["team", "Start free trial"], ...paid]);
+  expect(offers("none", false)).toEqual([["team", "Start plan"], ...paid]);
+  for (const status of ["canceled", "trial_ended"]) expect(offers(status, true)).toEqual([["team", "Start plan"], ...paid]);
+  expect(PAID_AT_ONCE).toBe("Starter is US$99 and Scale is US$599 a month per connected cloud account, plus tax where applicable. Both start paid at once, with no free trial.");
+});
+
+test("Manage billing is offered once there has ever been a subscription", () => {
+  expect(hadSubscription({ status: "none" })).toBe(false);
+  for (const status of ["trialing", "active", "past_due", "paused", "canceled", "trial_ended"]) expect(hadSubscription({ status })).toBe(true);
 });

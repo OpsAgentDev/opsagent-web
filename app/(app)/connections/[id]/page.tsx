@@ -6,7 +6,7 @@ import { ErrorNote } from "@/components/error-note";
 import { Reconnect } from "@/components/reconnect";
 import { RemoveConnection } from "@/components/remove-connection";
 import { api, unwrap, type Connection } from "@/lib/api/client";
-import { canReconnect } from "@/lib/connection-status";
+import { canReconnect, outcomeText } from "@/lib/connection-status";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -18,7 +18,7 @@ function LastVerification({ v }: { v: NonNullable<Connection["last_verification"
     <section>
       <h2>Last verification</h2>
       <p>
-        {v.outcome} at {new Date(v.at).toLocaleString()}
+        {outcomeText(v.outcome)}, {new Date(v.at).toLocaleString()}
       </p>
       {v.missing_grants.length > 0 && <p>Missing permissions: {v.missing_grants.join(", ")}</p>}
       {v.extra_grants.length > 0 && <p>Permissions beyond the template: {v.extra_grants.join(", ")}</p>}
@@ -61,10 +61,13 @@ export default function ConnectionPage() {
     <main>
       <ConnectionHeader c={c} />
       <ConnectionFacts c={c} />
+      {c.provider === "aws" && c.template_version === "1" && c.status !== "disconnected" && (
+        <p className="muted">A newer, narrower read role is available. To switch, update the stack in your AWS console with the current template.</p>
+      )}
       {c.last_verification && <LastVerification v={c.last_verification} />}
       <ConnectionActions c={c} canScan={SCANNABLE.has(c.status) && !scanning} onScan={scanNow} started={!!scan.started} />
-      {org.role === "owner" && canReconnect(c) && (
-        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} />
+      {org.role === "owner" && (canReconnect(c) || c.status === "pending") && (
+        <Reconnect org={org.slug} id={c.id} provider={c.provider} onVerifying={reload} pending={c.status === "pending"} />
       )}
       {org.role === "owner" && c.status !== "disconnected" && (
         <RemoveConnection

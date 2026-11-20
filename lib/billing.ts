@@ -18,7 +18,7 @@ export const TIERS: Record<string, string> = { starter: "Starter", team: "Team",
 /** The Billing line for what is billed; `connected` is how many cloud accounts ever connected (unknown: the count alone). */
 export const accountsLine = (tier: string, n: number, connected?: number) =>
   connected === 0
-    ? `No cloud account connected yet. ${tier} is billed per connected cloud account.`
+    ? `No cloud account connected yet. ${tier} is billed per connected cloud account, with a minimum of one.`
     : `${n} cloud ${n === 1 ? "account" : "accounts"} billed on ${tier}`;
 
 /** Whole days until `iso` (0 on the last day); null without a date. */
@@ -53,6 +53,23 @@ export function upgradePlans(b: Pick<Billing, "status" | "tier" | "enforced"> | 
   const at = PLANS.findIndex((p) => p.id === b.tier);
   return at < 0 ? [] : PLANS.slice(at + 1);
 }
+
+/** The plans Billing offers an owner without a subscription, Team first: the trial is Team's only, and only on a first subscription. */
+export function checkoutOffers(b: Pick<Billing, "status" | "trial_available">): { tier: string; label: string }[] {
+  const trial = b.status === "none" && b.trial_available !== false;
+  return [
+    { tier: "team", label: trial ? "Start free trial" : "Start plan" },
+    { tier: "starter", label: "Choose Starter" },
+    { tier: "scale", label: "Choose Scale" },
+  ];
+}
+
+const price = (id: string) => `US${PLANS.find((p) => p.id === id)!.price}`;
+/** Shown beside "Choose Starter" and "Choose Scale". */
+export const PAID_AT_ONCE = `Starter is ${price("starter")} and Scale is ${price("scale")} a month per connected cloud account, plus tax where applicable. Both start paid at once, with no free trial.`;
+
+/** Invoices live in the Stripe portal, so it is offered once the organisation has ever had a subscription (a trial counts). */
+export const hadSubscription = (b: Pick<Billing, "status">) => b.status !== "none";
 
 /** Navigates to a Stripe-hosted page; refuses any other URL. */
 export function goToStripe(url: string): void {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap } from "@/lib/api/client";
-import { agentsScopeNote, kindLabel } from "@/lib/agents";
+import { accessLabel, agentsScopeNote, kindLabel } from "@/lib/agents";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -50,6 +50,7 @@ export default function ConnectedAgents() {
             <tr>
               <th>Client</th>
               <th>Kind</th>
+              <th>Access</th>
               <th>Member</th>
               <th>Created</th>
               <th>Last used</th>
@@ -61,6 +62,7 @@ export default function ConnectedAgents() {
               <tr key={a.grant_id}>
                 <td>{a.client_name}</td>
                 <td>{kindLabel(a.client_kind)}</td>
+                <td>{accessLabel(a.scopes)}</td>
                 <td>{a.member_email}</td>
                 <td>{when(a.created_at)}</td>
                 <td>{when(a.last_used_at)}</td>

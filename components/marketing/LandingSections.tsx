@@ -3,6 +3,7 @@ import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { AccessLedger, AgentSession, FindingsPanel, SlackAlert, SlackBriefing } from "@/components/marketing/LandingVisuals";
 import { Live } from "@/components/marketing/Live";
 import { MCP_URL } from "@/lib/agents";
+import { HUMAN_REVIEW } from "@/lib/human-review";
 import { PRICE_NOTE } from "@/lib/plans";
 
 /** The home page's sections below the hero, in story order. One idea each; the visuals are in LandingVisuals. */
@@ -61,14 +62,14 @@ export function ReadOnly() {
         <p className="lp-more"><Link href="/how-it-works">See how it works</Link></p>
       </div>
       <AccessLedger
-        foot={<>Three scoped reads are the exceptions. They are listed on the <Link href="/security">Security page</Link>.</>}
+        foot={<>Everything the role can read is listed on the <Link href="/security">Security page</Link>.</>}
       />
     </section>
   );
 }
 
 const RHYTHM = [
-  ["Every 15 minutes", "Urgent exposures are checked day and night: public snapshots, public databases, open admin ports and audit logging."],
+  ["Every 15 minutes", "Urgent exposures are checked day and night: public RDS instance snapshots, public databases, open admin ports and audit logging."],
   ["When it is urgent", "One alert in Slack, or by email if Slack is not connected. Owners can switch alerts off per connection."],
   ["Every morning", "One short briefing, exceptions only. It is skipped when nothing changed."],
   ["Every Monday", "A weekly report, by email and in Slack."],
@@ -148,11 +149,11 @@ export function PricingPointer() {
           ))}
         </dl>
         <p className="lp-fine">Per cloud account, per month. {PRICE_NOTE}</p>
-        <p className="lp-review">
+        {HUMAN_REVIEW && <p className="lp-review">
           Want a person to look? Harun R. Rayhan, a DevOps and AWS consultant, reviews one finding for US$99 or one
           connected account for US$499, plus tax where applicable, and replies in writing. Nothing is changed in your account.{" "}
           <Link href="/features/ai-and-review">About human review</Link>
-        </p>
+        </p>}
       </div>
     </section>
   );

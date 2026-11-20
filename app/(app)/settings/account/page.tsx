@@ -2,6 +2,7 @@
 import { OrgLink } from "@/components/org-link";
 import { useRef, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { YourName } from "@/components/your-name";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { forgetChoices } from "@/lib/members";
 import { useOrg } from "@/lib/org";
@@ -9,7 +10,7 @@ import { useApi } from "@/lib/use-api";
 
 type Kind = "org" | "account";
 
-/** Deleting the organisation (owners) and the signed-in person's own account, each behind a typed confirmation. */
+/** The person's name and sign-in email; deleting the organisation (owners) and the signed-in person's own account, each behind a typed confirmation. */
 export default function AccountSettings() {
   const org = useOrg();
   const { data: me } = useApi(() => unwrap(api.GET("/auth/me")), []);
@@ -53,11 +54,12 @@ export default function AccountSettings() {
   return (
     <main className="stack">
       <h1>Account</h1>
+      {me && <YourName me={me} />}
       {owner && (
         <section className="card stack">
           <h2>Delete {org.name}</h2>
           <p>
-            Checks stop and the subscription is cancelled now. Findings and history are kept for 30 days, then deleted.
+            Checks stop and the subscription is cancelled now. Findings and history are kept for 30 days, then erased; they leave the nightly backups within 40 days.
             Delete the OpsAgent CloudFormation stack in each AWS account afterwards to remove OpsAgent&apos;s access.
           </p>
           <p><button type="button" className="danger" onClick={() => open("org")}>Delete organisation</button></p>

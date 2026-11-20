@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { hasWrite, ownsOrg } from "@/lib/agents";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import {
   consentWarnings,
@@ -19,6 +20,7 @@ function Consent() {
   const path = { params: { path: { request_id: requestId } } };
   const { data: view, error } = useApi(() => unwrap(api.GET("/oauth/consent/{request_id}", path)), [requestId]);
   const [org, setOrg] = useState("");
+  const [changes, setChanges] = useState<boolean | null>(null); // null: not touched, follow what the client asked for
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<Error | null>(null);
   const status = error instanceof ApiError ? error.status : undefined;
@@ -30,13 +32,16 @@ function Consent() {
     if (view) setOrg(defaultOrg(view.organisations));
   }, [view]);
 
+  const owner = ownsOrg(view?.organisations.find((o) => o.slug === org));
+  const allow = owner && (changes ?? hasWrite(view?.scopes));
+
   async function decide(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const deny = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "deny";
     setBusy(true);
     try {
       const { redirect_to } = await unwrap(
-        api.POST("/oauth/consent/{request_id}", { ...path, body: deny ? { deny: true } : { organisation: org } }),
+        api.POST("/oauth/consent/{request_id}", { ...path, body: deny ? { deny: true } : { organisation: org, allow_changes: allow } }),
       );
       log.info("consent decided", { deny });
       // Not isSameOrigin-checked: this is the client's own redirect URI by design.
@@ -60,7 +65,7 @@ function Consent() {
   return (
     <form className="stack" onSubmit={decide}>
       <p>
-        <strong>{view.client_name}</strong> wants read access to your OpsAgent findings and connections.
+        <strong>{view.client_name}</strong> wants access to your OpsAgent findings and connections.
       </p>
       <p>
         It will be sent to <code data-testid="redirect-uri">{view.redirect_uri}</code>
@@ -78,8 +83,20 @@ function Consent() {
         </select>
       </label>
       {view.organisations.length === 0 && <p className="muted">You have no organisation yet. Create one first.</p>}
+      {owner && (
+        <div>
+          <label className="row">
+            <input type="checkbox" checked={allow} onChange={(e) => setChanges(e.target.checked)} aria-describedby="changes-note" />
+            Let this agent make changes
+          </label>
+          <p id="changes-note" className="muted">
+            It can accept, snooze and reopen findings, and connect cloud accounts. It cannot change the cloud accounts
+            themselves, billing, members or delivery.
+          </p>
+        </div>
+      )}
       <div className="row">
-        <button type="submit" value="approve" disabled={busy || !org}>Approve</button>
+        <button type="submit" value="approve" disabled={busy || !org}>{allow ? "Approve read and changes" : "Approve"}</button>
         <button type="submit" className="secondary" value="deny" formNoValidate disabled={busy}>Deny</button>
       </div>
       <ErrorNote error={actionError} />

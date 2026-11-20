@@ -18,8 +18,8 @@ export default function HowItWorks() {
           <div className="step-card">
             <h2>Connect read-only</h2>
             <p>
-              You create one role in your cloud account in one click. It can list and describe resources and read
-              billing and security findings. It cannot read your stored data or change anything, with a few opt-in exceptions listed on the Security page. AWS is the first supported
+              You create one role in your cloud account in one click. It can list and describe your resources and read
+              your cost totals. It cannot read your stored data or change anything. Everything it can read is listed on the Security page. AWS is the first supported
               provider.
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function HowItWorks() {
           <span className="step-badge"><I.SunIcon size={22} /></span>
           <div className="step-card">
             <h2>Morning briefing and weekly report</h2>
-            <p>Exceptions only, in Slack and email. Skipped when nothing changed.</p>
+            <p>The briefing lists exceptions only and is skipped when nothing changed. The weekly report comes every Monday, by email and in Slack.</p>
           </div>
         </li>
         <li>

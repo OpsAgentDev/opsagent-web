@@ -114,3 +114,24 @@ describe("checkout", () => {
     expect(renderToStaticMarkup(createElement(ReviewNotice, { paid: false, canceled: false }))).toBe("");
   });
 });
+
+describe("human review switch", () => {
+  it("is off unless the build sets it to true (or 1)", async () => {
+    const { aiPageTitle, humanReviewOn } = await import("@/lib/human-review");
+    for (const off of [undefined, "", "false", "0", "yes"]) expect(humanReviewOn(off)).toBe(false);
+    for (const on of ["true", "1"]) expect(humanReviewOn(on)).toBe(true);
+    expect(aiPageTitle(false)).toBe("Dashboard AI");
+    expect(aiPageTitle(true)).toBe("Dashboard AI and human review");
+  });
+  it("off (the unit run's build): no Settings tab, no nav label, and the static llms.txt never mentions it", async () => {
+    const { HUMAN_REVIEW } = await import("@/lib/human-review");
+    const { SETTINGS_TABS } = await import("@/components/settings-tabs");
+    const { NAV } = await import("@/components/marketing/SiteHeader");
+    const { readFileSync } = await import("node:fs");
+    expect(HUMAN_REVIEW).toBe(false);
+    expect(SETTINGS_TABS.map((t) => t.label)).not.toContain("Human review");
+    expect(NAV.map((l) => l.label)).toContain("Dashboard AI");
+    expect(NAV.map((l) => l.label).join()).not.toMatch(/human review/i);
+    expect(readFileSync("public/llms.txt", "utf8")).not.toMatch(/human review|a person can review/i);
+  });
+});

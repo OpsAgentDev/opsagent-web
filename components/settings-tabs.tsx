@@ -1,6 +1,7 @@
 "use client";
 import { usePathname } from "next/navigation";
 import { OrgLink } from "@/components/org-link";
+import { HUMAN_REVIEW } from "@/lib/human-review";
 import { splitOrgPath } from "@/lib/org-path";
 
 /** Organisation settings: one page, each part a tab at its own address. */
@@ -10,7 +11,7 @@ export const SETTINGS_TABS = [
   { href: "/settings/delivery", label: "Delivery" },
   { href: "/settings/agents", label: "Connected agents" },
   { href: "/settings/ai", label: "AI" },
-  { href: "/settings/human-review", label: "Human review" },
+  ...(HUMAN_REVIEW ? [{ href: "/settings/human-review", label: "Human review" }] : []),
 ];
 
 /** The tab row above an organisation settings page; nothing on the personal ones (Security, Account). */
