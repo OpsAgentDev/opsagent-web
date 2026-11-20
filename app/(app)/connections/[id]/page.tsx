@@ -61,6 +61,9 @@ export default function ConnectionPage() {
     <main>
       <ConnectionHeader c={c} />
       <ConnectionFacts c={c} />
+      {c.provider === "aws" && c.template_version === "1" && c.status !== "disconnected" && (
+        <p className="muted">A newer, narrower read role is available. To switch, update the stack in your AWS console with the current template.</p>
+      )}
       {c.last_verification && <LastVerification v={c.last_verification} />}
       <ConnectionActions c={c} canScan={SCANNABLE.has(c.status) && !scanning} onScan={scanNow} started={!!scan.started} />
       {org.role === "owner" && (canReconnect(c) || c.status === "pending") && (

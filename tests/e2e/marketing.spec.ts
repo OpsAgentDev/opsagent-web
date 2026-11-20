@@ -183,13 +183,14 @@ test("pricing marks Team with the 14-day free trial badge", async ({ page }) => 
   await expect(page.locator("main .plan-badge")).toHaveCount(1);
 });
 
-test("security lists the three scoped reads as a real list", async ({ page }) => {
+test("security lists what the role reads as a real list", async ({ page }) => {
   await page.goto("/security");
   const section = page.locator("main section").filter({ has: page.getByRole("heading", { name: /What it reads/ }) });
   const items = section.getByRole("list").getByRole("listitem");
-  await expect(items).toHaveCount(3);
+  await expect(items).toHaveCount(8);
   await expect(items.first()).toHaveCSS("display", "list-item");
-  await expect(items.nth(1).locator("code")).toHaveText("opsagent:logs=allow");
+  await expect(section).toContainText("It cannot read object contents, database rows, secret or parameter values, log events or function code.");
+  await expect(section).not.toContainText("opsagent:logs");
 });
 
 test("docs Copy writes the MCP URL to the clipboard and says Copied", async ({ page, context }) => {
