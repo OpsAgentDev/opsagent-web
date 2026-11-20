@@ -27,9 +27,9 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Public exposure",
     Icon: I.GlobeIcon,
-    looks: "Public database snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet.",
+    looks: "Public RDS instance snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet. Aurora cluster snapshots and disk snapshots are not checked for public sharing.",
     evidence: "Public-access settings and the firewall rules that allow the traffic.",
-    runs: "Every 15 minutes for snapshots, databases and open ports; everything nightly",
+    runs: "Every 15 minutes for RDS instance snapshots, databases and open ports; everything nightly",
   },
   {
     title: "Backup coverage",

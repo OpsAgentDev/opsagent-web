@@ -116,7 +116,7 @@ function Chat() {
         />
         <section className="stack" style={{ flex: 1 }}>
           <ChatThread messages={messages} />
-          {stateNote(code, org.role) ? <AiStateNote code={code} role={org.role} /> : <ErrorNote error={error} />}
+          {stateNote(code, org.role) ? <AiStateNote code={code} role={org.role} detail={error instanceof ApiError ? error.problem.detail : undefined} /> : <ErrorNote error={error} />}
           <form className="stack" onSubmit={send}>
             <label>
               Message
