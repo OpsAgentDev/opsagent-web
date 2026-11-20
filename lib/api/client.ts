@@ -26,6 +26,7 @@ export type KeyModel = Schemas["KeyModelOut"];
 export type KeyPut = Schemas["KeyPutOut"];
 export type ChatSession = Schemas["ChatSessionOut"];
 export type ChatMessage = Schemas["ChatMessageOut"];
+export type AuditEntry = Schemas["AuditEntry"];
 
 /** A production build without an explicit brain URL would ship pointing at localhost. */
 export function resolveApiBaseUrl(configured: string | undefined, nodeEnv: string | undefined): string {

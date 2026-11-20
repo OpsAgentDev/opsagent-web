@@ -21,7 +21,7 @@ export default function Privacy() {
         <h2>Who we are</h2>
         <p>
           Binary Labs LLC is a limited liability company in Wyoming, USA. It is the controller of your account data.
-          Reach it through the <Link href="/contact">contact form</Link>.
+          Its postal address is 1309 Coffeen Avenue, Sheridan, WY 82801, USA. Reach it through the <Link href="/contact">contact form</Link>.
         </p>
         <p>
           You decide which cloud accounts to connect. For the cloud data that comes from them, OpsAgent processes it
@@ -39,7 +39,7 @@ export default function Privacy() {
           <li>Findings, and the evidence behind them.</li>
           <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
-          <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries. Ask through the <Link href="/contact">contact form</Link> for a copy.</li>
+          <li>An audit log of member actions, model calls, agent calls and deliveries, which owners can read under Settings, Audit log, and a record of your own sign-ins.</li>
           <li>Request logs, which include the IP address, requested URL and time of each request. They are kept for 90 days, for security and troubleshooting.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
           {HUMAN_REVIEW && <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>}
@@ -128,8 +128,7 @@ export default function Privacy() {
         <p>
           After a cancel or an ended trial your data stays until you delete the organisation, which an owner does
           under Settings, Account, or by asking through the <Link href="/contact">contact form</Link>; you can delete your own account there too. A deleted
-          organisation is erased from the live database after 30 days and leaves the nightly backups within 40 days. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
-          days. Disconnecting a cloud account stops OpsAgent using its role at once.
+          organisation is erased from the live database after 30 days and leaves the nightly backups within 40 days. We keep a record that the deletion happened, containing no customer data, for one year. An owner can download an export of the organisation&apos;s data as JSON under Settings, Account. Disconnecting a cloud account stops OpsAgent using its role at once.
         </p>
         <p>
           You can ask to see, correct, export or delete your data, or object to how it is used, through the contact
