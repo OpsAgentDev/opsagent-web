@@ -277,12 +277,13 @@
         "tags": [
           "auth"
         ],
+        "summary": "Changes the signed-in user's name; nothing else is changeable here.",
         "operationId": "auth_update_me",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateMeRequest"
+                "$ref": "#/components/schemas/MePatch"
               }
             }
           },
@@ -308,7 +309,7 @@
             }
           },
           "422": {
-            "description": "The name is not usable: 1 to 80 characters without control characters",
+            "description": "`validation`: not a usable name",
             "content": {
               "application/json": {
                 "schema": {
@@ -1728,16 +1729,6 @@
           "204": {
             "description": "Removing the primary promotes the backup"
           },
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "403": {
             "content": {
               "application/json": {
@@ -2009,6 +2000,84 @@
           },
           "503": {
             "description": "`billing_unavailable`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orgs/{org}/audit": {
+      "get": {
+        "tags": [
+          "orgs"
+        ],
+        "summary": "The organisation's audit log, newest first. Owners only.",
+        "operationId": "orgs_audit",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Organisation slug.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "`next_cursor` from the previous page.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Page size, default 50; values above 200 are clamped to 200.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_AuditEntry"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2844,16 +2913,6 @@
               }
             }
           },
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "403": {
             "content": {
               "application/json": {
@@ -3409,6 +3468,75 @@
             }
           },
           "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orgs/{org}/export": {
+      "post": {
+        "tags": [
+          "orgs"
+        ],
+        "summary": "The organisation's own data as one JSON document, sent as an attachment: `organisation`,\n`members`, `connections`, `findings` (with stored evidence), `delivery_settings`,\n`recipients`, `deliveries` and `audit_log`. Owners only; once per organisation per hour.",
+        "operationId": "orgs_export",
+        "parameters": [
+          {
+            "name": "org",
+            "in": "path",
+            "description": "Organisation slug.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The export document (`Content-Disposition: attachment`)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "`export_too_large`: over 20 MB; contact support",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -4047,7 +4175,7 @@
         "tags": [
           "human-reviews"
         ],
-        "summary": "Owner only. Allowed while the organisation is read-only: it is paid separately. 502\n`billing_unavailable` when Stripe fails.",
+        "summary": "Owner only. Allowed while the organisation is read-only: it is paid separately. 502\n`billing_unavailable` when Stripe fails. 404 `not_found` while human review is switched off\n(`HUMAN_REVIEW_ENABLED`); existing requests stay listed.",
         "operationId": "human-reviews_create",
         "parameters": [
           {
@@ -4334,16 +4462,6 @@
         ],
         "responses": {
           "204": {},
-          "402": {
-            "description": "Billing required, or a trial or plan limit reached",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Problem"
-                }
-              }
-            }
-          },
           "403": {
             "content": {
               "application/json": {
@@ -5580,6 +5698,64 @@
           }
         }
       },
+      "AuditEntry": {
+        "type": "object",
+        "description": "One audit log entry.",
+        "required": [
+          "id",
+          "at",
+          "actor_type",
+          "actor",
+          "action",
+          "metadata"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Stable action code, e.g. `connection.create`."
+          },
+          "actor": {
+            "type": "string",
+            "description": "A member's name and email (`Former member` once they left), `agent <client name>`, or\n`OpsAgent` for the system."
+          },
+          "actor_type": {
+            "type": "string",
+            "description": "`member`, `agent` or `system`."
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "The entry's metadata with anything secret-like left out."
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "target": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The target by name, where it has one and still exists."
+          },
+          "target_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "What the action was on (`connection`, `member`, `finding`, ...); null without a target."
+          }
+        }
+      },
       "AuthorizeUrl": {
         "type": "object",
         "required": [
@@ -5954,7 +6130,7 @@
               "boolean",
               "null"
             ],
-            "description": "`true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for."
+            "description": "`true` grants `opsagent.read opsagent.write` (owners only, else 403 `forbidden`), `false`\ngrants `opsagent.read`. Absent grants what the client asked for, without write for a member."
           },
           "deny": {
             "type": [
@@ -5975,11 +6151,16 @@
         "type": "object",
         "required": [
           "slug",
-          "name"
+          "name",
+          "role"
         ],
         "properties": {
           "name": {
             "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "description": "The caller's role there: `owner` or `member`. Only an owner may send `allow_changes: true`."
           },
           "slug": {
             "type": "string"
@@ -6037,7 +6218,7 @@
             "items": {
               "type": "string"
             },
-            "description": "What the client asks for: `[\"opsagent.read\"]`, or `[\"opsagent.read\", \"opsagent.write\"]`\nwhen it also wants to accept, snooze and reopen findings and connect cloud accounts.\nApproving grants exactly these."
+            "description": "What the client asks for: `[\"opsagent.read\"]`, or `[\"opsagent.read\", \"opsagent.write\"]`\nwhen it also wants to accept, snooze and reopen findings and connect cloud accounts.\nThe member chooses what is granted with `allow_changes`, whatever is asked for here."
           },
           "verified": {
             "type": "boolean",
@@ -6943,6 +7124,18 @@
           }
         }
       },
+      "MePatch": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The new display name: 1 to 80 characters after trimming, no control characters (the\nsign-up rules)."
+          }
+        }
+      },
       "Member": {
         "type": "object",
         "required": [
@@ -7149,6 +7342,82 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "Page_AuditEntry": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "One audit log entry.",
+              "required": [
+                "id",
+                "at",
+                "actor_type",
+                "actor",
+                "action",
+                "metadata"
+              ],
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "Stable action code, e.g. `connection.create`."
+                },
+                "actor": {
+                  "type": "string",
+                  "description": "A member's name and email (`Former member` once they left), `agent <client name>`, or\n`OpsAgent` for the system."
+                },
+                "actor_type": {
+                  "type": "string",
+                  "description": "`member`, `agent` or `system`."
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "metadata": {
+                  "type": "object",
+                  "description": "The entry's metadata with anything secret-like left out."
+                },
+                "outcome": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "target": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The target by name, where it has one and still exists."
+                },
+                "target_type": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "What the action was on (`connection`, `member`, `finding`, ...); null without a target."
+                }
+              }
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Pass as `cursor` to get the next page; null on the last page."
           }
         }
       },
@@ -8026,18 +8295,6 @@
           "url": {
             "type": "string",
             "description": "The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`."
-          }
-        }
-      },
-      "UpdateMeRequest": {
-        "type": "object",
-        "required": [
-          "name"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "The person's name: 1 to 80 characters without control characters."
           }
         }
       },

@@ -89,6 +89,7 @@ export interface paths {
         delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
+        /** Changes the signed-in user's name; nothing else is changeable here. */
         patch: operations["auth_update_me"];
         trace?: never;
     };
@@ -507,6 +508,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The organisation's audit log, newest first. Owners only. */
+        get: operations["orgs_audit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/billing": {
         parameters: {
             query?: never;
@@ -751,6 +769,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * The organisation's own data as one JSON document, sent as an attachment: `organisation`,
+         *     `members`, `connections`, `findings` (with stored evidence), `delivery_settings`,
+         *     `recipients`, `deliveries` and `audit_log`. Owners only; once per organisation per hour.
+         */
+        post: operations["orgs_export"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/findings": {
         parameters: {
             query?: never;
@@ -875,7 +914,8 @@ export interface paths {
         put?: never;
         /**
          * Owner only. Allowed while the organisation is read-only: it is paid separately. 502
-         *     `billing_unavailable` when Stripe fails.
+         *     `billing_unavailable` when Stripe fails. 404 `not_found` while human review is switched off
+         *     (`HUMAN_REVIEW_ENABLED`); existing requests stay listed.
          */
         post: operations["human-reviews_create"];
         delete?: never;
@@ -1268,6 +1308,29 @@ export interface components {
             /** @description Credits used on OpsAgent's key this period. */
             used: string;
         };
+        /** @description One audit log entry. */
+        AuditEntry: {
+            /** @description Stable action code, e.g. `connection.create`. */
+            action: string;
+            /**
+             * @description A member's name and email (`Former member` once they left), `agent <client name>`, or
+             *     `OpsAgent` for the system.
+             */
+            actor: string;
+            /** @description `member`, `agent` or `system`. */
+            actor_type: string;
+            /** Format: date-time */
+            at: string;
+            /** Format: uuid */
+            id: string;
+            /** @description The entry's metadata with anything secret-like left out. */
+            metadata: Record<string, never>;
+            outcome?: string | null;
+            /** @description The target by name, where it has one and still exists. */
+            target?: string | null;
+            /** @description What the action was on (`connection`, `member`, `finding`, ...); null without a target. */
+            target_type?: string | null;
+        };
         AuthorizeUrl: {
             url: string;
         };
@@ -1394,7 +1457,10 @@ export interface components {
             urgent_alerts?: boolean | null;
         };
         ConsentDecision: {
-            /** @description `true` grants read and changes (owners only), `false` grants read; absent grants what the client asked for. */
+            /**
+             * @description `true` grants `opsagent.read opsagent.write` (owners only, else 403 `forbidden`), `false`
+             *     grants `opsagent.read`. Absent grants what the client asked for, without write for a member.
+             */
             allow_changes?: boolean | null;
             deny?: boolean | null;
             /** @description Slug of the organisation to grant access to; required unless `deny`. */
@@ -1402,6 +1468,8 @@ export interface components {
         };
         ConsentOrganisation: {
             name: string;
+            /** @description The caller's role there: `owner` or `member`. Only an owner may send `allow_changes: true`. */
+            role: string;
             slug: string;
         };
         ConsentRedirect: {
@@ -1422,7 +1490,7 @@ export interface components {
             /**
              * @description What the client asks for: `["opsagent.read"]`, or `["opsagent.read", "opsagent.write"]`
              *     when it also wants to accept, snooze and reopen findings and connect cloud accounts.
-             *     Approving grants exactly these.
+             *     The member chooses what is granted with `allow_changes`, whatever is asked for here.
              */
             scopes: string[];
             /** @description Always false: dynamic and metadata-document clients are unverified. */
@@ -1717,6 +1785,13 @@ export interface components {
              */
             terms_accepted_at?: string | null;
         };
+        MePatch: {
+            /**
+             * @description The new display name: 1 to 80 characters after trimming, no control characters (the
+             *     sign-up rules).
+             */
+            name: string;
+        };
         Member: {
             email: string;
             /** Format: uuid */
@@ -1787,6 +1862,32 @@ export interface components {
         OrgPatch: {
             name?: string | null;
             timezone?: string | null;
+        };
+        Page_AuditEntry: {
+            items: {
+                /** @description Stable action code, e.g. `connection.create`. */
+                action: string;
+                /**
+                 * @description A member's name and email (`Former member` once they left), `agent <client name>`, or
+                 *     `OpsAgent` for the system.
+                 */
+                actor: string;
+                /** @description `member`, `agent` or `system`. */
+                actor_type: string;
+                /** Format: date-time */
+                at: string;
+                /** Format: uuid */
+                id: string;
+                /** @description The entry's metadata with anything secret-like left out. */
+                metadata: Record<string, never>;
+                outcome?: string | null;
+                /** @description The target by name, where it has one and still exists. */
+                target?: string | null;
+                /** @description What the action was on (`connection`, `member`, `finding`, ...); null without a target. */
+                target_type?: string | null;
+            }[];
+            /** @description Pass as `cursor` to get the next page; null on the last page. */
+            next_cursor?: string | null;
         };
         Page_ChatSessionOut: {
             items: {
@@ -2084,10 +2185,6 @@ export interface components {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/ai?topup=…`. */
             url: string;
         };
-        UpdateMeRequest: {
-            /** @description The person's name: 1 to 80 characters without control characters. */
-            name: string;
-        };
         Verification: {
             assume_with_ok?: boolean | null;
             assume_without_denied?: boolean | null;
@@ -2377,7 +2474,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateMeRequest"];
+                "application/json": components["schemas"]["MePatch"];
             };
         };
         responses: {
@@ -2397,7 +2494,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description The name is not usable: 1 to 80 characters without control characters */
+            /** @description `validation`: not a usable name */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3555,15 +3652,6 @@ export interface operations {
                 };
                 content?: never;
             };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -3774,6 +3862,57 @@ export interface operations {
             };
             /** @description `billing_unavailable` */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    orgs_audit: {
+        parameters: {
+            query?: {
+                /** @description `next_cursor` from the previous page. */
+                cursor?: string;
+                /** @description Page size, default 50; values above 200 are clamped to 200. */
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_AuditEntry"];
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4399,15 +4538,6 @@ export interface operations {
                     "application/json": components["schemas"]["Disconnected"];
                 };
             };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
-            };
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -4787,6 +4917,62 @@ export interface operations {
                 };
             };
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    orgs_export: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The export document (`Content-Disposition: attachment`) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `export_too_large`: over 20 MB; contact support */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5437,15 +5623,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-            /** @description Billing required, or a trial or plan limit reached */
-            402: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Problem"];
-                };
             };
             403: {
                 headers: {
