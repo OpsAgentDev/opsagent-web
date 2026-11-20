@@ -13,8 +13,8 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Idle resources and cost anomalies",
     Icon: I.CostIcon,
-    looks: "Unattached volumes, unused addresses and days when spend jumps above its 7 and 30-day baselines.",
-    evidence: "The volume or address itself. For a spend jump, the day's spend and its baselines, in dollars.",
+    looks: "Unattached volumes, unused addresses, running machines that averaged under 5% CPU over the past 7 days, load balancers a week old or more that took no requests (no bytes, for network load balancers) in 7 days, and days when spend jumps above its 7 and 30-day baselines. When CloudWatch cannot be read, the CPU and load balancer parts stay silent rather than guess.",
+    evidence: "The volume, address, machine or load balancer itself, with its 7-day CPU or request count. For a spend jump, the day's spend and its baselines, in dollars.",
     runs: NIGHTLY,
   },
   {
@@ -27,9 +27,9 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
   {
     title: "Public exposure",
     Icon: I.GlobeIcon,
-    looks: "Public RDS instance snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet. Aurora cluster snapshots and disk snapshots are not checked for public sharing.",
+    looks: "Public RDS instance snapshots, public Aurora cluster snapshots, public disk (EBS) snapshots, databases anyone can reach, public buckets, storage without public-access blocking, and admin or database ports open to the whole internet. Connections made from an older role template keep working but need the current template for the Aurora and disk snapshot checks, which start once the role allows them.",
     evidence: "Public-access settings and the firewall rules that allow the traffic.",
-    runs: "Every 15 minutes for RDS instance snapshots, databases and open ports; everything nightly",
+    runs: "Every 15 minutes for snapshots (RDS instance, Aurora cluster and disk), databases and open ports; everything nightly",
   },
   {
     title: "Backup coverage",
