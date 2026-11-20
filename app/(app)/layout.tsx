@@ -84,6 +84,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AppShell
       email={data.me.email}
+      name={data.me.name}
       orgs={data.orgs}
       current={org}
       plan={planLine(billing)}

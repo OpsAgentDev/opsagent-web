@@ -2,6 +2,7 @@
 import { OrgLink } from "@/components/org-link";
 import { useRef, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { YourName } from "@/components/your-name";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { forgetChoices } from "@/lib/members";
 import { useOrg } from "@/lib/org";
@@ -9,7 +10,7 @@ import { useApi } from "@/lib/use-api";
 
 type Kind = "org" | "account";
 
-/** Deleting the organisation (owners) and the signed-in person's own account, each behind a typed confirmation. */
+/** The person's name and sign-in email; deleting the organisation (owners) and the signed-in person's own account, each behind a typed confirmation. */
 export default function AccountSettings() {
   const org = useOrg();
   const { data: me } = useApi(() => unwrap(api.GET("/auth/me")), []);
@@ -53,6 +54,7 @@ export default function AccountSettings() {
   return (
     <main className="stack">
       <h1>Account</h1>
+      {me && <YourName me={me} />}
       {owner && (
         <section className="card stack">
           <h2>Delete {org.name}</h2>

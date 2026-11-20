@@ -3,6 +3,7 @@ import { ComingSoon } from "@/components/marketing/ComingSoon";
 import { AccessLedger, AgentSession, FindingsPanel, SlackAlert, SlackBriefing } from "@/components/marketing/LandingVisuals";
 import { Live } from "@/components/marketing/Live";
 import { MCP_URL } from "@/lib/agents";
+import { HUMAN_REVIEW } from "@/lib/human-review";
 import { PRICE_NOTE } from "@/lib/plans";
 
 /** The home page's sections below the hero, in story order. One idea each; the visuals are in LandingVisuals. */
@@ -148,11 +149,11 @@ export function PricingPointer() {
           ))}
         </dl>
         <p className="lp-fine">Per cloud account, per month. {PRICE_NOTE}</p>
-        <p className="lp-review">
+        {HUMAN_REVIEW && <p className="lp-review">
           Want a person to look? Harun R. Rayhan, a DevOps and AWS consultant, reviews one finding for US$99 or one
           connected account for US$499, plus tax where applicable, and replies in writing. Nothing is changed in your account.{" "}
           <Link href="/features/ai-and-review">About human review</Link>
-        </p>
+        </p>}
       </div>
     </section>
   );

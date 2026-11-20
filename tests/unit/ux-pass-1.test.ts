@@ -38,6 +38,9 @@ describe("connection text", () => {
     expect(connectionSentence("connected")).toMatch(/every night/);
     expect(connectionSentence("degraded", "Missing ec2:Describe")).toBe("Missing ec2:Describe");
     expect(connectionSentence("degraded")).toBe("Some checks can't read this account right now.");
+    expect(connectionSentence("degraded", "scans_failing")).toBe(
+      "The last three nightly scans could not finish, so findings may be out of date. We are looking into it.",
+    );
     expect(connectionSentence("revoked")).toMatch(/Reconnect/);
     expect(connectionSentence("disconnected")).toBe("This connection is turned off.");
     expect(connectionSentence("wibble")).toBeNull();

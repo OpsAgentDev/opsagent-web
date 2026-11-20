@@ -4,11 +4,14 @@ import Link from "next/link";
 import { FeaturePage, FeatureSection } from "@/components/marketing/FeaturePage";
 import * as I from "@/components/marketing/landing-icons";
 import { FACTS, HEADLINE, SPECIALISMS } from "@/components/reviewer-profile";
+import { aiPageTitle, HUMAN_REVIEW } from "@/lib/human-review";
 import { PRICE_NOTE } from "@/lib/plans";
 
 export const metadata: Metadata = {
-  title: "Dashboard AI and human review · OpsAgent",
-  description: "Dashboard AI explains findings and answers questions once an owner turns it on. Or have Harun R. Rayhan review a finding (US$99) or an account (US$499), plus tax where applicable.",
+  title: `${aiPageTitle()} · OpsAgent`,
+  description: HUMAN_REVIEW
+    ? "Dashboard AI explains findings and answers questions once an owner turns it on. Or have Harun R. Rayhan review a finding (US$99) or an account (US$499), plus tax where applicable."
+    : "Dashboard AI explains findings and answers questions once an owner turns it on, on OpsAgent's key or your own.",
 };
 
 const CREDITS: [string, string][] = [
@@ -26,8 +29,8 @@ export default function AiAndReview() {
   return (
     <FeaturePage
       slug="ai-and-review"
-      title="Dashboard AI and human review"
-      lead="Ask about your findings in plain words, right in the dashboard. When you want a person to look, request a human review."
+      title={aiPageTitle()}
+      lead={`Ask about your findings in plain words, right in the dashboard.${HUMAN_REVIEW ? " When you want a person to look, request a human review." : ""}`}
     >
       <section aria-labelledby="ai-h" className="feature-part">
         <h2 id="ai-h">Dashboard AI</h2>
@@ -58,6 +61,14 @@ export default function AiAndReview() {
         </p>
       </FeatureSection>
 
+      {HUMAN_REVIEW && <HumanReview />}
+    </FeaturePage>
+  );
+}
+
+function HumanReview() {
+  return (
+    <>
       <section aria-labelledby="review-h" className="feature-part">
         <h2 id="review-h">Human review</h2>
         <p>A one-off review by a person, requested and paid in the dashboard. Nothing is changed in your account.</p>
@@ -85,6 +96,6 @@ export default function AiAndReview() {
       <p className="muted">
         Owners request a review under Settings, Human review, or from any finding. {PRICE_NOTE}
       </p>
-    </FeaturePage>
+    </>
   );
 }
