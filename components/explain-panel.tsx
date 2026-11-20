@@ -44,7 +44,7 @@ export function ExplainPanel({ org, id, role, cached }: Props) {
   return (
     <section className="stack">
       <h2>Explanation</h2>
-      {stateNote(code, role) ? <AiStateNote code={code} role={role} /> : <ErrorNote error={error} />}
+      {stateNote(code, role) ? <AiStateNote code={code} role={role} detail={error instanceof ApiError ? error.problem.detail : undefined} /> : <ErrorNote error={error} />}
       {explanation ? (
         <>
           <p className="muted">{AI_LABEL}</p>

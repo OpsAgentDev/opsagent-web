@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { connectNoisy, signUp, sql } from "./helpers";
 
 const NOTICE =
-  "Dashboard AI sends the details of the findings and resources you ask about to Anthropic, or to the AI provider you configure, to generate answers. Anthropic does not train on this data. You can turn it off at any time, or use your own OpenAI or Anthropic key instead.";
+  "Dashboard AI sends the findings and resources it looks up to answer you, which can include lists across your organisation, to Anthropic, to OpenAI as the backup provider, or to the AI provider you configure. Anthropic does not train on this data. You can turn it off at any time, or use your own OpenAI or Anthropic key instead.";
 const NEWEST_ORG = "(SELECT id FROM organisations ORDER BY created_at DESC LIMIT 1)";
 const card = (page: Page, name: string) => page.getByRole("region", { name });
 

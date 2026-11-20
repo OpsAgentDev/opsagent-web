@@ -43,7 +43,7 @@ test("days left are counted in words", () => {
 });
 
 test("the billed line says so when no cloud account is connected yet", () => {
-  expect(accountsLine("Team", 1, 0)).toBe("No cloud account connected yet. Team is billed per connected cloud account.");
+  expect(accountsLine("Team", 1, 0)).toBe("No cloud account connected yet. Team is billed per connected cloud account, with a minimum of one.");
   expect(accountsLine("Team", 1, 1)).toBe("1 cloud account billed on Team");
   expect(accountsLine("Scale", 3, 3)).toBe("3 cloud accounts billed on Scale");
   expect(accountsLine("Team", 1)).toBe("1 cloud account billed on Team"); // connections unreadable

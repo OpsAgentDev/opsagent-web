@@ -28,6 +28,7 @@ export default function Privacy() {
           <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
           <li>An audit log of sign-ins, member actions, model calls, agent calls and deliveries. Ask through the <Link href="/contact">contact form</Link> for a copy.</li>
+          <li>Request logs, which include the IP address, requested URL and time of each request. They are kept for 90 days, for security and troubleshooting.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
           {HUMAN_REVIEW && <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>}
         </ul>

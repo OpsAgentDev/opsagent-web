@@ -32,7 +32,7 @@ export default function Security() {
               Compute and network: your instances, volumes, snapshots, Elastic IP addresses, security groups and
               network interfaces, your load balancers, and the list of regions.
             </li>
-            <li>Databases: database instances and clusters, their snapshots, and who each snapshot is shared with.</li>
+            <li>Databases: database instances and clusters, their snapshots, and who each RDS instance snapshot is shared with.</li>
             <li>
               Storage: bucket names, their regions, their public-access settings and whether a bucket&apos;s policy
               makes it public.

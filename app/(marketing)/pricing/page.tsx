@@ -42,7 +42,7 @@ export default function Pricing() {
           </li>
         ))}
       </ul>
-      <p className="trial-note">Every plan covers any number of cloud accounts; each connected account is billed at the plan&apos;s price.</p>
+      <p className="trial-note">Every plan covers any number of cloud accounts; each connected account is billed at the plan&apos;s price, with a minimum of one account while the plan is active.</p>
       <p className="trial-note">{PRICE_NOTE}</p>
       <section>
         <h2>Questions</h2>

@@ -38,7 +38,7 @@ test("trialing shows days left, connections line and Manage billing", async ({ p
   await page.goto("/settings/billing");
   await expect(page.getByText("Trial: 10 days left")).toBeVisible();
   // Nothing is connected in this organisation, whatever the billed count says.
-  await expect(page.getByText("No cloud account connected yet. Team is billed per connected cloud account.")).toBeVisible();
+  await expect(page.getByText("No cloud account connected yet. Team is billed per connected cloud account, with a minimum of one.")).toBeVisible();
   await expect(page.getByText(/billed on Team/)).toHaveCount(0);
   await expect(page.getByText("1,000 AI credits per cloud account each period")).toBeVisible();
   await expect(page.getByRole("button", { name: "Manage billing" })).toBeVisible();

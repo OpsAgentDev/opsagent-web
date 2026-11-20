@@ -42,8 +42,8 @@ export default function Alerts() {
       <FeatureSection Icon={I.BellIcon} title="Urgent alerts">
         <p>
           When a scan opens a new critical finding, OpsAgent sends one alert straight away. The 15-minute checks look
-          for public snapshots and databases, admin and database ports open to the internet, and audit logging that
-          is switched off. Criticals the nightly scan finds alert as soon as it finishes.
+          for public RDS instance snapshots, public databases, admin and database ports open to the internet, and audit
+          logging that is switched off. Criticals the nightly scan finds alert as soon as it finishes.
         </p>
         <p>
           High, medium and low findings never interrupt you; they wait for the briefing. An alert says no more than the
