@@ -93,6 +93,49 @@ export interface paths {
         patch: operations["auth_update_me"];
         trace?: never;
     };
+    "/auth/me/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mails a 6-digit code to the new address; `POST /auth/me/email/confirm` with it makes the
+         *     change. 202 whether or not the address already signs in to another account (that address
+         *     then gets a notice instead of a code). The code works once, for 15 minutes; 5 requests per
+         *     user per hour, and the sign-in mail caps per address, per client IP and overall.
+         */
+        post: operations["auth_request_email_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me/email/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Moves the account to the address the code was mailed to. This session stays; the user's
+         *     other sessions end, and the old address is told. 10 attempts per user per 15 minutes and
+         *     20 per day; the fifth wrong code disables it.
+         */
+        post: operations["auth_confirm_email_change"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/me/terms": {
         parameters: {
             query?: never;
@@ -695,8 +738,9 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Owner only, for a `revoked` connection (409 `connection_not_revoked` otherwise). The owner
-         *     launches the stack again and calls `verify`; the connection and its findings are kept.
+         * Owner only, for a `revoked` connection or one still `pending` (409 `connection_not_revoked`
+         *     otherwise). The owner launches the stack (again) and calls `verify`; the connection and its
+         *     findings are kept.
          */
         post: operations["connections_reconnect"];
         delete?: never;
@@ -1562,6 +1606,14 @@ export interface components {
             next_step: string;
             /** @description Always `disconnected`. */
             status: string;
+        };
+        EmailChangeConfirm: {
+            /** @description The 6-digit code mailed to the new address; spaces are ignored. */
+            code: string;
+        };
+        EmailChangeRequest: {
+            /** @description The new sign-in address. */
+            email: string;
         };
         EvidenceItem: {
             /** Format: date-time */
@@ -2496,6 +2548,119 @@ export interface operations {
             };
             /** @description `validation`: not a usable name */
             422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_request_email_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description A code was mailed if the address is free */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `fresh_sign_in_required`: the sign-in is older than 15 minutes */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `validation`: not an email address; `email_unchanged`: already the sign-in email; `email_not_allowed`: the domain is not open for sign-up */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    auth_confirm_email_change: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailChangeConfirm"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Me"];
+                };
+            };
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `email_taken`: another account took the address meanwhile */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            /** @description `code_invalid`: wrong, used, expired or disabled */
+            410: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };

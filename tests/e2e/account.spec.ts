@@ -80,7 +80,6 @@ test("your name is prefilled, saved through PATCH /auth/me, and a refusal shows 
   const field = page.getByLabel("Your name");
   await expect(field).toHaveValue("Ada");
   await expect(page.getByText("Sign-in email: boss@example.com")).toBeVisible();
-  await expect(page.getByRole("link", { name: "contact form" })).toHaveAttribute("href", "/contact");
   await field.fill("  Ada Lovelace ");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Name saved.")).toBeVisible();
@@ -94,4 +93,41 @@ test("your name is prefilled, saved through PATCH /auth/me, and a refusal shows 
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "That name can't be used." })).toBeVisible();
   await expect(page.getByText("Name saved.")).toHaveCount(0);
+});
+
+test("the sign-in email is changed with a code sent to the new address", async ({ page }) => {
+  await mock(page);
+  let email = me.email;
+  const sent: unknown[] = [];
+  let refuse: ReturnType<typeof problem> | null = problem(403, "fresh_sign_in_required", "Sign out and sign in again, then retry within 15 minutes.");
+  // Brain main may not have these routes yet: the page's requests are what is checked here.
+  await page.route("**/v1/auth/me", (r) => (r.request().method() === "GET" ? r.fulfill({ json: { ...me, email } }) : r.fallback()));
+  await page.route("**/v1/auth/me/email", (r) => {
+    sent.push(r.request().postDataJSON());
+    return refuse ? r.fulfill(refuse) : r.fulfill({ status: 202 });
+  });
+  await page.route("**/v1/auth/me/email/confirm", (r) => {
+    const { code } = r.request().postDataJSON() as { code: string };
+    sent.push({ code });
+    if (code !== "123456") return r.fulfill(problem(410, "code_invalid", "code_invalid"));
+    email = "new@example.com";
+    return r.fulfill({ json: { ...me, email } });
+  });
+  await page.goto("/settings/account");
+  await expect(page.getByText("Sign-in email: boss@example.com")).toBeVisible();
+  await expect(page.getByRole("link", { name: "contact form" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Change", exact: true }).click();
+  await page.getByLabel("New sign-in email").fill(" New@Example.com ");
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "sign out and sign in again" })).toBeVisible();
+  refuse = null;
+  await page.getByRole("button", { name: "Send code" }).click();
+  await expect(page.getByText("We sent a code to New@Example.com.")).toBeVisible();
+  await page.getByLabel("6-digit code").fill("000000");
+  await expect(page.getByRole("alert").filter({ hasText: "That code didn't work." })).toBeVisible();
+  await expect(page.getByLabel("6-digit code")).toHaveValue("");
+  await page.getByLabel("6-digit code").fill("123 456");
+  await expect(page.getByText("Sign-in email changed. Your other devices were signed out.")).toBeVisible();
+  await expect(page.getByText("Sign-in email: new@example.com")).toBeVisible();
+  expect(sent).toEqual([{ email: "New@Example.com" }, { email: "New@Example.com" }, { code: "000000" }, { code: "123456" }]);
 });

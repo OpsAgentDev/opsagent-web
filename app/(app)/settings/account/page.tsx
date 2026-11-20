@@ -14,7 +14,7 @@ type Kind = "org" | "account";
 /** The person's name and sign-in email; the data export (owners); deleting the organisation (owners) and the signed-in person's own account, each behind a typed confirmation. */
 export default function AccountSettings() {
   const org = useOrg();
-  const { data: me } = useApi(() => unwrap(api.GET("/auth/me")), []);
+  const { data: me, reload } = useApi(() => unwrap(api.GET("/auth/me")), []);
   const dialog = useRef<HTMLDialogElement>(null);
   const [kind, setKind] = useState<Kind | null>(null);
   const [typed, setTyped] = useState("");
@@ -55,7 +55,7 @@ export default function AccountSettings() {
   return (
     <main className="stack">
       <h1>Account</h1>
-      {me && <YourName me={me} />}
+      {me && <YourName me={me} onEmailChanged={reload} />}
       {owner && <ExportData org={org.slug} />}
       {owner && (
         <section className="card stack">

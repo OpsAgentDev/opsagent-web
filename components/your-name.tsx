@@ -1,13 +1,13 @@
 "use client";
-import Link from "next/link";
 import { useContext, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
+import { SignInEmail } from "@/components/sign-in-email";
 import { api, unwrap } from "@/lib/api/client";
 import { SessionReloadContext } from "@/lib/org";
 import { cleanName } from "@/lib/person-name";
 
-/** The signed-in person's name (editable) and sign-in email (changed by request only). */
-export function YourName({ me }: { me: { name?: string | null; email: string } }) {
+/** The signed-in person's name and sign-in email, both editable. */
+export function YourName({ me, onEmailChanged }: { me: { name?: string | null; email: string }; onEmailChanged: () => void }) {
   const reloadSession = useContext(SessionReloadContext);
   const [name, setName] = useState(me.name ?? "");
   const [busy, setBusy] = useState(false);
@@ -45,10 +45,7 @@ export function YourName({ me }: { me: { name?: string | null; email: string } }
         <ErrorNote error={error} showCode={false} />
         {saved && <p role="status" className="ok">Name saved.</p>}
       </form>
-      <p>Sign-in email: {me.email}</p>
-      <p className="muted">
-        To change your sign-in email, write to us through the <Link href="/contact">contact form</Link>.
-      </p>
+      <SignInEmail email={me.email} onChanged={onEmailChanged} />
     </section>
   );
 }
