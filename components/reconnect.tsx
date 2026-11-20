@@ -3,19 +3,24 @@ import { useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { isAwsConsoleUrl } from "@/lib/connection-status";
 import { api, unwrap } from "@/lib/api/client";
+import { useApi } from "@/lib/use-api";
 
 type Props = { org: string; id: string; provider: string; onVerifying: () => void; pending?: boolean };
 type Link = { quick_create_url?: string | null; stack_name: string };
 
 /**
  * Owner action on a connection that lost access: launch the role again and verify. The connection and its findings stay.
- * `pending`: not verified yet, so its stack is already launched and only the verify form is shown.
+ * `pending`: never verified, so the same block finishes it: the launch link is fetched at once and the verify form follows.
  */
 export function Reconnect({ org, id, provider, onVerifying, pending = false }: Props) {
-  const [link, setLink] = useState<Link | null>(null);
+  const [asked, setLink] = useState<Link | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const path = { params: { path: { org, id } } };
+  const reconnect = () => unwrap(api.POST("/orgs/{org}/connections/{id}/reconnect", path));
+  // Without the link (a brain that gives it only for a lost role, or a failed call) the verify form still finishes it.
+  const fetched = useApi<Link | null>(() => (pending ? reconnect().catch(() => null) : Promise.resolve(null)), [org, id, pending]);
+  const link = asked ?? fetched.data ?? null;
 
   async function run(step: () => Promise<void>) {
     if (busy) return;
@@ -29,7 +34,7 @@ export function Reconnect({ org, id, provider, onVerifying, pending = false }: P
     setBusy(false);
   }
 
-  const start = () => run(async () => setLink(await unwrap(api.POST("/orgs/{org}/connections/{id}/reconnect", path))));
+  const start = () => run(async () => setLink(await reconnect()));
 
   function verify(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -42,7 +47,7 @@ export function Reconnect({ org, id, provider, onVerifying, pending = false }: P
 
   return (
     <section>
-      <h2>{pending ? "Verify the role" : "Reconnect"}</h2>
+      <h2>{pending ? "Finish connecting" : "Reconnect"}</h2>
       {!link && !pending ? (
         <>
           <p>Give OpsAgent read-only access again. Your findings, history and settings for this account are kept.</p>
@@ -53,12 +58,18 @@ export function Reconnect({ org, id, provider, onVerifying, pending = false }: P
           {link?.quick_create_url && (
             <>
               <ol className="how">
-                <li>In AWS CloudFormation, delete the stack <code>{link.stack_name}</code> if it still exists. A new one cannot be created beside it.</li>
-                <li>Launch the stack. CloudFormation opens in a new tab with everything filled in; tick the acknowledgement and create it.</li>
+                {pending ? (
+                  <li>Create the read-only role. CloudFormation opens in a new tab with everything filled in; tick the acknowledgement and create the stack. If the stack <code>{link.stack_name}</code> is already there, skip this step.</li>
+                ) : (
+                  <>
+                    <li>In AWS CloudFormation, delete the stack <code>{link.stack_name}</code> if it still exists. A new one cannot be created beside it.</li>
+                    <li>Launch the stack. CloudFormation opens in a new tab with everything filled in; tick the acknowledgement and create it.</li>
+                  </>
+                )}
                 <li>When it finishes, open its Outputs tab, copy the role ARN, paste it below and verify.</li>
               </ol>
               <a className="button" href={isAwsConsoleUrl(link.quick_create_url) ? link.quick_create_url : undefined} target="_blank" rel="noreferrer">
-                Launch stack in AWS
+                {pending ? "Create the read-only role" : "Launch stack in AWS"}
               </a>
             </>
           )}
