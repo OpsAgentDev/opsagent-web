@@ -34,3 +34,16 @@ describe("isAwsConsoleUrl", () => {
     expect(isAwsConsoleUrl("javascript:alert(1)")).toBe(false);
   });
 });
+
+describe("launchBlock", () => {
+  it("finishes a pending connection, reconnects a lost one, and is absent otherwise", async () => {
+    const { launchBlock } = await import("@/lib/connection-status");
+    expect(launchBlock({ status: "pending" })).toBe("finish");
+    expect(launchBlock({ status: "pending", status_reason: "access_denied" })).toBe("finish");
+    expect(launchBlock({ status: "revoked", status_reason: "access_denied" })).toBe("reconnect");
+    expect(launchBlock({ status: "disconnected", status_reason: "revoked_at_period_end" })).toBe("reconnect");
+    for (const status of ["verifying", "connected", "degraded", "blocked", "disconnected"]) {
+      expect(launchBlock({ status })).toBeNull();
+    }
+  });
+});
