@@ -18,6 +18,18 @@ export default function Privacy() {
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
       </p>
       <section>
+        <h2>Who we are</h2>
+        <p>
+          Binary Labs LLC is a limited liability company in Wyoming, USA. It is the controller of your account data.
+          Reach it through the <Link href="/contact">contact form</Link>.
+        </p>
+        <p>
+          You decide which cloud accounts to connect. For the cloud data that comes from them, OpsAgent processes it
+          for you. A data processing agreement is available on request through the contact form.
+        </p>
+        <p>OpsAgent is not meant for children.</p>
+      </section>
+      <section>
         <h2>What we store</h2>
         <ul className="legal-list">
           <li>Your account: email address and name.</li>
@@ -43,17 +55,31 @@ export default function Privacy() {
           To run the service: sign you in, check your cloud, write your briefings and deliver them. We never sell your
           data, and we don&apos;t use it for advertising.
         </p>
+        <p>
+          We use your data to provide the service you signed up for and to keep it secure.
+          {GA_ID ? " Analytics on the public pages runs only with your consent." : null}
+        </p>
       </section>
       <section>
         <h2>Where it lives and how long</h2>
         <p>
           Data is stored on Amazon Web Services, in the United States (Oregon). Encrypted nightly database backups are
           kept there too, in a storage bucket Binary Labs controls. Secrets such as Slack tokens are encrypted with a per-organisation key.
+          Data is stored and processed in the United States. If you are in the EU, the UK or elsewhere, your data is
+          transferred to the United States.
         </p>
         <p>
-          Evidence excerpts are stripped of secret-shaped strings and email addresses before they are stored, and so
-          are resource names and tags. Beyond that, resource names and identifiers are stored as your cloud reports them.
+          Before anything is stored, strings that look like secrets (keys, tokens, passwords) and email addresses are
+          removed from evidence excerpts, resource names and tags. Everything else about a resource, such as its
+          identifier, region and configuration, is stored as your cloud reports it.
           Evidence and inventory snapshots expire after 90 days. Findings are kept while your organisation exists.
+        </p>
+        <p>
+          The audit log and delivery records have no time limit: they are kept while your organisation exists and
+          are erased with it. Audit entries about your own account, such as sign-ins and passkey changes, are not
+          tied to an organisation and are kept with no time limit. Waitlist entries and contact form messages are
+          stored, contact form messages are also emailed to us, and both are kept with no time limit. Ask through
+          the contact form to have a waitlist entry or a message deleted.
         </p>
       </section>
       <section>
@@ -62,8 +88,8 @@ export default function Privacy() {
           <li>Cloudflare: DNS and traffic proxy for opsagent.dev, and Turnstile, the security check on the sign-up, sign-in, waitlist and contact forms.</li>
           <li>Amazon Web Services: hosting, the database and encrypted nightly backups.</li>
           <li>Stripe: payments, subscriptions and tax, as merchant of record. It receives your email and your organisation&apos;s name, and collects your card details.</li>
-          <li>Resend: sending sign-in and briefing email.</li>
-          <li>Slack: delivering briefings, when you connect it.</li>
+          <li>Resend: sending sign-in mail, briefings, urgent alerts, invites and account notices.</li>
+          <li>Slack: receiving briefings and urgent alerts, when you connect it.</li>
           <li>Google and GitHub: signing you in, when you choose them.</li>
           {GA_ID ? (
             <li>
@@ -104,6 +130,10 @@ export default function Privacy() {
           under Settings, Account, or by asking through the <Link href="/contact">contact form</Link>; you can delete your own account there too. A deleted
           organisation is erased from the live database after 30 days and leaves the nightly backups within 40 days. We keep a record that the deletion happened, containing no customer data, for one year. You can also ask for an export of your organisation&apos;s data as JSON, delivered within 30
           days. Disconnecting a cloud account stops OpsAgent using its role at once.
+        </p>
+        <p>
+          You can ask to see, correct, export or delete your data, or object to how it is used, through the contact
+          form. We answer within 30 days. You can also complain to your local data protection authority.
         </p>
         <p>If an incident on our side affects your data, we tell you within 72 hours of confirming it.</p>
       </section>
