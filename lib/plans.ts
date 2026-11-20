@@ -8,7 +8,7 @@ export const PLANS: Plan[] = [
 ];
 
 /** Stripe prices are tax-exclusive; shown under every list of plan prices. */
-export const PRICE_NOTE = "Prices in US dollars, plus tax where applicable.";
+export const PRICE_NOTE = "Prices in US dollars, plus tax where applicable. At checkout, Stripe may show the price in your local currency.";
 
 export const PLAN_FEATURES = [
   ["Members", "members"],
