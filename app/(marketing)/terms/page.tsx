@@ -59,7 +59,7 @@ export default function Terms() {
           <li>Plans renew every month until you cancel.</li>
           <li>You can cancel at any time. The plan stays active until the end of the period you have paid for.</li>
           <li>We do not give partial refunds for a period that has started.</li>
-          <li>Dashboard AI top-ups are a one-time purchase of 1,000 credits for US$15. They do not expire while your plan is active, are not refundable, cannot be used after the plan ends, and are removed when the organisation is deleted.</li>
+          <li>Dashboard AI top-ups are a one-time purchase of 1,000 credits for US$15. They do not expire while your plan is active, are not refundable, cannot be used after the plan ends, and are removed when the organisation is deleted. If an answer uses more credits than you have left, the difference is taken from your next top-up.</li>
           <li>Stripe is the merchant of record and handles payments and tax. Card details stay with Stripe.</li>
         </ul>
       </section>
