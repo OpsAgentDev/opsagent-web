@@ -7,7 +7,7 @@ import { MCP_URL } from "@/lib/agents";
 
 export const metadata: Metadata = {
   title: "Connect your agent · OpsAgent",
-  description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. Your agent reads findings and evidence for one organisation you approve, and changes nothing unless you allow it.",
+  description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. It reads findings for one organisation you approve and changes nothing unless allowed.",
 };
 
 export default function Agents() {
