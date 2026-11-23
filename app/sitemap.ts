@@ -4,7 +4,7 @@ import type { MetadataRoute } from "next";
 const PATHS = [
   "", "/pricing", "/how-it-works", "/security", "/contact", "/privacy", "/terms", "/status",
   "/features/checks", "/features/alerts", "/features/agents", "/features/ai-and-review",
-  "/docs/connect-your-agent",
+  "/docs/connect-your-agent", "/compare/aws-devops-agent",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

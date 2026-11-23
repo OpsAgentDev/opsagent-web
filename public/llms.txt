@@ -10,6 +10,7 @@
 - [Connect your agent](https://opsagent.dev/features/agents): Claude, Cursor or any MCP client; read-only unless you approve changes.
 - [Dashboard AI](https://opsagent.dev/features/ai-and-review): AI explains findings once an owner turns it on.
 - [Connect docs](https://opsagent.dev/docs/connect-your-agent): How to connect an MCP client; read-only unless you approve changes.
+- [OpsAgent vs AWS DevOps Agent](https://opsagent.dev/compare/aws-devops-agent): Nightly read-only checks for a flat price vs incident investigations billed per agent-second; sourced and dated.
 - [Pricing](https://opsagent.dev/pricing): Flat per cloud account, Starter US$99, Team US$299, Scale US$599 a month, plus tax where applicable.
 - [Security](https://opsagent.dev/security): Read-only by design.
 - [Privacy](https://opsagent.dev/privacy)
