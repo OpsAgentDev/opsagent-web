@@ -1879,6 +1879,7 @@ export interface components {
         };
         NewOrg: {
             name: string;
+            source?: components["schemas"]["SignupSourceBody"] | null;
             /** @description IANA zone; default `UTC`. */
             timezone?: string | null;
         };
@@ -2216,6 +2217,13 @@ export interface components {
         SessionUrl: {
             /** @description The hosted Stripe page; it returns to `WEB_BASE_URL/settings/billing?status=…`. */
             url: string;
+        };
+        SignupSourceBody: {
+            landing_path?: string | null;
+            referrer?: string | null;
+            utm_campaign?: string | null;
+            utm_medium?: string | null;
+            utm_source?: string | null;
         };
         SlackStart: {
             authorize_url: string;

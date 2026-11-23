@@ -2,6 +2,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { api, unwrap, type Org } from "@/lib/api/client";
+import { readFirstTouch } from "@/lib/source";
 
 export function CreateOrg({ onCreated, intro }: { onCreated: (org: Org) => void; intro?: ReactNode }) {
   const [error, setError] = useState<Error | null>(null);
@@ -14,7 +15,7 @@ export function CreateOrg({ onCreated, intro }: { onCreated: (org: Org) => void;
     const name = String(new FormData(e.currentTarget).get("name"));
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
-      onCreated(await unwrap(api.POST("/orgs", { body: { name, timezone } })));
+      onCreated(await unwrap(api.POST("/orgs", { body: { name, timezone, source: readFirstTouch() } })));
     } catch (err) {
       setError(err as Error);
       setBusy(false);
