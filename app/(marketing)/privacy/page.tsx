@@ -39,7 +39,7 @@ export default function Privacy() {
           <li>Findings, and the evidence behind them.</li>
           <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
-          <li>An audit log of member actions, model calls, agent calls and deliveries, which owners can read under Settings, Audit log, and a record of your own sign-ins.</li>
+          <li>An audit log of member actions, model calls, agent calls and deliveries, which owners can get through the API and the organisation export, and a record of your own sign-ins.</li>
           <li>Request logs, which include the IP address, requested URL and time of each request. They are kept for 90 days, for security and troubleshooting.</li>
           <li>For the account owner: name, email, company, plan and sign-up source are also kept in Binary Labs LLC&apos;s internal customer list, described below.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
@@ -79,7 +79,7 @@ export default function Privacy() {
           Before anything is stored, strings that look like secrets (keys, tokens, passwords) and email addresses are
           removed from evidence excerpts, resource names and tags. Everything else about a resource, such as its
           identifier, region and configuration, is stored as your cloud reports it.
-          Evidence and inventory snapshots expire after 90 days. Findings are kept while your organisation exists.
+          Evidence expires 90 days after it is collected, and inventory snapshots after 90 days. Findings are kept while your organisation exists.
         </p>
         <p>
           The audit log and delivery records have no time limit: they are kept while your organisation exists and
@@ -92,10 +92,14 @@ export default function Privacy() {
           Routine records are deleted on a schedule. A nightly job deletes the records of 15-minute watch scans, alert
           deliveries and skipped runs 14 days after they finish, together with the request counts and inventory
           snapshots tied to them, unless a finding still points to the run. Inventory snapshots and the raw cloud call
-          records are deleted after 90 days. Expired sign-in links, sessions and agent access tokens are deleted between
-          1 and 30 days after they expire. Findings and delivery records are kept while your organisation exists. The
+          records are deleted after 90 days. Expired sessions are deleted 1 day after they expire; sign-in links, agent
+          consent requests and agent access tokens after 7 days; agent refresh tokens and invites after 30 days.
+          Dashboard chat sessions are deleted 30 days after the last message, AI usage records after 395 days, and
+          expired agent registrations are removed. Findings and delivery records are kept while your organisation exists. The
           same job erases a deleted organisation after 30 days, and removes accounts whose email was never confirmed 30
-          days after they were created. Deleting your own account erases it at once.
+          days after they were created. Deleting your own account anonymises it at once: the email is replaced, the name and
+          sign-in ids are cleared, and passkeys and sign-in links are deleted. Audit entries of organisations you were in
+          stay with those organisations. One record that says an account was deleted, without your name, is kept for a year.
         </p>
       </section>
       <section>
@@ -108,15 +112,16 @@ export default function Privacy() {
           no model calls over MCP, but what the agent reads is then handled under that agent&apos;s own terms.
         </p>
         <p>
-          Write tools are off unless the person approving ticks &quot;Let this agent make changes&quot;. With that grant the
-          agent can accept, snooze and reopen findings, and start connecting a cloud account. Without it, those tools
-          are refused.
+          Write tools are off unless an owner ticks &quot;Let this agent make changes&quot; when approving. With that grant
+          the agent can accept, snooze and reopen findings, and, if the owner approved it, start connecting a cloud
+          account and verify the connection. Without it, those tools are refused.
         </p>
         <p>
           Access tokens are opaque random values, and we store only a hash of each one, never the token. Every call is
-          logged: the time, which agent and grant made it, the tool or resource, whether it succeeded and how long it
-          took. Arguments and results, tokens and evidence are not logged. Owners can read these entries under
-          Settings, Audit log, and they are kept like the rest of the audit log.
+          recorded in the audit log: the time, the grant and client id, the tool, resource or prompt name (a resource
+          address can contain ids), and whether it succeeded. A server log line also notes the tool, outcome and how
+          long it took. Arguments and results, tokens and evidence are not recorded. Owners can get these entries through
+          the API and the export, and they are kept like the rest of the audit log.
         </p>
         <p>
           Owners can revoke any connected agent under Settings, Connected agents, and members can revoke their own. A
@@ -180,8 +185,8 @@ export default function Privacy() {
       <section>
         <h2>Contact</h2>
         <p>
-          Privacy questions and data requests go through the <Link href="/contact">contact form</Link>. We answer
-          within 30 days.
+          Privacy questions and data requests go through the <Link href="/contact">contact form</Link>. We aim to
+          reply promptly.
         </p>
       </section>
       <section>
