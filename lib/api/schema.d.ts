@@ -89,7 +89,7 @@ export interface paths {
         delete: operations["auth_delete_me"];
         options?: never;
         head?: never;
-        /** Changes the signed-in user's name; nothing else is changeable here. */
+        /** Changes the signed-in user's name and/or marketing opt-in; nothing else is changeable here. */
         patch: operations["auth_update_me"];
         trace?: never;
     };
@@ -1830,6 +1830,8 @@ export interface components {
             has_passkey: boolean;
             /** Format: uuid */
             id: string;
+            /** @description Whether the user opted in to hear about other Binary Labs products (off by default). */
+            marketing_ok: boolean;
             name?: string | null;
             /**
              * Format: date-time
@@ -1838,11 +1840,13 @@ export interface components {
             terms_accepted_at?: string | null;
         };
         MePatch: {
+            /** @description Opt in (true) or out (false) of hearing about other Binary Labs products. */
+            marketing_ok?: boolean | null;
             /**
              * @description The new display name: 1 to 80 characters after trimming, no control characters (the
              *     sign-up rules).
              */
-            name: string;
+            name?: string | null;
         };
         Member: {
             email: string;
@@ -2554,7 +2558,7 @@ export interface operations {
                     "application/json": components["schemas"]["Problem"];
                 };
             };
-            /** @description `validation`: not a usable name */
+            /** @description `validation`: not a usable name, or nothing to change */
             422: {
                 headers: {
                     [name: string]: unknown;
