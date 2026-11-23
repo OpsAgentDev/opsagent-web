@@ -3,7 +3,7 @@ import Link from "next/link";
 import * as I from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
-  title: "How it works · OpsAgent",
+  title: "How the read-only AI ops agent works · OpsAgent",
   description: "Connect read-only, checks run, you get a morning briefing. Urgent exposures alert you within minutes.",
 };
 

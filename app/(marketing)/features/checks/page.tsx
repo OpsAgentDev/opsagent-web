@@ -3,7 +3,7 @@ import { FeaturePage } from "@/components/marketing/FeaturePage";
 import * as I from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
-  title: "What it checks · OpsAgent",
+  title: "Cloud checks: IAM, exposure, cost and backups · OpsAgent",
   description: "Ten deterministic, read-only checks across cost, security, backups, certificates, logging, encryption, hardening and GPUs. Every finding cites its evidence.",
 };
 

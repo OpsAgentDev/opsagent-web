@@ -6,7 +6,7 @@ import * as I from "@/components/marketing/landing-icons";
 import "../../landing.css";
 
 export const metadata: Metadata = {
-  title: "Alerts and briefings · OpsAgent",
+  title: "Cloud alerts in Slack and morning briefings · OpsAgent",
   description: "Urgent exposures reach you in Slack within minutes. Everything else waits for one short morning briefing and a weekly report.",
 };
 

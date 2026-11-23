@@ -5,7 +5,7 @@ import { PLAN_FEATURES as FEATURES, PLANS, PRICE_NOTE } from "@/lib/plans";
 import { joinCta, SIGNUPS_OPEN } from "@/lib/signups";
 
 export const metadata: Metadata = {
-  title: "Pricing · OpsAgent",
+  title: "AI ops agent pricing, flat per cloud account · OpsAgent",
   description: "Flat pricing per cloud account, whatever its size: Starter US$99, Team US$299, Scale US$599 a month, plus tax where applicable. 14-day free trial on Team.",
 };
 

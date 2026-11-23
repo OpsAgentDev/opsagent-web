@@ -6,7 +6,7 @@ import * as I from "@/components/marketing/landing-icons";
 import { MCP_URL } from "@/lib/agents";
 
 export const metadata: Metadata = {
-  title: "Connect your agent · OpsAgent",
+  title: "Cloud MCP server for Claude, Cursor and ChatGPT · OpsAgent",
   description: "Point Claude, ChatGPT, Cursor, VS Code or any MCP client at OpsAgent. It reads findings for one organisation you approve and changes nothing unless allowed.",
 };
 
