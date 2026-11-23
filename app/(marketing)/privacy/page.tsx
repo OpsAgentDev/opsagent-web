@@ -12,7 +12,7 @@ export default function Privacy() {
   return (
     <main className="page">
       <h1>Privacy policy</h1>
-      <p className="lead">Last updated 20 November 2026</p>
+      <p className="lead">Last updated 23 November 2026</p>
       <p>
         OpsAgent is run by Binary Labs LLC. This page says what we store when you use it, why, and what you can ask
         us to do with it. For anything here, use the <Link href="/contact">contact form</Link>.
@@ -88,6 +88,40 @@ export default function Privacy() {
           stored, contact form messages are also emailed to us, and both are kept with no time limit. Ask through
           the contact form to have a waitlist entry or a message deleted.
         </p>
+        <p>
+          Routine records are deleted on a schedule. A nightly job deletes the records of 15-minute watch scans, alert
+          deliveries and skipped runs 14 days after they finish, together with the request counts and inventory
+          snapshots tied to them, unless a finding still points to the run. Inventory snapshots and the raw cloud call
+          records are deleted after 90 days. Expired sign-in links, sessions and agent access tokens are deleted between
+          1 and 30 days after they expire. Findings and delivery records are kept while your organisation exists. The
+          same job erases a deleted organisation after 30 days, and removes accounts whose email was never confirmed 30
+          days after they were created. Deleting your own account erases it at once.
+        </p>
+      </section>
+      <section>
+        <h2>Connected AI agents (MCP)</h2>
+        <p>
+          You can connect an AI agent, such as Claude, to OpsAgent over MCP. An owner or member approves each agent in
+          the browser, for one organisation. Once approved, the agent can read that organisation&apos;s connections,
+          findings, the evidence behind them, resources, scans and cost anomalies, and start a scan. It cannot read
+          other organisations, and it cannot change your cloud account. The agent runs on its own model: OpsAgent makes
+          no model calls over MCP, but what the agent reads is then handled under that agent&apos;s own terms.
+        </p>
+        <p>
+          Write tools are off unless the person approving ticks &quot;Let this agent make changes&quot;. With that grant the
+          agent can accept, snooze and reopen findings, and start connecting a cloud account. Without it, those tools
+          are refused.
+        </p>
+        <p>
+          Access tokens are opaque random values, and we store only a hash of each one, never the token. Every call is
+          logged: the time, which agent and grant made it, the tool or resource, whether it succeeded and how long it
+          took. Arguments and results, tokens and evidence are not logged. Owners can read these entries under
+          Settings, Audit log, and they are kept like the rest of the audit log.
+        </p>
+        <p>
+          Owners can revoke any connected agent under Settings, Connected agents, and members can revoke their own. A
+          revoked agent loses access at once, and an agent also loses access when its member leaves the organisation.
+        </p>
       </section>
       <section>
         <h2>Who else processes it</h2>
@@ -142,6 +176,13 @@ export default function Privacy() {
           form. We answer within 30 days. You can also complain to your local data protection authority.
         </p>
         <p>If an incident on our side affects your data, we tell you within 72 hours of confirming it.</p>
+      </section>
+      <section>
+        <h2>Contact</h2>
+        <p>
+          Privacy questions and data requests go through the <Link href="/contact">contact form</Link>. We answer
+          within 30 days.
+        </p>
       </section>
       <section>
         <h2>Changes</h2>
