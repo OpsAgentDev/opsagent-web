@@ -117,7 +117,7 @@ export default function Privacy() {
           OpsAgent uses only first-party cookies needed to sign you in and to approve agent connections. No advertising
           cookies.{" "}
           {GA_ID
-            ? "On the public pages, Google Analytics sets its cookies only if you accept them in the banner; change your answer any time with \"Cookie settings\" at the foot of the page."
+            ? "On the public pages, Google Analytics sets its cookies only if you accept them in the banner; change your answer any time with \"Cookie settings\" at the foot of the page. If you accept, OpsAgent also sets one first-party cookie, oa_src, holding the campaign tags (utm_source, utm_medium, utm_campaign) and the site that referred you, plus the first page you landed on; it lasts 90 days and is sent with your organisation when you create one, so we know which channel brought you. If you decline, it is not set."
             : "No tracking cookies."}{" "}
           Your browser also
           remembers, in its local storage, if you dismissed the passkey suggestion.

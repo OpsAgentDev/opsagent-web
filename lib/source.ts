@@ -1,4 +1,6 @@
-/** First-touch sign-up source: kept in a first-party cookie from the first marketing page, sent when the organisation is created. */
+import { CONSENT_KEY, consentOf } from "@/lib/analytics";
+
+/** First-touch sign-up source: kept in a first-party cookie, only after the visitor accepted the analytics banner, and sent when the organisation is created. */
 export type SignupSource = {
   utm_source: string | null;
   utm_medium: string | null;
@@ -13,9 +15,18 @@ const MAX_LEN = 200; // brain cuts at the same length
 const KEYS = ["utm_source", "utm_medium", "utm_campaign", "referrer", "landing_path"] as const;
 const clip = (v: string | null | undefined) => (v ? v.slice(0, MAX_LEN) : null);
 
-/** The stored first touch, or null when absent or not ours. */
+const consented = () => {
+  try { return consentOf(localStorage.getItem(CONSENT_KEY)) === "granted"; } catch { return false; }
+};
+
+/** Drops the cookie (consent declined or withdrawn). */
+export function clearFirstTouch(): void {
+  if (typeof document !== "undefined") document.cookie = `${SOURCE_COOKIE}=; Max-Age=0; Path=/`;
+}
+
+/** The stored first touch, or null when absent, not ours, or analytics consent is not granted. */
 export function readFirstTouch(): SignupSource | null {
-  if (typeof document === "undefined") return null;
+  if (typeof document === "undefined" || !consented()) return null;
   const raw = document.cookie.split(";").map((c) => c.trim()).find((c) => c.startsWith(`${SOURCE_COOKIE}=`));
   if (!raw) return null;
   try {
@@ -40,9 +51,9 @@ function externalReferrer(url: URL, referrer: string): string | null {
   }
 }
 
-/** Stores the visit as the first touch unless one is already stored. */
+/** Stores the visit as the first touch unless one is already stored; nothing without analytics consent. */
 export function recordFirstTouch(url: URL, referrer: string): void {
-  if (typeof document === "undefined" || readFirstTouch()) return;
+  if (typeof document === "undefined" || !consented() || readFirstTouch()) return;
   const q = url.searchParams;
   const source: SignupSource = {
     utm_source: clip(q.get("utm_source")),
