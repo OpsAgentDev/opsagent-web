@@ -113,8 +113,8 @@ export default function Privacy() {
         </p>
         <p>
           Write tools are off unless an owner ticks &quot;Let this agent make changes&quot; when approving. With that grant
-          the agent can accept, snooze and reopen findings, and, if the owner approved it, start connecting a cloud
-          account and verify the connection. Without it, those tools are refused.
+          the agent can accept, snooze and reopen findings, and start connecting a cloud
+          account and verify the connection (owners only). Without it, those tools are refused.
         </p>
         <p>
           Access tokens are opaque random values, and we store only a hash of each one, never the token. Every call is
