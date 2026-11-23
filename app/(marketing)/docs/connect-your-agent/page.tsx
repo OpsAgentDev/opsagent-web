@@ -4,7 +4,7 @@ import { CLIENTS, MCP_URL, STDIO_BRIDGE, type Snippet } from "@/lib/agents";
 export const metadata = {
   title: "Connect an MCP client · OpsAgent",
   description:
-    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any MCP client to OpsAgent. You approve it in your browser; access is read-only unless you approve changes.",
+    "Connect Claude, ChatGPT, Cursor, VS Code, Codex, Gemini CLI or any MCP client to OpsAgent. You approve in your browser; read-only unless you allow changes.",
 };
 
 function Code({ s, client }: { s: Snippet; client: string }) {
