@@ -15,10 +15,10 @@ const LINKS: [string, string][] = [
 ];
 const NAV = [...FEATURES, ...LINKS];
 const FEATURE_PAGES = [
-  { path: "/features/alerts", h1: "Alerts and briefings", section: "Urgent alerts" },
-  { path: "/features/checks", h1: "What it checks", section: "The ten checks" },
-  { path: "/features/agents", h1: "Connect your agent", section: "What your agent can do" },
-  { path: "/features/ai-and-review", h1: "Dashboard AI and human review", section: "Human review" },
+  { path: "/features/alerts", h1: "Alerts and briefings", section: "Urgent alerts", title: "Cloud alerts in Slack and morning briefings · OpsAgent" },
+  { path: "/features/checks", h1: "What it checks", section: "The ten checks", title: "Cloud checks: IAM, exposure, cost and backups · OpsAgent" },
+  { path: "/features/agents", h1: "Connect your agent", section: "What your agent can do", title: "Cloud MCP server for Claude, Cursor and ChatGPT · OpsAgent" },
+  { path: "/features/ai-and-review", h1: "Dashboard AI and human review", section: "Human review", title: "Dashboard AI and human review · OpsAgent" },
 ];
 
 test("header has every nav link and Join", async ({ page }) => {
@@ -239,7 +239,7 @@ for (const p of FEATURE_PAGES) {
     await expect(main.getByRole("heading", { name: p.section, exact: true })).toBeVisible();
     await expect(main.getByRole("heading", { level: 2, name: "Get your ops teammate." })).toBeVisible();
     await expect(main.getByRole("button", { name: "Join the waitlist" })).toBeVisible();
-    await expect(page).toHaveTitle(`${p.h1} · OpsAgent`);
+    await expect(page).toHaveTitle(p.title);
   });
 }
 
