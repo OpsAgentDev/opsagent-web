@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { FirstTouch } from "@/components/marketing/FirstTouch";
 import { Analytics } from "@/components/marketing/Analytics";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
@@ -21,6 +22,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       {children}
       <SiteFooter />
       <Analytics />
+      <FirstTouch />
     </div>
   );
 }
