@@ -41,12 +41,19 @@ export default function Privacy() {
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
           <li>An audit log of member actions, model calls, agent calls and deliveries, which owners can read under Settings, Audit log, and a record of your own sign-ins.</li>
           <li>Request logs, which include the IP address, requested URL and time of each request. They are kept for 90 days, for security and troubleshooting.</li>
+          <li>For the account owner: name, email, company, plan and sign-up source are also kept in Binary Labs LLC&apos;s internal customer list, described below.</li>
           <li>If you join the waitlist or use the contact form: your email address and message.</li>
           {HUMAN_REVIEW && <li>If you request a human review: your email address, what it is for, and your note, which is emailed to us.</li>}
         </ul>
         <p>
           OpsAgent connects through a read-only role you create. It cannot read object contents, database
           rows, secret or parameter values, log events or function code. What it can read is listed on the <Link href="/security">security page</Link>.
+        </p>
+      </section>
+      <section>
+        <h2>Our customer list</h2>
+        <p>
+          We keep the account owner&apos;s name, email, company, plan and sign-up source in Binary Labs LLC&apos;s internal customer list (a private Google Sheet) to support you. We contact you about other Binary Labs products only if you turn that on in settings, and you can opt out any time.
         </p>
       </section>
       <section>

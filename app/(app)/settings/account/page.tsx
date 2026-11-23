@@ -3,6 +3,7 @@ import { OrgLink } from "@/components/org-link";
 import { useRef, useState } from "react";
 import { ErrorNote } from "@/components/error-note";
 import { ExportData } from "@/components/export-data";
+import { MarketingOk } from "@/components/marketing-ok";
 import { YourName } from "@/components/your-name";
 import { api, ApiError, unwrap } from "@/lib/api/client";
 import { forgetChoices } from "@/lib/members";
@@ -56,6 +57,7 @@ export default function AccountSettings() {
     <main className="stack">
       <h1>Account</h1>
       {me && <YourName me={me} onEmailChanged={reload} />}
+      {me && <MarketingOk key={String(me.marketing_ok)} initial={me.marketing_ok} />}
       {owner && <ExportData org={org.slug} />}
       {owner && (
         <section className="card stack">
