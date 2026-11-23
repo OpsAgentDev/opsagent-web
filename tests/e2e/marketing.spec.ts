@@ -217,9 +217,19 @@ test("Features dropdown opens on hover and closes when the pointer leaves", asyn
 test("footer links to every public page", async ({ page }) => {
   await page.goto("/");
   const footer = page.getByRole("contentinfo");
-  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"], ["Status", "/status"]] as [string, string][]) {
+  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"], ["Status", "/status"], ["vs AWS DevOps Agent", "/compare/aws-devops-agent"]] as [string, string][]) {
     await expect(footer.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
+});
+
+test("AWS DevOps Agent comparison is sourced, dated and in the sitemap", async ({ page, request }) => {
+  await page.goto("/compare/aws-devops-agent");
+  await expect(page.getByRole("heading", { level: 1, name: "OpsAgent and AWS DevOps Agent" })).toBeVisible();
+  await expect(page.getByRole("table")).toContainText("US$0.0083 per agent-second");
+  await expect(page.getByRole("link", { name: "AWS DevOps Agent pricing" })).toHaveAttribute("href", "https://aws.amazon.com/devops-agent/pricing/");
+  await expect(page.locator("main")).toContainText("23 November 2026");
+  await expect(page).toHaveTitle("AWS DevOps Agent alternative for small teams · OpsAgent");
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/aws-devops-agent");
 });
 
 test("status page lists the API, MCP, scans and deliveries", async ({ page }) => {

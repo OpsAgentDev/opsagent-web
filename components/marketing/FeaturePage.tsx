@@ -4,10 +4,10 @@ import { closingLine } from "@/lib/signups";
 import type { CostIcon } from "@/components/marketing/landing-icons";
 
 /** Frame shared by the /features pages: title and summary, the sections, and the closing call to action. */
-export function FeaturePage({ slug, title, lead, children }: { slug: string; title: string; lead: string; children: ReactNode }) {
+export function FeaturePage({ slug, title, lead, kicker = "Features", children }: { slug: string; title: string; lead: string; kicker?: string; children: ReactNode }) {
   return (
     <main className="page feature">
-      <p className="feature-kicker">Features</p>
+      <p className="feature-kicker">{kicker}</p>
       <h1>{title}</h1>
       <p className="lead">{lead}</p>
       {children}
