@@ -228,6 +228,9 @@ test("AWS DevOps Agent comparison is sourced, dated and in the sitemap", async (
   await expect(page.getByRole("heading", { level: 1, name: "OpsAgent and AWS DevOps Agent" })).toBeVisible();
   await expect(page.getByRole("table")).toContainText("US$0.0083 per agent-second");
   await expect(page.getByRole("table")).toContainText("Starter US$99, Team US$299, Scale US$599");
+  await expect(page.getByRole("table")).toContainText("bill separately");
+  await expect(page.getByRole("table")).toContainText("AI credit top-ups are optional.");
+  await expect(page.getByRole("table")).toContainText("No tool changes your cloud.");
   await expect(page.getByRole("link", { name: "Source for Price" })).toHaveAttribute("href", "https://aws.amazon.com/devops-agent/pricing/");
   await expect(page.locator("main")).toContainText("As of 24 November 2026");
   await expect(page.getByRole("heading", { name: "What OpsAgent does not do" })).toBeVisible();

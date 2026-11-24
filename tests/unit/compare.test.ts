@@ -67,6 +67,14 @@ describe("compare pages", () => {
     expect(allText.replace("you@company.com", "")).not.toMatch(/[\w.]+@[\w.]+\.\w+/);
   });
 
+  it("keeps the facts the fact check corrected", () => {
+    const row = (l: string) => entry.rows.find((r) => r.label === l)!;
+    expect(row("Use from AI agents").opsagent).toContain("With an owner's approval, an agent can also triage findings and connect accounts. No tool changes your cloud.");
+    expect(row("Use from AI agents").opsagent).not.toMatch(/read-only MCP/i);
+    expect(row("Price").them).toContain("Connected AWS services, such as CloudWatch Logs Insights queries, bill separately.");
+    expect(row("Price").opsagent).toContain("AI credit top-ups are optional.");
+  });
+
   it("carries Product JSON-LD with the live prices", () => {
     const m = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/);
     expect(m).not.toBeNull();

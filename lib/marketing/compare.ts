@@ -54,9 +54,9 @@ export const COMPARE: CompareEntry[] = [
       },
       {
         label: "Price",
-        them: "Pay as you go at US$0.0083 per agent-second, billed for investigations, evaluations and on-demand tasks, with no upfront commitment. AWS lists a free trial and monthly credits for some AWS Support plans. See AWS's pricing page for the current terms.",
+        them: "Pay as you go at US$0.0083 per agent-second, billed for investigations, evaluations and on-demand tasks, with no upfront commitment. AWS lists a free trial and monthly credits for some AWS Support plans. Connected AWS services, such as CloudWatch Logs Insights queries, bill separately. See AWS's pricing page for the current terms.",
         opsagent:
-          "Flat per cloud account per month: Starter US$99, Team US$299, Scale US$599, plus tax where applicable. It does not change with how much the agent finds.",
+          "Flat per cloud account per month: Starter US$99, Team US$299, Scale US$599, plus tax where applicable. It does not change with how much the agent finds. AI credit top-ups are optional.",
         sourceUrl: PRICING,
       },
       {
@@ -80,7 +80,7 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "Use from AI agents",
         them: "Can be reached over MCP, ACP and A2A, and connects to private or remote MCP servers.",
-        opsagent: "Is a read-only MCP server: Claude, Cursor or any MCP client reads findings and evidence.",
+        opsagent: "An MCP server: Claude, Cursor or any MCP client reads findings and evidence. With an owner's approval, an agent can also triage findings and connect accounts. No tool changes your cloud.",
         sourceUrl: ABOUT,
       },
       {
