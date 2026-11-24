@@ -9,6 +9,8 @@ export type CompareEntry = {
   name: string;
   /** Page title and search-result title. */
   title: string;
+  /** The h1, when "OpsAgent and <name>" does not read well. */
+  heading?: string;
   /** Meta description, and the lead paragraph under the heading. */
   description: string;
   /** ISO date the rows were last checked against their sources. */
@@ -18,11 +20,39 @@ export type CompareEntry = {
   notDo: string[];
 };
 
+// The OpsAgent column, from the PRD and `docs/tech-spec/mvp-marketing.md`. Shared so every page says the same thing.
+const WHAT_IT_DOES =
+  "Runs ten deterministic checks on your AWS account every night and tells you what to fix. Urgent exposures are checked every 15 minutes. Each finding cites its resource, evidence and check; Dashboard AI explains it in plain language once an owner turns it on.";
+const PRICE =
+  "Flat per cloud account per month: Starter US$99, Team US$299, Scale US$599, plus tax where applicable. It does not change with how much the agent finds. AI credit top-ups are optional.";
+const AI_AGENTS =
+  "An MCP server: Claude, Cursor or any MCP client reads findings and evidence. With an owner's approval, an agent can also triage findings and connect accounts. No tool changes your cloud.";
+const SIGN_UP = "Sign up on the web, then connect an AWS account with a read-only role.";
+const AWS_ONLY = "AWS only for now. The product is built to be provider-neutral.";
+const NO_CHANGES = "None. OpsAgent connects read-only and never applies a fix.";
+const NOT_DO_BASE = [
+  "It never changes your cloud: no fixes, no remediation and no write access in this version.",
+  "It covers AWS only for now.",
+];
+
 const DOCS = "https://docs.aws.amazon.com/devopsagent/latest/userguide";
 const ABOUT = `${DOCS}/about-aws-devops-agent.html`;
 const ACTIONS = `${DOCS}/working-with-devops-agent-working-with-directed-actions.html`;
 const FAQS = "https://aws.amazon.com/devops-agent/faqs/";
 const PRICING = "https://aws.amazon.com/devops-agent/pricing/";
+
+const CLERIC_HOME = "https://cleric.ai/";
+const CLERIC_PRICING = "https://cleric.ai/pricing";
+const CLERIC_DOCS = "https://docs.cleric.ai/";
+const CLERIC_FAQ = "https://docs.cleric.ai/reference/faq";
+const CLERIC_INTEGRATIONS = "https://docs.cleric.ai/integrations/supported-integrations";
+
+const SUPPORT_DOCS = "https://docs.aws.amazon.com/awssupport/latest/user";
+const TA = `${SUPPORT_DOCS}/trusted-advisor.html`;
+const TA_REF = `${SUPPORT_DOCS}/trusted-advisor-check-reference.html`;
+const SH_DOC = "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html";
+const SH_PRICING = "https://aws.amazon.com/security-hub/pricing/";
+const SH_CSPM_PRICING = "https://aws.amazon.com/security-hub/cspm/pricing/";
 
 export const COMPARE: CompareEntry[] = [
   {
@@ -36,8 +66,7 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "What it does",
         them: "Starts investigating when an alert or support ticket arrives, correlates telemetry, code and deployment data to find the root cause, proposes mitigation steps, and recommends changes to stop repeat incidents.",
-        opsagent:
-          "Runs ten deterministic checks on your AWS account every night and tells you what to fix. Urgent exposures are checked every 15 minutes. Each finding cites its resource, evidence and check; Dashboard AI explains it in plain language once an owner turns it on.",
+        opsagent: WHAT_IT_DOES,
         sourceUrl: ABOUT,
       },
       {
@@ -49,26 +78,25 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "How you get it",
         them: "You need an AWS account. An administrator sets it up in the AWS Management Console by creating an Agent Space that defines what the agent can reach.",
-        opsagent: "Sign up on the web, then connect an AWS account with a read-only role.",
+        opsagent: SIGN_UP,
         sourceUrl: FAQS,
       },
       {
         label: "Price",
         them: "Pay as you go at US$0.0083 per agent-second, billed for investigations, evaluations and on-demand tasks, with no upfront commitment. AWS lists a free trial and monthly credits for some AWS Support plans. Connected AWS services, such as CloudWatch Logs Insights queries, bill separately. See AWS's pricing page for the current terms.",
-        opsagent:
-          "Flat per cloud account per month: Starter US$99, Team US$299, Scale US$599, plus tax where applicable. It does not change with how much the agent finds. AI credit top-ups are optional.",
+        opsagent: PRICE,
         sourceUrl: PRICING,
       },
       {
         label: "Clouds",
         them: "AWS. Azure resources connect through Microsoft Entra ID, and on-premises systems through observability integrations or private MCP servers.",
-        opsagent: "AWS only for now. The product is built to be provider-neutral.",
+        opsagent: AWS_ONLY,
         sourceUrl: FAQS,
       },
       {
         label: "Changes to your cloud",
         them: "Read-only actions by default. Directed actions that create or modify resources are off until you opt in, need an operator's approval for each action, and exclude deleting resources.",
-        opsagent: "None. OpsAgent connects read-only and never applies a fix.",
+        opsagent: NO_CHANGES,
         sourceUrl: ACTIONS,
       },
       {
@@ -80,7 +108,7 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "Use from AI agents",
         them: "Can be reached over MCP, ACP and A2A, and connects to private or remote MCP servers.",
-        opsagent: "An MCP server: Claude, Cursor or any MCP client reads findings and evidence. With an owner's approval, an agent can also triage findings and connect accounts. No tool changes your cloud.",
+        opsagent: AI_AGENTS,
         sourceUrl: ABOUT,
       },
       {
@@ -91,11 +119,152 @@ export const COMPARE: CompareEntry[] = [
       },
     ],
     notDo: [
-      "It never changes your cloud: no fixes, no remediation and no write access in this version.",
-      "It covers AWS only for now.",
+      ...NOT_DO_BASE,
       "It does not investigate incidents as they happen or find a root cause from your logs and traces.",
       "It does not page you, run on-call schedules or store logs and metrics.",
       "It does not review code changes before release.",
+    ],
+  },
+  {
+    slug: "cleric",
+    name: "Cleric",
+    title: "Cleric alternative for small teams · OpsAgent",
+    description:
+      "Cleric investigates alerts and checks releases, priced in credits. OpsAgent checks your AWS account read-only every night for a flat monthly price.",
+    asOf: "2026-11-24",
+    rows: [
+      {
+        label: "What it does",
+        them: "An AI SRE that investigates production issues. When an alert fires or you ask, it queries logs, metrics and system state to find root causes and recommend solutions.",
+        opsagent: WHAT_IT_DOES,
+        sourceUrl: CLERIC_DOCS,
+      },
+      {
+        label: "How it starts",
+        them: "An Issue starts from an alert, a scheduled monitor or a failed deploy. For up to 14 days after a change deploys, it also watches for regressions. You can chat with it in Slack, Microsoft Teams or its web app.",
+        opsagent: "On a schedule: a full scan every night, and urgent exposures every 15 minutes. It needs no alert or deploy to start.",
+        sourceUrl: CLERIC_PRICING,
+      },
+      {
+        label: "Clouds and tools",
+        them: "Connects to your existing tools. Its docs list AWS, Google Cloud, Kubernetes, Datadog, Grafana, Prometheus, PagerDuty, GitHub and others. For AWS you create an IAM role from a trust policy Cleric gives you, and Cleric assumes it with temporary credentials.",
+        opsagent: AWS_ONLY,
+        sourceUrl: CLERIC_INTEGRATIONS,
+      },
+      {
+        label: "How you get it",
+        them: "You add integrations yourself in its web app, or have a coding agent add them over MCP. Slack is its primary way to interact with Cleric; Microsoft Teams is also supported.",
+        opsagent: SIGN_UP,
+        sourceUrl: CLERIC_INTEGRATIONS,
+      },
+      {
+        label: "Price",
+        them: "Credits cost $0.50 each. Plans per month, with annual billing also offered: Team $700 for 1,400 credits, Pro $1,500 for 3,000 credits, Scale $3,000 for 6,000 credits. Enterprise is custom and billed annually. Verifying one production change costs 2 credits ($1) and investigating one Issue costs 10 credits ($5). Users are unlimited. A trial gives 1,000 evaluation credits after approval, with no time limit. When credits run out, new work pauses unless you buy more credits or turn on overage.",
+        opsagent: PRICE,
+        sourceUrl: CLERIC_PRICING,
+      },
+      {
+        label: "Changes to your cloud",
+        them: "It primarily investigates using read-only access. Its GitHub integration has write permissions by default, so it can create branches, open pull requests and file issues. Cleric says it is instructed that it cannot merge pull requests, and recommends branch protection on your default branch.",
+        opsagent: NO_CHANGES,
+        sourceUrl: CLERIC_FAQ,
+      },
+      {
+        label: "Use from AI agents",
+        them: "You can use Cleric from Claude Code, Cursor and other MCP clients to search its knowledge or start an investigation. It can also connect to your MCP servers to use their tools and data. MCP access is on every plan.",
+        opsagent: AI_AGENTS,
+        sourceUrl: CLERIC_PRICING,
+      },
+      {
+        label: "Where Cleric fits better",
+        them: "When something is broken, or a release may have broken it. It brings the cause, the evidence and a fix pull request to review, then checks that the issue is resolved after the fix deploys.",
+        opsagent: "OpsAgent does not investigate live incidents, read your logs and traces to find a root cause, open pull requests or watch releases.",
+        sourceUrl: CLERIC_HOME,
+      },
+    ],
+    notDo: [
+      ...NOT_DO_BASE,
+      "It does not investigate incidents as they happen or find a root cause from your logs and traces.",
+      "It does not open pull requests or watch your releases for regressions.",
+      "It does not page you, run on-call schedules or store logs and metrics.",
+      "It does not review code changes before release.",
+    ],
+  },
+  {
+    slug: "trusted-advisor-security-hub",
+    name: "AWS Trusted Advisor and Security Hub",
+    title: "Trusted Advisor and Security Hub, or OpsAgent",
+    heading: "OpsAgent, or doing it yourself with AWS Trusted Advisor and Security Hub",
+    description:
+      "Doing it yourself with AWS Trusted Advisor and Security Hub: which checks each support plan unlocks, how each is priced, and where OpsAgent differs.",
+    asOf: "2026-11-24",
+    rows: [
+      {
+        label: "What Trusted Advisor does",
+        them: "Inspects your AWS environment and recommends ways to save money, improve availability and performance, or help close security gaps.",
+        opsagent: WHAT_IT_DOES,
+        sourceUrl: TA,
+      },
+      {
+        label: "What Security Hub does",
+        them: "Security Hub CSPM runs checks against security standards, including AWS Foundational Security Best Practices, CIS, PCI DSS and NIST, and generates control findings. It also receives findings from services such as GuardDuty, Inspector and Macie, so you see them in one place.",
+        opsagent: "OpsAgent runs its own ten checks. It does not score your account against CIS, PCI DSS or NIST, and it does not take in other tools' findings.",
+        sourceUrl: SH_DOC,
+      },
+      {
+        label: "Trusted Advisor checks without a paid plan",
+        them: "With Basic Support or Developer Support, the console shows all Service limits checks and six more: Amazon EBS public snapshots, Amazon RDS public snapshots, Amazon S3 bucket permissions, MFA on the root account, security groups with specific ports unrestricted, and AWS STS global endpoint usage.",
+        opsagent: "Ten checks run nightly on each connected account. They cover public snapshots and buckets, open admin and database ports, root MFA, access keys, backups, certificates, logging, encryption, instance hardening, idle resources and GPUs.",
+        sourceUrl: TA_REF,
+      },
+      {
+        label: "Trusted Advisor checks on a paid plan",
+        them: "The full set of Trusted Advisor checks, and its API, come with Business Support+, Enterprise Support or Unified Operations. Basic Support has no automatic check updates: you refresh Security checks by hand. AWS lists Business Support+, which adds 24/7 access to AWS experts, at a $29 a month minimum per account. AWS says Developer Support and Business Support will be discontinued on January 1, 2027.",
+        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks.",
+        sourceUrl: TA,
+      },
+      {
+        label: "How you get it",
+        them: "You enable Security Hub CSPM in each AWS Region you want covered: it only processes findings in the Region where you enabled it, and full CIS AWS Foundations Benchmark coverage needs every supported Region. Most control findings also need AWS Config switched on and recording resources.",
+        opsagent: SIGN_UP,
+        sourceUrl: SH_DOC,
+      },
+      {
+        label: "Price",
+        them: "Security Hub Essentials plan: billed per resource unit per month, pro-rated for the time resources are monitored. One EC2 instance is one unit, 12 Lambda functions are one unit, 18 container images are one unit and 125 IAM users or roles are one unit. AWS's pricing examples use $3.75 per resource unit. The plan includes Security Hub CSPM and the AWS Config service-linked recorder. There is a 30-day free trial.",
+        opsagent: PRICE,
+        sourceUrl: SH_PRICING,
+      },
+      {
+        label: "Security Hub CSPM price",
+        them: "Security Hub CSPM on its own is priced on security checks, finding ingestion events and automation rule evaluations. Its examples price the first 100,000 checks a month at $0.0010 per security check. Findings from its own security checks are not charged for ingestion. AWS Config is required for its AWS checks and is priced separately. There is a 30-day free trial.",
+        opsagent: "Flat per cloud account, whatever the number of findings.",
+        sourceUrl: SH_CSPM_PRICING,
+      },
+      {
+        label: "Changes to your cloud",
+        them: "Automation rules modify or suppress findings. Through Amazon EventBridge you can define custom actions, such as sending findings to a ticketing system or to an automated remediation system.",
+        opsagent: NO_CHANGES,
+        sourceUrl: SH_DOC,
+      },
+      {
+        label: "Use from AI agents",
+        them: "Security Hub CSPM has a console, an API, the AWS CLI and SDKs.",
+        opsagent: AI_AGENTS,
+        sourceUrl: SH_DOC,
+      },
+      {
+        label: "Where doing it yourself fits better",
+        them: "When you need to assess your account against a named standard such as CIS, PCI DSS or NIST, or bring findings from other AWS security services and partner products into one view across accounts.",
+        opsagent: "OpsAgent does not assess against those standards or take in other tools' findings. It lists each AWS account separately.",
+        sourceUrl: SH_DOC,
+      },
+    ],
+    notDo: [
+      ...NOT_DO_BASE,
+      "It does not assess your account against CIS, PCI DSS or NIST.",
+      "It does not take in findings from other security tools.",
+      "It does not roll findings up across accounts; each AWS account is listed separately.",
     ],
   },
 ];

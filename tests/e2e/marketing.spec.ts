@@ -241,6 +241,43 @@ test("AWS DevOps Agent comparison is sourced, dated and in the sitemap", async (
   expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/aws-devops-agent");
 });
 
+test("Cleric comparison is sourced, dated and in the sitemap and llms.txt", async ({ page, request }) => {
+  const res = await page.goto("/compare/cleric");
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1, name: "OpsAgent and Cleric" })).toBeVisible();
+  const table = page.getByRole("table");
+  await expect(table).toContainText("Team $700 for 1,400 credits");
+  await expect(table).toContainText("Starter US$99, Team US$299, Scale US$599");
+  await expect(table).toContainText("it cannot merge pull requests");
+  await expect(table).toContainText("No tool changes your cloud.");
+  await expect(page.getByRole("link", { name: "Source for Price" })).toHaveAttribute("href", "https://cleric.ai/pricing");
+  await expect(page.getByRole("rowheader", { name: "Where Cleric fits better" })).toBeVisible();
+  await expect(page.locator("main")).toContainText("As of 24 November 2026");
+  await expect(page.getByRole("heading", { name: "What OpsAgent does not do" })).toBeVisible();
+  await expect(page).toHaveTitle("Cleric alternative for small teams · OpsAgent");
+  expect(await page.locator('script[type="application/ld+json"]').first().textContent()).toContain('"@type":"Product"');
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/cleric");
+  expect(await (await request.get("/llms.txt")).text()).toContain("https://opsagent.dev/compare/cleric");
+});
+
+test("Trusted Advisor and Security Hub comparison says which plan unlocks which checks", async ({ page, request }) => {
+  const res = await page.goto("/compare/trusted-advisor-security-hub");
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1, name: "OpsAgent, or doing it yourself with AWS Trusted Advisor and Security Hub" })).toBeVisible();
+  const table = page.getByRole("table");
+  await expect(table).toContainText("With Basic Support or Developer Support, the console shows all Service limits checks and six more");
+  await expect(table).toContainText("Business Support+, Enterprise Support or Unified Operations");
+  await expect(table).toContainText("$29 a month minimum per account");
+  await expect(table).toContainText("per resource unit per month");
+  await expect(table).toContainText("Starter US$99, Team US$299, Scale US$599");
+  await expect(page.getByRole("link", { name: "Source for Price" })).toHaveAttribute("href", "https://aws.amazon.com/security-hub/pricing/");
+  await expect(page.getByRole("rowheader", { name: "Where doing it yourself fits better" })).toBeVisible();
+  await expect(page.locator("main")).toContainText("As of 24 November 2026");
+  await expect(page).toHaveTitle("Trusted Advisor and Security Hub, or OpsAgent");
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/trusted-advisor-security-hub");
+  expect(await (await request.get("/llms.txt")).text()).toContain("https://opsagent.dev/compare/trusted-advisor-security-hub");
+});
+
 test("sample report is labelled, anonymised, indexed and offers the trial", async ({ page, request }) => {
   const res = await page.goto("/sample-report");
   expect(res?.status()).toBe(200);
