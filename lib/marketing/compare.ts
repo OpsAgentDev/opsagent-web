@@ -141,7 +141,7 @@ export const COMPARE: CompareEntry[] = [
       },
       {
         label: "How it starts",
-        them: "An Issue starts from an alert, a scheduled monitor or a failed deploy. For up to 14 days after a change deploys, it also watches for regressions. You can chat with it in Slack, Microsoft Teams or its web app.",
+        them: "An Issue starts from an alert, a scheduled monitor (Pro and above) or a failed deploy. For up to 14 days after a change deploys, it also watches for regressions. You can chat with it in Slack, Microsoft Teams or its web app.",
         opsagent: "On a schedule: a full scan every night, and urgent exposures every 15 minutes. It needs no alert or deploy to start.",
         sourceUrl: CLERIC_PRICING,
       },
@@ -159,7 +159,7 @@ export const COMPARE: CompareEntry[] = [
       },
       {
         label: "Price",
-        them: "Credits cost $0.50 each. Plans per month, with annual billing also offered: Team $700 for 1,400 credits, Pro $1,500 for 3,000 credits, Scale $3,000 for 6,000 credits. Enterprise is custom and billed annually. Verifying one production change costs 2 credits ($1) and investigating one Issue costs 10 credits ($5). Users are unlimited. A trial gives 1,000 evaluation credits after approval, with no time limit. When credits run out, new work pauses unless you buy more credits or turn on overage.",
+        them: "Credits cost $0.50 each. Plans per month, with annual billing also offered: Team $700 for 1,400 credits, Pro $1,500 for 3,000 credits, Scale $3,000 for 6,000 credits. Enterprise is custom and billed annually. Verifying one production change costs 2 credits ($1) and investigating one Issue costs 10 credits ($5). Users are unlimited. A trial gives 1,000 evaluation credits after approval, with no time limit. When credits run out, new work pauses until the next credit release, unless you buy more credits or turn on overage.",
         opsagent: PRICE,
         sourceUrl: CLERIC_PRICING,
       },
@@ -196,7 +196,7 @@ export const COMPARE: CompareEntry[] = [
     title: "Trusted Advisor and Security Hub, or OpsAgent",
     heading: "OpsAgent, or doing it yourself with AWS Trusted Advisor and Security Hub",
     description:
-      "Doing it yourself with AWS Trusted Advisor and Security Hub: which checks each support plan unlocks, how each is priced, and where OpsAgent differs.",
+      "Doing it yourself with AWS Trusted Advisor and Security Hub: which checks AWS Support plans unlock, how each is priced, and where OpsAgent differs.",
     asOf: "2026-11-24",
     rows: [
       {
@@ -212,15 +212,15 @@ export const COMPARE: CompareEntry[] = [
         sourceUrl: SH_DOC,
       },
       {
-        label: "Trusted Advisor checks without a paid plan",
+        label: "Trusted Advisor checks on Basic or Developer Support",
         them: "With Basic Support or Developer Support, the console shows all Service limits checks and six more: Amazon EBS public snapshots, Amazon RDS public snapshots, Amazon S3 bucket permissions, MFA on the root account, security groups with specific ports unrestricted, and AWS STS global endpoint usage.",
         opsagent: "Ten checks run nightly on each connected account. They cover public snapshots and buckets, open admin and database ports, root MFA, access keys, backups, certificates, logging, encryption, instance hardening, idle resources and GPUs.",
         sourceUrl: TA_REF,
       },
       {
-        label: "Trusted Advisor checks on a paid plan",
+        label: "Trusted Advisor checks with Business Support+, Enterprise Support or Unified Operations",
         them: "The full set of Trusted Advisor checks, and its API, come with Business Support+, Enterprise Support or Unified Operations. Basic Support has no automatic check updates: you refresh Security checks by hand. AWS lists Business Support+, which adds 24/7 access to AWS experts, at a $29 a month minimum per account. AWS says Developer Support and Business Support will be discontinued on January 1, 2027.",
-        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks.",
+        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks. AWS bills about a cent per scan for the Cost Explorer and CloudWatch reads.",
         sourceUrl: TA,
       },
       {
@@ -231,13 +231,13 @@ export const COMPARE: CompareEntry[] = [
       },
       {
         label: "Price",
-        them: "Security Hub Essentials plan: billed per resource unit per month, pro-rated for the time resources are monitored. One EC2 instance is one unit, 12 Lambda functions are one unit, 18 container images are one unit and 125 IAM users or roles are one unit. AWS's pricing examples use $3.75 per resource unit. The plan includes Security Hub CSPM and the AWS Config service-linked recorder. There is a 30-day free trial.",
+        them: "Security Hub Essentials plan: billed per resource unit per month, pro-rated for the time resources are monitored. One EC2 instance is one unit, 12 Lambda functions are one unit, 18 container images are one unit and 125 IAM users or roles are one unit. AWS's pricing examples, for one Region in US East (N. Virginia), use $3.75 per resource unit. The plan includes Security Hub CSPM and the AWS Config service-linked recorder. There is a 30-day free trial.",
         opsagent: PRICE,
         sourceUrl: SH_PRICING,
       },
       {
         label: "Security Hub CSPM price",
-        them: "Security Hub CSPM on its own is priced on security checks, finding ingestion events and automation rule evaluations. Its examples price the first 100,000 checks a month at $0.0010 per security check. Findings from its own security checks are not charged for ingestion. AWS Config is required for its AWS checks and is priced separately. There is a 30-day free trial.",
+        them: "Security Hub CSPM on its own is priced on security checks, finding ingestion events and automation rule evaluations. Its examples price the first 100,000 checks a month at $0.0010 per security check. Findings from its own security checks are not charged for ingestion. AWS Config configuration items are priced separately; Config rules that Security Hub CSPM turns on are not charged. There is a 30-day free trial.",
         opsagent: "Flat per cloud account, whatever the number of findings.",
         sourceUrl: SH_CSPM_PRICING,
       },

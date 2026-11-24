@@ -124,27 +124,32 @@ describe("sourced facts that were checked on 2026-11-24", () => {
     expect(writes).toMatch(/pull requests/);
     expect(writes).toMatch(/cannot merge/);
     expect(row(e, "Use from AI agents").them).toContain("MCP");
+    expect(row(e, "How it starts").them).toContain("a scheduled monitor (Pro and above)");
+    expect(price.them).toContain("new work pauses until the next credit release, unless you buy more credits or turn on overage.");
   });
 
   it("Trusted Advisor: says exactly which plan unlocks which checks", () => {
     const e = entryOf("trusted-advisor-security-hub");
-    const free = row(e, "Trusted Advisor checks without a paid plan").them;
+    const free = row(e, "Trusted Advisor checks on Basic or Developer Support").them;
     for (const t of ["Basic Support", "Developer Support", "Service limits", "EBS public snapshots", "RDS public snapshots", "S3 bucket permissions", "MFA on the root account", "security groups with specific ports unrestricted", "STS global endpoint usage"]) {
       expect(free).toContain(t);
     }
-    const full = row(e, "Trusted Advisor checks on a paid plan").them;
+    const full = row(e, "Trusted Advisor checks with Business Support+, Enterprise Support or Unified Operations").them;
     expect(full).toContain("Business Support+, Enterprise Support or Unified Operations");
     expect(full).toContain("$29");
     expect(full).toContain("refresh");
     expect(full).toContain("January 1, 2027");
+    expect(e.description).toContain("which checks AWS Support plans unlock");
+    expect(full).not.toMatch(/paid plan/i);
+    expect(e.rows.find((r) => r.label.startsWith("Trusted Advisor checks with"))!.opsagent).toContain("AWS bills about a cent per scan for the Cost Explorer and CloudWatch reads.");
   });
 
   it("Security Hub: names the standards and the pricing model AWS publishes", () => {
     const e = entryOf("trusted-advisor-security-hub");
     for (const t of ["CIS", "PCI DSS", "NIST"]) expect(row(e, "What Security Hub does").them).toContain(t);
-    expect(row(e, "Price").them).toContain("per resource unit");
+    expect(row(e, "Price").them).toContain("for one Region in US East (N. Virginia), use $3.75 per resource unit");
     expect(row(e, "Price").them).toContain("30-day free trial");
     expect(row(e, "Security Hub CSPM price").them).toContain("per security check");
-    expect(row(e, "Security Hub CSPM price").them).toContain("AWS Config");
+    expect(row(e, "Security Hub CSPM price").them).toContain("AWS Config configuration items are priced separately; Config rules that Security Hub CSPM turns on are not charged.");
   });
 });
