@@ -9,7 +9,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <p>OpsAgent is a product of Binary Labs LLC.</p>
       <nav aria-label="Footer" className="site-footer-links">
-        {[...NAV, { href: "/privacy", label: "Privacy" }, { href: "/terms", label: "Terms" }, { href: "/status", label: "Status" }, { href: "/compare/aws-devops-agent", label: "vs AWS DevOps Agent" }].map((l) => (
+        {[...NAV, { href: "/privacy", label: "Privacy" }, { href: "/terms", label: "Terms" }, { href: "/status", label: "Status" }, { href: "/compare/aws-devops-agent", label: "vs AWS DevOps Agent" }, { href: "/sample-report", label: "Sample report" }].map((l) => (
           <Link key={l.href} href={l.href}>{l.label}</Link>
         ))}
         <CookieSettings />
