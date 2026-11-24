@@ -217,7 +217,7 @@ test("Features dropdown opens on hover and closes when the pointer leaves", asyn
 test("footer links to every public page", async ({ page }) => {
   await page.goto("/");
   const footer = page.getByRole("contentinfo");
-  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"], ["Status", "/status"], ["vs AWS DevOps Agent", "/compare/aws-devops-agent"]] as [string, string][]) {
+  for (const [name, href] of [...NAV, ["Privacy", "/privacy"], ["Terms", "/terms"], ["Status", "/status"], ["vs AWS DevOps Agent", "/compare/aws-devops-agent"], ["Sample report", "/sample-report"]] as [string, string][]) {
     await expect(footer.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 });
@@ -230,6 +230,19 @@ test("AWS DevOps Agent comparison is sourced, dated and in the sitemap", async (
   await expect(page.locator("main")).toContainText("23 November 2026");
   await expect(page).toHaveTitle("AWS DevOps Agent alternative for small teams · OpsAgent");
   expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/aws-devops-agent");
+});
+
+test("sample report is labelled, anonymised, indexed and offers the trial", async ({ page, request }) => {
+  const res = await page.goto("/sample-report");
+  expect(res?.status()).toBe(200);
+  const main = page.locator("main");
+  await expect(page.getByRole("heading", { level: 1, name: "What an OpsAgent report looks like" })).toBeVisible();
+  await expect(main.getByText("Anonymised from a real scan of our own AWS account. Identifiers changed.")).toBeVisible();
+  await expect(main.getByRole("link", { name: "Start free trial" })).toHaveAttribute("href", "/sign-up?utm_source=sample-report");
+  const text = await main.innerHTML();
+  for (const leak of [/(?<!\d)(?!123456789012)\d{12}(?!\d)/, /\bi-[0-9a-f]{8,}/, /\bvol-[0-9a-f]{8,}/, /opsagent-/i, /binary/i]) expect(text).not.toMatch(leak);
+  expect((await page.title()).length).toBeLessThanOrEqual(60);
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/sample-report");
 });
 
 test("status page lists the API, MCP, scans and deliveries", async ({ page }) => {
