@@ -26,7 +26,7 @@ const productJsonLd = {
 export function CompareView({ entry }: { entry: CompareEntry }) {
   const sources = [...new Set(entry.rows.map((r) => r.sourceUrl))];
   return (
-    <FeaturePage slug={`compare-${entry.slug}`} kicker="Compare" title={`OpsAgent and ${entry.name}`} lead={entry.description}>
+    <FeaturePage slug={`compare-${entry.slug}`} kicker="Compare" title={entry.heading ?? `OpsAgent and ${entry.name}`} lead={entry.description}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <p className="compare-asof">As of {longDate(entry.asOf)}. Every {entry.name} row links to the page it comes from.</p>
       <div className="compare-wrap">

@@ -11,6 +11,8 @@
 - [Dashboard AI](https://opsagent.dev/features/ai-and-review): AI explains findings once an owner turns it on.
 - [Connect docs](https://opsagent.dev/docs/connect-your-agent): How to connect an MCP client; read-only unless you approve changes.
 - [OpsAgent vs AWS DevOps Agent](https://opsagent.dev/compare/aws-devops-agent): Nightly read-only checks for a flat price vs incident investigations billed per agent-second; sourced and dated.
+- [OpsAgent vs Cleric](https://opsagent.dev/compare/cleric): Nightly read-only checks for a flat price vs alert and release investigations priced in credits; sourced and dated.
+- [OpsAgent vs Trusted Advisor and Security Hub](https://opsagent.dev/compare/trusted-advisor-security-hub): Which Trusted Advisor checks each AWS support plan unlocks and how Security Hub is priced, next to OpsAgent's flat price; sourced and dated.
 - [Sample report](https://opsagent.dev/sample-report): A morning briefing and findings anonymised from a real scan of our own AWS account.
 - [Pricing](https://opsagent.dev/pricing): Flat per cloud account, Starter US$99, Team US$299, Scale US$599 a month, plus tax where applicable.
 - [Security](https://opsagent.dev/security): Read-only by design.
