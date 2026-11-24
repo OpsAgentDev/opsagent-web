@@ -498,6 +498,9 @@ body:has(.mkt) { background: var(--bg); }
 .mkt .compare-table thead th { color: var(--ink); font-weight: 650; }
 .mkt .compare-table tbody th { color: var(--soft); font-weight: 500; width: 22%; }
 .mkt .compare-sources { font-size: 14px; color: var(--soft); }
+.mkt .compare-sources li { overflow-wrap: anywhere; }
+.mkt .compare-asof { font-size: 14px; color: var(--soft); margin: 8px 0 0; }
+.mkt .compare-note { font-size: 13px; color: var(--soft); }
 
 /* Sample report: the anonymised label, the briefing block and one finding per row. */
 .mkt .sample-note { display: inline-block; margin-top: 8px; padding: 8px 14px; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; }

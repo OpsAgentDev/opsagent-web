@@ -223,12 +223,21 @@ test("footer links to every public page", async ({ page }) => {
 });
 
 test("AWS DevOps Agent comparison is sourced, dated and in the sitemap", async ({ page, request }) => {
-  await page.goto("/compare/aws-devops-agent");
+  const res = await page.goto("/compare/aws-devops-agent");
+  expect(res?.status()).toBe(200);
   await expect(page.getByRole("heading", { level: 1, name: "OpsAgent and AWS DevOps Agent" })).toBeVisible();
   await expect(page.getByRole("table")).toContainText("US$0.0083 per agent-second");
-  await expect(page.getByRole("link", { name: "AWS DevOps Agent pricing" })).toHaveAttribute("href", "https://aws.amazon.com/devops-agent/pricing/");
-  await expect(page.locator("main")).toContainText("23 November 2026");
+  await expect(page.getByRole("table")).toContainText("Starter US$99, Team US$299, Scale US$599");
+  await expect(page.getByRole("table")).toContainText("bill separately");
+  await expect(page.getByRole("table")).toContainText("AI credit top-ups are optional.");
+  await expect(page.getByRole("table")).toContainText("No tool changes your cloud.");
+  await expect(page.getByRole("link", { name: "Source for Price" })).toHaveAttribute("href", "https://aws.amazon.com/devops-agent/pricing/");
+  await expect(page.locator("main")).toContainText("As of 24 November 2026");
+  await expect(page.getByRole("heading", { name: "What OpsAgent does not do" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Get your ops teammate." })).toBeVisible();
   await expect(page).toHaveTitle("AWS DevOps Agent alternative for small teams · OpsAgent");
+  expect(await page.locator('script[type="application/ld+json"]').first().textContent()).toContain('"@type":"Product"');
+  expect((await request.get("/compare/nope")).status()).toBe(404);
   expect(await (await request.get("/sitemap.xml")).text()).toContain("/compare/aws-devops-agent");
 });
 
