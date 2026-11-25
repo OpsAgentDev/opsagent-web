@@ -375,3 +375,29 @@ test("/docs redirects permanently to the docs page", async ({ request }) => {
   expect(res.status()).toBe(308);
   expect(res.headers().location).toBe("/docs/connect-your-agent");
 });
+
+test("security group tool runs in the browser and sends nothing", async ({ page, request }) => {
+  const res = await page.goto("/tools/security-group-check");
+  expect(res?.status()).toBe(200);
+  await expect(page).toHaveTitle("AWS security group checker: ports open to the world · OpsAgent");
+  const calls: string[] = [];
+  page.on("request", (r) => { if (["fetch", "xhr"].includes(r.resourceType())) calls.push(r.url()); });
+  await page.getByRole("button", { name: "Try an example" }).click();
+  const results = page.locator(".tool-results");
+  await expect(results).toContainText("sg-0a1b2c3d4e5f60718");
+  await expect(results).toContainText("22");
+  await expect(results.getByRole("link", { name: "What the role can and cannot read" })).toBeVisible();
+  expect(calls).toEqual([]);
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/tools/security-group-check");
+  expect(await (await request.get("/llms.txt")).text()).toContain("https://opsagent.dev/tools/security-group-check");
+});
+
+test("credential report tool flags the example and refuses other input", async ({ page }) => {
+  await page.goto("/tools/iam-credential-report-check");
+  await page.locator(".tool-input").fill("hello");
+  await page.getByRole("button", { name: "Check" }).click();
+  await expect(page.getByRole("status")).toContainText("does not look like an IAM credential report");
+  await page.getByRole("button", { name: "Try an example" }).click();
+  await expect(page.locator(".tool-results")).toContainText("Root account in use");
+  await expect(page.locator(".tool-results")).toContainText("j.contractor has console access without MFA");
+});

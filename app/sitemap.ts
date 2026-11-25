@@ -5,7 +5,7 @@ import { COMPARE } from "@/lib/marketing/compare";
 const PATHS = [
   "", "/pricing", "/how-it-works", "/security", "/contact", "/privacy", "/terms", "/status",
   "/features/checks", "/features/alerts", "/features/agents", "/features/ai-and-review",
-  "/docs/connect-your-agent", "/sample-report", ...COMPARE.map((c) => `/compare/${c.slug}`),
+  "/docs/connect-your-agent", "/sample-report", "/tools/security-group-check", "/tools/iam-credential-report-check", ...COMPARE.map((c) => `/compare/${c.slug}`),
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
