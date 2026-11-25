@@ -42,6 +42,23 @@ describe("security group tool", () => {
     expect(analyseSecurityGroups(" ".repeat(2_000_001))).toMatchObject({ ok: false });
   });
 
+  it.each([
+    '{"SecurityGroups":[null]}',
+    '{"SecurityGroups":[{"IpPermissions":{}}]}',
+    '{"SecurityGroups":[{"IpPermissions":[null]}]}',
+    '{"SecurityGroups":[{"IpPermissions":[{"IpRanges":"0.0.0.0/0"}]}]}',
+    '{"SecurityGroups":[{"IpPermissions":[{"IpRanges":[null]}]}]}',
+  ])("odd_shapes_give_an_error_not_a_throw: %s", (input) => {
+    expect(analyseSecurityGroups(input)).toMatchObject({ ok: false });
+  });
+
+  it("icmp_opens_no_port_and_titles_use_the_group_name", () => {
+    expect(analyseSecurityGroups(sg([{ IpProtocol: "icmp", FromPort: -1, ToPort: -1, ...world }]))).toMatchObject({ ok: true, findings: [] });
+    const named = JSON.stringify({ SecurityGroups: [{ GroupId: "sg-1", GroupName: "web", IpPermissions: [{ IpProtocol: "tcp", FromPort: 22, ToPort: 22, ...world }] }] });
+    const r = analyseSecurityGroups(named);
+    expect(r.ok && r.findings[0]?.title).toBe("Security group web exposes an admin or database port to the world");
+  });
+
   it("accepts_a_bare_list_and_an_empty_one", () => {
     expect(analyseSecurityGroups("[]")).toEqual({ ok: true, checked: 0, findings: [] });
   });
@@ -85,6 +102,23 @@ describe("credential report tool", () => {
   it("root_without_credentials_needs_no_mfa", () => {
     const csv = "user,mfa_active,password_enabled,password_last_used,access_key_1_active\n<root_account>,false,false,N/A,false";
     expect(titles(csv)).toEqual([]);
+  });
+
+  it("root_with_no_password_info_and_no_mfa_is_reported", () => {
+    const csv = "user,mfa_active,password_enabled,password_last_used,access_key_1_active\n<root_account>,false,not_supported,N/A,false";
+    expect(titles(csv)).toEqual(["high:Root account has no MFA"]);
+  });
+
+  it("a_future_date_is_no_information", () => {
+    const csv = "user,mfa_active,password_enabled,password_last_used,access_key_1_active\n<root_account>,true,true,2027-01-01T00:00:00+00:00,false";
+    expect(titles(csv)).toEqual([]);
+  });
+
+  it("handles_quotes_crlf_and_a_bom_and_counts_users_only", () => {
+    const csv = '\uFEFFuser,mfa_active,password_enabled,password_last_used,password_last_changed,access_key_1_active\r\n<root_account>,true,not_supported,N/A,not_supported,false\r\n"a,b",false,true,2026-11-20T00:00:00+00:00,2026-11-01T00:00:00+00:00,false\r\n';
+    const r = analyseCredentialReport(csv, now);
+    expect(r.ok && r.checked).toBe(1);
+    expect(r.ok && r.findings.map((f) => f.title)).toEqual(["a,b has console access without MFA"]);
   });
 
   it("rejects_other_input", () => {

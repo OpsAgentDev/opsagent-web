@@ -35,23 +35,32 @@ export function analyseSecurityGroups(text: string): ToolResult {
   const groups = Array.isArray(data) ? data : (data as { SecurityGroups?: unknown })?.SecurityGroups;
   if (!Array.isArray(groups)) return { ok: false, error: 'Expected a "SecurityGroups" list, as printed by aws ec2 describe-security-groups.' };
 
+  try {
+    return check(groups as Group[]);
+  } catch {
+    return { ok: false, error: "That JSON does not have the shape aws ec2 describe-security-groups prints." };
+  }
+}
+
+function check(groups: Group[]): ToolResult {
   const findings: ToolFinding[] = [];
-  for (const g of groups as Group[]) {
+  for (const g of groups) {
     const id = g.GroupId ?? "(no id)";
-    const name = g.GroupName ? ` (${g.GroupName})` : "";
-    const open = (g.IpPermissions ?? []).filter(isWorld).map(portRange);
+    const name = g.GroupName || id;
+    // ICMP and other non-port protocols open no port; brain skips them too.
+    const open = (g.IpPermissions ?? []).filter((p) => ["tcp", "udp", "-1"].includes(p.IpProtocol ?? "tcp") && isWorld(p)).map(portRange);
     const admin = ADMIN_PORTS.filter((port) => open.some(([from, to]) => from <= port && port <= to));
     if (admin.length > 0) {
       findings.push({
         severity: "critical",
-        title: `Security group ${id}${name} exposes an admin or database port to the world`,
-        detail: `Open to 0.0.0.0/0 or ::/0 on ${admin.join(", ")}. SSH, RDP and database ports open to the world are scanned and brute-forced within minutes. Replace the open range with your office or VPN range (aws ec2 revoke-security-group-ingress removes a rule).`,
+        title: `Security group ${name} exposes an admin or database port to the world`,
+        detail: `${id} is open to 0.0.0.0/0 or ::/0 on ${admin.join(", ")}. SSH, RDP and database ports open to the world are scanned and brute-forced within minutes. Replace the open range with your office or VPN range (aws ec2 revoke-security-group-ingress removes a rule).`,
       });
     } else if (open.length > 0) {
       findings.push({
         severity: "info",
-        title: `Security group ${id}${name} is open to the world on ${open.map(label).join(", ")}`,
-        detail: "No admin or database port is open. Ports 80 and 443 open to the world are normal for a public web server.",
+        title: `Security group ${name} is open to the world on ${open.map(label).join(", ")}`,
+        detail: `${id}: no admin or database port is open. Ports 80 and 443 open to the world are normal for a public web server.`,
       });
     }
   }

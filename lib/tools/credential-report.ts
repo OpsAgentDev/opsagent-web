@@ -10,7 +10,8 @@ function daysSince(ts: string | undefined, now: Date): number | null {
   if (!m) return null;
   const then = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
   const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
-  return Math.round((today - then) / MS_PER_DAY);
+  const days = Math.round((today - then) / MS_PER_DAY);
+  return days < 0 ? null : days; // a date in the future is no information, as in brain
 }
 
 /** One CSV record; handles quoted fields and doubled quotes. */
@@ -76,5 +77,6 @@ export function analyseCredentialReport(text: string, now: Date = new Date()): T
     if (keys.length >= 2) findings.push({ severity: "low", title: `${user} has ${keys.length} active access keys`, detail: "Two live keys usually mean a rotation was never finished, doubling what can leak. Delete the one no longer used." });
     if (consoleOn && consoleDays !== null && consoleDays > 90) findings.push({ severity: "low", title: `Console password of ${user} unused for ${consoleDays} days`, detail: "A password nobody uses can still be guessed or phished. Remove the console password if the user does not sign in." });
   }
-  return { ok: true, checked: lines.length - 1, findings: findings.sort(bySeverity) };
+  const users = lines.slice(1).filter((l) => (fields(l)[header.indexOf("user")] ?? "") !== "" && !l.startsWith("<root_account>")).length;
+  return { ok: true, checked: users, findings: findings.sort(bySeverity) };
 }

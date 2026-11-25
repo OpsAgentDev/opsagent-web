@@ -35,6 +35,10 @@ export function PasteTool({ tool }: { tool: keyof typeof TOOLS }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState<ToolResult | null>(null);
   const cta = joinCta();
+  // Never let an odd paste escape as an uncaught error.
+  const run = (input: string) => {
+    try { setResult(t.analyse(input)); } catch { setResult({ ok: false, error: "That could not be read. Check that you pasted the whole output." }); }
+  };
   const serious = result?.ok && result.findings.some((f) => f.severity === "critical" || f.severity === "high" || f.severity === "medium");
 
   return (
@@ -49,34 +53,36 @@ export function PasteTool({ tool }: { tool: keyof typeof TOOLS }) {
         onChange={(e) => { setText(e.target.value); setResult(null); }}
       />
       <div className="tool-actions">
-        <button type="button" className="trial-cta" onClick={() => setResult(t.analyse(text))}>Check</button>
-        <button type="button" className="copy-btn" onClick={() => { const ex = t.example(); setText(ex); setResult(t.analyse(ex)); }}>Try an example</button>
+        <button type="button" className="trial-cta" onClick={() => run(text)}>Check</button>
+        <button type="button" className="copy-btn" onClick={() => { const ex = t.example(); setText(ex); run(ex); }}>Try an example</button>
       </div>
       <div role="status" aria-live="polite">
         {result && !result.ok && <p className="tool-error">{result.error}</p>}
         {result?.ok && (
-          <div className="tool-results">
-            <p>
-              Checked {result.checked} {t.noun}{result.checked === 1 ? "" : "s"}.{" "}
-              {result.findings.length === 0 ? "Nothing found." : `${result.findings.length} to look at.`}
-            </p>
-            <ol className="check-cards">
-              {result.findings.map((f, i) => (
-                <li key={i}>
-                  <h3><span className={`sev sev-${f.severity}`}>{f.severity}</span> {f.title}</h3>
-                  <p>{f.detail}</p>
-                </li>
-              ))}
-            </ol>
-            <aside className="tool-cta">
-              <h2>{serious ? t.urgent : t.calm}</h2>
-              {serious ? <p>{t.urgentBody}</p> : <p><Link href="/features/checks">See the other nine</Link>.</p>}
-              <Link href={cta.href} className="trial-cta">{cta.label}</Link>{" "}
-              <Link href="/security">What the role can and cannot read</Link>
-            </aside>
-          </div>
+          <p>
+            Checked {result.checked} {t.noun}{result.checked === 1 ? "" : "s"}.{" "}
+            {result.findings.length === 0 ? "Nothing found." : `${result.findings.length} to look at.`}
+          </p>
         )}
       </div>
+      {result?.ok && (
+        <div className="tool-results">
+          <ol className="check-cards">
+            {result.findings.map((f, i) => (
+              <li key={i}>
+                <h3><span className={`sev sev-${f.severity}`}>{f.severity}</span> {f.title}</h3>
+                <p>{f.detail}</p>
+              </li>
+            ))}
+          </ol>
+          <aside className="tool-cta">
+            <h2>{serious ? t.urgent : t.calm}</h2>
+            {serious ? <p>{t.urgentBody}</p> : <p><Link href="/features/checks">See the other nine</Link>.</p>}
+            <Link href={cta.href} className="trial-cta">{cta.label}</Link>{" "}
+            <Link href="/security">What the role can and cannot read</Link>
+          </aside>
+        </div>
+      )}
     </section>
   );
 }
