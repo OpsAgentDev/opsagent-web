@@ -39,7 +39,9 @@ export default function Dashboard() {
   const waiting = scanning || (watching > 0 && !last);
   useEffect(() => {
     if (!waiting) return;
-    const t = setInterval(reload, 5000);
+    let ticks = 0;
+    // shortcut: gives up after 5 minutes (a first scan that failed never produces a result); a reload shows it again.
+    const t = setInterval(() => (++ticks > 60 ? clearInterval(t) : reload()), 5000);
     return () => clearInterval(t);
   }, [waiting, reload]);
   return (
