@@ -18,7 +18,7 @@ const when = (at: string) => new Date(at).toLocaleString("en-GB", { day: "numeri
 export default function Dashboard() {
   const org = useOrg();
   const { hasPasskey, reloadSession } = useSetup();
-  const { data: rows, error } = useApi(() => loadAccounts(org.slug), [org.slug]);
+  const { data: rows, error, reload } = useApi(() => loadAccounts(org.slug), [org.slug]);
   const [skipped, setSkippedState] = useState(false);
   useEffect(() => setSkippedState(isSkipped(org.slug)), [org.slug]);
   const toggleSkip = (v: boolean) => { setSkipped(org.slug, v); setSkippedState(v); };
@@ -35,6 +35,15 @@ export default function Dashboard() {
     : null;
   const watching = live.filter((r) => r.c.status === "connected").length;
   const scanning = live.some((r) => r.history?.running);
+  // First scan: connected but no result yet. Check again every 5 seconds so the findings appear without a refresh.
+  const waiting = scanning || (watching > 0 && !last);
+  useEffect(() => {
+    if (!waiting) return;
+    let ticks = 0;
+    // shortcut: gives up after 5 minutes (a first scan that failed never produces a result); a reload shows it again.
+    const t = setInterval(() => (++ticks > 60 ? clearInterval(t) : reload()), 5000);
+    return () => clearInterval(t);
+  }, [waiting, reload]);
   return (
     <main>
       <header className="ov-greet">
