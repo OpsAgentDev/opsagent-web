@@ -381,7 +381,8 @@ test("security group tool runs in the browser and sends nothing", async ({ page,
   expect(res?.status()).toBe(200);
   await expect(page).toHaveTitle("AWS security group checker: ports open to the world · OpsAgent");
   const calls: string[] = [];
-  page.on("request", (r) => { if (["fetch", "xhr"].includes(r.resourceType())) calls.push(r.url()); });
+  page.on("request", (r) => { // Next.js link prefetches (?_rsc=) are page loads, not data; anything else would be the pasted text leaving.
+    if (["fetch", "xhr"].includes(r.resourceType()) && !r.url().includes("_rsc=")) calls.push(r.url()); });
   await page.getByRole("button", { name: "Try an example" }).click();
   const results = page.locator(".tool-results");
   await expect(results).toContainText("sg-0a1b2c3d4e5f60718");
