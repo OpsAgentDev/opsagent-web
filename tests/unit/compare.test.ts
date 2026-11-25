@@ -99,6 +99,7 @@ describe.each(COMPARE)("compare page $slug", (entry) => {
     expect(ld.name).toBe("OpsAgent");
     expect(ld.offers.map((o: { price: string }) => `$${o.price}`)).toEqual(PLANS.map((p) => p.price));
     expect(ld.offers.every((o: { priceCurrency: string }) => o.priceCurrency === "USD")).toBe(true);
+    expect(ld.offers.every((o: { availability: string }) => o.availability === "https://schema.org/InStock")).toBe(true);
   });
 
   it("metadata fits search limits and the unknown slug is a 404", async () => {

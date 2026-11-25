@@ -18,6 +18,7 @@ const productJsonLd = {
     name: p.name,
     price: p.price.replace("$", ""),
     priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
     url: "https://opsagent.dev/pricing",
   })),
 };
