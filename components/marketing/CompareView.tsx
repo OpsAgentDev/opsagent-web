@@ -13,11 +13,14 @@ const productJsonLd = {
   name: "OpsAgent",
   description: "A read-only ops agent for AWS: nightly checks, a morning briefing and an MCP server, for a flat price per cloud account.",
   url: "https://opsagent.dev",
+  image: "https://opsagent.dev/opengraph-image.png",
+  brand: { "@type": "Brand", name: "OpsAgent" },
   offers: PLANS.map((p) => ({
     "@type": "Offer",
     name: p.name,
     price: p.price.replace("$", ""),
     priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
     url: "https://opsagent.dev/pricing",
   })),
 };
