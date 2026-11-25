@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { joinCta } from "@/lib/signups";
 import { SAMPLE_BRIEFING, SAMPLE_FINDINGS, SAMPLE_META } from "@/lib/marketing/sample";
 import "../landing.css";
 
@@ -13,7 +12,6 @@ export const metadata: Metadata = {
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default function SampleReport() {
-  const cta = joinCta();
   return (
     <main className="page feature">
       <p className="feature-kicker">Sample report</p>
@@ -55,7 +53,7 @@ export default function SampleReport() {
       <section className="feature-cta" aria-labelledby="feature-cta-h">
         <h2 id="feature-cta-h">Get your own report.</h2>
         <p>Start a 14-day free trial. Card required, cancel any time.</p>
-        <Link href={cta.href} className="trial-cta">{cta.label}</Link>
+        <Link href="/sign-up?utm_source=sample-report" className="trial-cta">Start free trial</Link>
       </section>
     </main>
   );
