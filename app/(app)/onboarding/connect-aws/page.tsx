@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { ErrorNote } from "@/components/error-note";
@@ -90,7 +91,7 @@ export default function ConnectAws() {
           )}
           <label>
             Display name
-            <input name="display_name" required placeholder="production" />
+            <input name="display_name" required defaultValue="production" />
           </label>
           <button type="submit" disabled={busy}>Create connection</button>
         </form>
@@ -103,6 +104,9 @@ export default function ConnectAws() {
                 <li>When it finishes, open its Outputs tab and copy the role ARN.</li>
                 <li>Paste the ARN below and verify.</li>
               </ol>
+              <p className="muted">
+                Not sure what it creates? <Link href="/security">Read what the role can and cannot read</Link> first. It has no write permission.
+              </p>
               <a className="button" href={isAwsConsoleUrl(created.quick_create_url) ? created.quick_create_url : undefined} target="_blank" rel="noreferrer">
                 Launch stack in AWS
               </a>
@@ -111,7 +115,7 @@ export default function ConnectAws() {
           {created.provider === "aws" && (
             <label>
               Role ARN
-              <input name="role_arn" required placeholder="arn:aws:iam::123456789012:role/OpsAgentRead" />
+              <input name="role_arn" required placeholder="arn:aws:iam::123456789012:role/OpsAgentReadRole-xxxxxxxx" />
             </label>
           )}
           <button type="submit" disabled={busy}>Verify connection</button>
