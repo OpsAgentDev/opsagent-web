@@ -38,6 +38,7 @@ const S3 = "https://docs.aws.amazon.com/AmazonS3/latest/userguide";
 const BPA = `${S3}/access-control-block-public-access.html`;
 const BACKUP = "https://docs.aws.amazon.com/aws-backup/latest/devguide";
 const TRAIL = "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/view-cloudtrail-events.html";
+const COST = "https://docs.aws.amazon.com/cost-management/latest/userguide";
 const GD = "https://docs.aws.amazon.com/guardduty/latest/ug";
 const LOGS = "https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html";
 
@@ -246,6 +247,44 @@ export const PROBLEMS: ProblemEntry[] = [
     cannot: [
       "It does not read your logs or CloudTrail events, only whether logging and detection are on.",
       "It never starts a trail or enables GuardDuty. It connects read-only; you run the commands above.",
+    ],
+  },
+  {
+    slug: "surprise-aws-bill",
+    title: "Surprise AWS bill: find the spike and idle spend · OpsAgent",
+    description: "Find which AWS service jumped on your bill, and the volumes, IP addresses, load balancers and instances you pay for but do not use.",
+    heading: "Your AWS bill jumped, or you pay for things you do not use",
+    lead: "Most surprise bills are one new resource, or something left behind. This is how to find the day it changed and the idle spend under it.",
+    asOf: "2026-11-28",
+    facts: [
+      { text: "Cost Explorer refreshes your cost data at least once every 24 hours.", sourceUrl: `${COST}/ce-what-is.html` },
+      { text: "Any public IPv4 address that is not used on a resource is charged as idle, at $0.005 an hour at the time of reading.", sourceUrl: "https://aws.amazon.com/vpc/pricing/" },
+      { text: "You are charged for each hour or partial hour that an Application Load Balancer is running.", sourceUrl: "https://aws.amazon.com/elasticloadbalancing/pricing/" },
+      { text: "AWS Budgets lets you set spending limits and get alerts when costs approach or exceed them. AWS Cost Anomaly Detection uses machine learning to detect and alert on anomalous spend.", sourceUrl: `${COST}/budgets-managing-costs.html` },
+    ],
+    find: {
+      text: "Print daily cost by service for a date range, then look for the day and the service that moved. Replace the dates.",
+      command: "aws ce get-cost-and-usage --time-period Start=2026-11-01,End=2026-11-28 --granularity DAILY --metrics UnblendedCost --group-by Type=DIMENSION,Key=SERVICE",
+      sourceUrl: `${CLI}/ce/get-cost-and-usage.html`,
+    },
+    steps: [
+      { text: "List volumes attached to nothing. They are billed every month. Snapshot one if the data matters, then delete it.", command: "aws ec2 describe-volumes --filters Name=status,Values=available\naws ec2 delete-volume --volume-id VOLUME_ID", sourceUrl: `${CLI}/ec2/delete-volume.html` },
+      { text: "List Elastic IP addresses attached to nothing and release the ones you do not need.", command: "aws ec2 describe-addresses\naws ec2 release-address --allocation-id ALLOCATION_ID", sourceUrl: `${CLI}/ec2/release-address.html` },
+      { text: "Confirm nothing routes to a load balancer with no traffic, then delete it.", command: "aws elbv2 delete-load-balancer --load-balancer-arn ARN", sourceUrl: `${CLI}/elbv2/delete-load-balancer.html` },
+      { text: "Stop an instance that sits idle, or move it to a smaller type. A stopped instance still pays for its volumes.", command: "aws ec2 stop-instances --instance-ids INSTANCE_ID", sourceUrl: `${CLI}/ec2/stop-instances.html` },
+      { text: "Set a budget alert or turn on Cost Anomaly Detection so the next jump reaches you the same day.", sourceUrl: `${COST}/manage-ad.html` },
+    ],
+    check: "check 01",
+    flags: [
+      "Medium: a day's spend more than 3 standard deviations above both its 7-day and 30-day baseline. High when it is also 20% and US$50 or more above the 30-day mean. The newest 2 days are left out because billing data lags.",
+      "A volume attached to nothing, and an Elastic IP address attached to nothing, with the monthly cost when it is known. High from US$100 a month, Medium from US$20, Low below.",
+      "An idle load balancer with no requests or traffic for a week, and an instance under 5% CPU for a week. These need the CloudWatch read access in the current OpsAgent read role.",
+    ],
+    cannot: [
+      "It reads daily cost totals by service, not each resource or tag in depth. It names the service and the day, and you open Cost Explorer for the rest.",
+      "It does not forecast your bill, and it does not advise on Savings Plans or reserved instances.",
+      "Each full scan makes one Cost Explorer request in your account, which AWS bills at about US$0.01.",
+      "It never deletes, stops or resizes anything. It connects read-only; you run the commands above.",
     ],
   },
 ];
