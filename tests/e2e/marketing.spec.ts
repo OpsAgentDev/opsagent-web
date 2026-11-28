@@ -402,3 +402,16 @@ test("credential report tool flags the example and refuses other input", async (
   await expect(page.locator(".tool-results")).toContainText("Root account in use");
   await expect(page.locator(".tool-results")).toContainText("j.contractor has console access without MFA");
 });
+
+test("problem pages render, link to AWS docs and to the free tool, and are in the sitemap", async ({ page, request }) => {
+  const res = await page.goto("/problems/old-iam-access-keys");
+  expect(res?.status()).toBe(200);
+  await expect(page.getByRole("heading", { level: 1, name: "Find old and forgotten IAM access keys in your AWS account" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What OpsAgent flags" })).toBeVisible();
+  await expect(page.locator("main")).toContainText("aws iam create-access-key");
+  await expect(page.getByRole("link", { name: "Check your credential report in the browser" })).toHaveAttribute("href", "/tools/iam-credential-report-check");
+  await expect(page).toHaveTitle("Find old and unused IAM access keys in AWS · OpsAgent");
+  expect((await request.get("/problems/nope")).status()).toBe(404);
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  for (const s of ["old-iam-access-keys", "acm-certificate-expiring", "security-group-open-to-the-world"]) expect(sitemap).toContain(`/problems/${s}`);
+});
