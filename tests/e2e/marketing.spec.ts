@@ -413,5 +413,5 @@ test("problem pages render, link to AWS docs and to the free tool, and are in th
   await expect(page).toHaveTitle("Find old and unused IAM access keys in AWS · OpsAgent");
   expect((await request.get("/problems/nope")).status()).toBe(404);
   const sitemap = await (await request.get("/sitemap.xml")).text();
-  for (const s of ["old-iam-access-keys", "acm-certificate-expiring", "security-group-open-to-the-world"]) expect(sitemap).toContain(`/problems/${s}`);
+  for (const s of ["old-iam-access-keys", "acm-certificate-expiring", "security-group-open-to-the-world", "public-s3-bucket", "missing-aws-backups", "cloudtrail-guardduty-off"]) expect(sitemap).toContain(`/problems/${s}`);
 });
