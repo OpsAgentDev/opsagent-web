@@ -54,6 +54,14 @@ const SH_DOC = "https://docs.aws.amazon.com/securityhub/latest/userguide/what-is
 const SH_PRICING = "https://aws.amazon.com/security-hub/pricing/";
 const SH_CSPM_PRICING = "https://aws.amazon.com/security-hub/cspm/pricing/";
 
+const PROWLER_HOME = "https://prowler.com/";
+const PROWLER_PRICING = "https://prowler.com/pricing";
+const PROWLER_DOCS = "https://docs.prowler.com";
+const PROWLER_AUTH = `${PROWLER_DOCS}/user-guide/providers/aws/authentication.md`;
+const PROWLER_FIXER = `${PROWLER_DOCS}/user-guide/cli/tutorials/fixer.md`;
+const PROWLER_SCHEDULE = `${PROWLER_DOCS}/user-guide/tutorials/prowler-scan-scheduling.md`;
+const PROWLER_MCP = `${PROWLER_DOCS}/getting-started/products/prowler-mcp.md`;
+
 export const COMPARE: CompareEntry[] = [
   {
     slug: "aws-devops-agent",
@@ -265,6 +273,86 @@ export const COMPARE: CompareEntry[] = [
       "It does not assess your account against CIS, PCI DSS or NIST.",
       "It does not take in findings from other security tools.",
       "It does not roll findings up across accounts; each AWS account is listed separately.",
+    ],
+  },  {
+    slug: "prowler",
+    name: "Prowler",
+    title: "Prowler alternative for small teams · OpsAgent",
+    description:
+      "Prowler is open source and covers many clouds and compliance frameworks. OpsAgent is a hosted, read-only nightly AWS check with a next step per finding.",
+    asOf: "2026-11-28",
+    rows: [
+      {
+        label: "What it does",
+        them: "Describes itself as the world's most widely used open-source cloud security platform. Its homepage claims 2,500+ open checks across 34 providers, mapped to 100+ compliance frameworks.",
+        opsagent: WHAT_IT_DOES,
+        sourceUrl: PROWLER_HOME,
+      },
+      {
+        label: "How you get it",
+        them: "Open Source, Prowler Cloud and Private Cloud run the same engine. Open Source is free under Apache-2.0 and you run it yourself on a laptop, in CI/CD, on Kubernetes or on a local server. Prowler Cloud is hosted by Prowler, with auto-scaling scans.",
+        opsagent: SIGN_UP,
+        sourceUrl: PROWLER_PRICING,
+      },
+      {
+        label: "Price",
+        them: "Prowler Cloud costs $99 per cloud account per month, or $79 billed annually, with 50,000 resources included, pooled across your tenant. A cloud account is an AWS account, Google Cloud project, Azure subscription, GitHub repository or Microsoft 365 tenant. The free trial runs 7 days with no credit card.",
+        opsagent: PRICE,
+        sourceUrl: PROWLER_PRICING,
+      },
+      {
+        label: "Clouds",
+        them: "Its docs list official support for AWS, Azure, Google Cloud, Alibaba Cloud, Cloudflare, OpenStack and Oracle Cloud. Its homepage counts 34 providers, including AI and SaaS services.",
+        opsagent: AWS_ONLY,
+        sourceUrl: PROWLER_DOCS,
+      },
+      {
+        label: "AWS access",
+        them: "Attach the AWS managed policies SecurityAudit and ViewOnlyAccess to the user or role. For certain checks, additional read-only permissions are required.",
+        opsagent: "A read-only role that allows only the AWS actions its checks call. No write access.",
+        sourceUrl: PROWLER_AUTH,
+      },
+      {
+        label: "Changes to your cloud",
+        them: "Cloud scans use read-only access. Prowler Realtime applies fixes only when you enable automatic remediation and configure a dedicated role. The Autonomous Fixer opens a pull request, on paid plans.",
+        opsagent: NO_CHANGES,
+        sourceUrl: PROWLER_HOME,
+      },
+      {
+        label: "Fixing findings from the command line",
+        them: "The open-source CLI can fix some of the failed findings it identifies, when you run it with a fixer option. Its example applies s3:PutAccountPublicAccessBlock.",
+        opsagent: "OpsAgent gives the console path and CLI command as the next step. You run it, or not.",
+        sourceUrl: PROWLER_FIXER,
+      },
+      {
+        label: "Standards",
+        them: "Maps results to compliance frameworks, naming CIS, SOC 2, ISO 27001, PCI DSS and NIS2.",
+        opsagent: "Does not assess your account against named standards.",
+        sourceUrl: PROWLER_HOME,
+      },
+      {
+        label: "How often it scans",
+        them: "In Prowler Cloud with a subscription, you schedule scans daily, every 48 hours, weekly or monthly. The scan time is on the hour.",
+        opsagent: "A full scan every night at a time you choose, and urgent exposures every 15 minutes.",
+        sourceUrl: PROWLER_SCHEDULE,
+      },
+      {
+        label: "Use from AI agents",
+        them: "A Cloud MCP server at mcp.prowler.com connects Claude, Cursor or any MCP client to Prowler Cloud. Its docs say the server is under active development.",
+        opsagent: AI_AGENTS,
+        sourceUrl: PROWLER_MCP,
+      },
+      {
+        label: "Where Prowler fits better",
+        them: "When you need more than AWS, a free self-hosted scanner, or results against compliance frameworks such as CIS, SOC 2 or PCI DSS. It also offers fixers.",
+        opsagent: "OpsAgent is AWS only, hosted only and read-only. It does not assess against those frameworks or apply fixes.",
+        sourceUrl: PROWLER_HOME,
+      },
+    ],
+    notDo: [
+      ...NOT_DO_BASE,
+      "It does not assess your account against CIS, SOC 2, ISO 27001 or PCI DSS.",
+      "It cannot be self-hosted; it is a hosted service.",
     ],
   },
 ];

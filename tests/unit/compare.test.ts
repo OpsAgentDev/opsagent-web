@@ -19,6 +19,7 @@ const row = (e: CompareEntry, l: string) => e.rows.find((r) => r.label === l)!;
 const HOSTS: Record<string, RegExp> = {
   "aws-devops-agent": /(^|\.)amazon\.com$/,
   cleric: /^(docs\.)?cleric\.ai$/,
+  prowler: /^(docs\.)?prowler\.com$/,
   "trusted-advisor-security-hub": /(^|\.)amazon\.com$/,
 };
 
@@ -42,8 +43,8 @@ describe.each(COMPARE)("compare page $slug", (entry) => {
 
   it("is dated: asOf is an ISO date and the page shows it", () => {
     expect(entry.asOf).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(html).toContain("As of 24 November 2026");
-    expect(entry.asOf).toBe("2026-11-24");
+    const long = new Date(`${entry.asOf}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    expect(html).toContain(`As of ${long}`);
   });
 
   it("prices_match_pricing_page", () => {
@@ -129,6 +130,18 @@ describe("sourced facts that were checked on 2026-11-24", () => {
     expect(row(e, "Use from AI agents").them).toContain("MCP");
     expect(row(e, "How it starts").them).toContain("a scheduled monitor (Pro and above)");
     expect(price.them).toContain("new work pauses until the next credit release, unless you buy more credits or turn on overage.");
+  });
+
+  it("Prowler: price, access and fixer wording match its pages (checked 2026-11-28)", () => {
+    const e = entryOf("prowler");
+    expect(e.asOf).toBe("2026-11-28");
+    const price = row(e, "Price");
+    for (const t of ["$99 per cloud account per month", "$79 billed annually", "7 days"]) expect(price.them).toContain(t);
+    expect(price.sourceUrl).toBe("https://prowler.com/pricing");
+    const access = row(e, "AWS access").them;
+    for (const t of ["SecurityAudit", "ViewOnlyAccess"]) expect(access).toContain(t);
+    expect(row(e, "Changes to your cloud").them).toMatch(/read-only/);
+    expect(row(e, "Fixing findings from the command line").them).toContain("s3:PutAccountPublicAccessBlock");
   });
 
   it("Trusted Advisor: says exactly which plan unlocks which checks", () => {
