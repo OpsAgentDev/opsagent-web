@@ -13,6 +13,7 @@
 - [OpsAgent vs AWS DevOps Agent](https://opsagent.dev/compare/aws-devops-agent): Nightly read-only checks for a flat price vs incident investigations billed per agent-second; sourced and dated.
 - [OpsAgent vs Cleric](https://opsagent.dev/compare/cleric): Nightly read-only checks for a flat price vs alert and release investigations priced in credits; sourced and dated.
 - [OpsAgent vs Trusted Advisor and Security Hub](https://opsagent.dev/compare/trusted-advisor-security-hub): Which Trusted Advisor checks each AWS support plan unlocks and how Security Hub is priced, next to OpsAgent's flat price; sourced and dated.
+- [OpsAgent vs Prowler](https://opsagent.dev/compare/prowler): Hosted nightly read-only AWS checks vs open-source multi-cloud scanning with compliance frameworks and fixers; sourced and dated.
 - [Sample report](https://opsagent.dev/sample-report): A morning briefing and findings anonymised from a real scan of our own AWS account.
 - [Security group checker](https://opsagent.dev/tools/security-group-check): Free, runs in your browser. Paste aws ec2 describe-security-groups output and see which groups leave SSH or a database port open to the world.
 - [IAM credential report checker](https://opsagent.dev/tools/iam-credential-report-check): Free, runs in your browser. Paste your IAM credential report and see root use, missing MFA, old keys and unused keys.
