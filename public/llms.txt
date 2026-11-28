@@ -17,6 +17,9 @@
 - [Find old and forgotten IAM access keys](https://opsagent.dev/problems/old-iam-access-keys): How to list old or never-used AWS access keys and rotate them safely; links the free credential report checker.
 - [ACM certificate expiring or renewal failed](https://opsagent.dev/problems/acm-certificate-expiring): Why ACM does not renew a certificate, how to check it and fix the DNS record.
 - [Security group open to the whole internet](https://opsagent.dev/problems/security-group-open-to-the-world): Find security groups open to 0.0.0.0/0 on admin ports and close them; links the free checker.
+- [Public S3 bucket and block public access](https://opsagent.dev/problems/public-s3-bucket): Find S3 buckets that are public or have block public access off, and turn it on.
+- [No AWS backups or failed backup jobs](https://opsagent.dev/problems/missing-aws-backups): Find EC2, EBS and RDS resources with no plan, failed jobs or one day of retention.
+- [CloudTrail not logging or GuardDuty off](https://opsagent.dev/problems/cloudtrail-guardduty-off): Check a trail is logging and GuardDuty is on in each region, and fix what is off.
 - [Sample report](https://opsagent.dev/sample-report): A morning briefing and findings anonymised from a real scan of our own AWS account.
 - [Security group checker](https://opsagent.dev/tools/security-group-check): Free, runs in your browser. Paste aws ec2 describe-security-groups output and see which groups leave SSH or a database port open to the world.
 - [IAM credential report checker](https://opsagent.dev/tools/iam-credential-report-check): Free, runs in your browser. Paste your IAM credential report and see root use, missing MFA, old keys and unused keys.
