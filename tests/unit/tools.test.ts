@@ -1,8 +1,9 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { analyseCredentialReport } from "@/lib/tools/credential-report";
-import { credentialExample, SG_EXAMPLE } from "@/lib/tools/examples";
+import { credentialExample, SG_EXAMPLE, TRUST_EXAMPLE } from "@/lib/tools/examples";
 import { ADMIN_PORTS, analyseSecurityGroups } from "@/lib/tools/sg-exposure";
+import { analyseTrustPolicy } from "@/lib/tools/trust-policy";
 
 const sg = (perms: object[]) => JSON.stringify({ SecurityGroups: [{ GroupId: "sg-1", IpPermissions: perms }] });
 const world = { IpRanges: [{ CidrIp: "0.0.0.0/0" }], Ipv6Ranges: [] };
@@ -124,5 +125,62 @@ describe("credential report tool", () => {
   it("rejects_other_input", () => {
     expect(analyseCredentialReport("hello", now)).toMatchObject({ ok: false });
     expect(analyseCredentialReport("", now)).toMatchObject({ ok: false });
+  });
+});
+
+describe("trust policy tool", () => {
+  const stmt = (s: object) => ({ Effect: "Allow", Action: "sts:AssumeRole", ...s });
+  const role = (s: object, arn = "arn:aws:iam::123456789012:role/r") => ({ RoleName: "r", Arn: arn, AssumeRolePolicyDocument: { Version: "2012-10-17", Statement: [stmt(s)] } });
+  const run = (v: unknown) => analyseTrustPolicy(JSON.stringify(v));
+  const titles = (r: ReturnType<typeof run>) => (r.ok ? r.findings.map((f) => f.severity + ": " + f.title) : []);
+
+  it("example_flags_the_open_role_and_the_vendor_without_external_id_only", () => {
+    const r = analyseTrustPolicy(TRUST_EXAMPLE);
+    expect(r.ok && r.checked).toBe(4);
+    const t = titles(r);
+    expect(t).toHaveLength(2);
+    expect(t[0]).toMatch(/^critical: legacy-open can be assumed by anyone/);
+    expect(t[1]).toMatch(/^medium: vendor-monitoring trusts account 444455556666 with no sts:ExternalId/);
+  });
+
+  it.each([
+    ["a bare * principal", { Principal: "*" }, "critical"],
+    ["AWS: [*]", { Principal: { AWS: ["*"] } }, "critical"],
+    ["a * principal behind a condition", { Principal: { AWS: "*" }, Condition: { StringEquals: { "aws:PrincipalOrgID": "o-1" } } }, "medium"],
+    ["an account id with no external id", { Principal: { AWS: "444455556666" } }, "medium"],
+    ["an account principal, array form", { Principal: { AWS: ["arn:aws:iam::444455556666:root"] } }, "medium"],
+  ])("flags %s", (_n, s, sev) => {
+    const r = run(role(s));
+    expect(titles(r)).toHaveLength(1);
+    expect(r.ok && r.findings[0].severity).toBe(sev);
+  });
+
+  it.each([
+    ["the role's own account", { Principal: { AWS: "arn:aws:iam::123456789012:root" } }],
+    ["an external id (any operator, any case)", { Principal: { AWS: "444455556666" }, Condition: { StringLike: { "STS:ExternalId": "x" } } }],
+    ["a service principal", { Principal: { Service: "ec2.amazonaws.com" } }],
+    ["a federated principal", { Principal: { Federated: "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com" }, Action: "sts:AssumeRoleWithWebIdentity" }],
+    ["a Deny statement", { Effect: "Deny", Principal: { AWS: "*" } }],
+    ["an action that is not an assume", { Principal: { AWS: "*" }, Action: "s3:GetObject" }],
+  ])("does not flag %s", (_n, s) => {
+    expect(run(role(s)).ok && titles(run(role(s)))).toHaveLength(0);
+  });
+
+  it("reads get-role, a bare policy and a url-encoded document", () => {
+    const open = { Principal: { AWS: "*" } };
+    expect(titles(run({ Role: role(open) }))).toHaveLength(1);
+    expect(titles(run({ Version: "2012-10-17", Statement: stmt(open) }))).toHaveLength(1);
+    const enc = { ...role(open), AssumeRolePolicyDocument: encodeURIComponent(JSON.stringify(role(open).AssumeRolePolicyDocument)) };
+    expect(titles(run({ Roles: [enc] }))).toHaveLength(1);
+  });
+
+  it("a bare policy cannot say which account is foreign, and says so", () => {
+    const r = run({ Version: "2012-10-17", Statement: [stmt({ Principal: { AWS: "arn:aws:iam::123456789012:root" } })] });
+    expect(r.ok && r.findings[0].detail).toContain("does not say which account owns the role");
+  });
+
+  it("rejects_other_input", () => {
+    for (const bad of ["", "not json", "[]", "{}", JSON.stringify({ Roles: [] })]) expect(analyseTrustPolicy(bad).ok).toBe(false);
+    expect(analyseTrustPolicy("x".repeat(2_000_001)).ok).toBe(false);
   });
 });
