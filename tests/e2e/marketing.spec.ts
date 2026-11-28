@@ -415,3 +415,13 @@ test("problem pages render, link to AWS docs and to the free tool, and are in th
   const sitemap = await (await request.get("/sitemap.xml")).text();
   for (const s of ["old-iam-access-keys", "acm-certificate-expiring", "security-group-open-to-the-world", "public-s3-bucket", "missing-aws-backups", "cloudtrail-guardduty-off", "surprise-aws-bill"]) expect(sitemap).toContain(`/problems/${s}`);
 });
+
+test("trust policy tool runs in the page and says OpsAgent does not check it yet", async ({ page, request }) => {
+  const res = await page.goto("/tools/iam-trust-policy-check");
+  expect(res?.status()).toBe(200);
+  await page.getByRole("button", { name: "Try an example" }).click();
+  await expect(page.getByText("legacy-open can be assumed by anyone in any AWS account")).toBeVisible();
+  await expect(page.getByText("OpsAgent does not read role trust policies yet.")).toBeVisible();
+  expect(await (await request.get("/sitemap.xml")).text()).toContain("/tools/iam-trust-policy-check");
+  expect(await (await request.get("/llms.txt")).text()).toContain("https://opsagent.dev/tools/iam-trust-policy-check");
+});

@@ -38,3 +38,23 @@ export function credentialExample(now: Date = new Date()): string {
     `j.contractor,arn:aws:iam::123456789012:user/j.contractor,${ago(1000)},true,${ago(300)},${ago(1000)},N/A,false,true,${ago(1000)},N/A,N/A,N/A,false,N/A,N/A,N/A,N/A,false,N/A,false,N/A`,
   ].join("\n");
 }
+
+const trustRole = (name: string, statement: object) => ({
+  RoleName: name,
+  Arn: `arn:aws:iam::123456789012:role/${name}`,
+  AssumeRolePolicyDocument: { Version: "2012-10-17", Statement: [{ Effect: "Allow", Action: "sts:AssumeRole", ...statement }] },
+});
+
+/** Four roles: an open one, a vendor account with no external ID, a vendor with one, and a service role. */
+export const TRUST_EXAMPLE = JSON.stringify(
+  {
+    Roles: [
+      trustRole("legacy-open", { Principal: { AWS: "*" } }),
+      trustRole("vendor-monitoring", { Principal: { AWS: "arn:aws:iam::444455556666:root" } }),
+      trustRole("vendor-backup", { Principal: { AWS: "arn:aws:iam::444455556666:root" }, Condition: { StringEquals: { "sts:ExternalId": "a1b2c3d4" } } }),
+      trustRole("ecs-task", { Principal: { Service: "ecs-tasks.amazonaws.com" } }),
+    ],
+  },
+  null,
+  2,
+);

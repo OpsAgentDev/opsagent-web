@@ -24,6 +24,7 @@
 - [Sample report](https://opsagent.dev/sample-report): A morning briefing and findings anonymised from a real scan of our own AWS account.
 - [Security group checker](https://opsagent.dev/tools/security-group-check): Free, runs in your browser. Paste aws ec2 describe-security-groups output and see which groups leave SSH or a database port open to the world.
 - [IAM credential report checker](https://opsagent.dev/tools/iam-credential-report-check): Free, runs in your browser. Paste your IAM credential report and see root use, missing MFA, old keys and unused keys.
+- [IAM role trust policy checker](https://opsagent.dev/tools/iam-trust-policy-check): Free, runs in your browser. Paste aws iam list-roles output and see roles anyone can assume, or that trust another account without an ExternalId. Nothing is uploaded.
 - [Pricing](https://opsagent.dev/pricing): Flat per cloud account, Starter US$99, Team US$299, Scale US$599 a month, plus tax where applicable.
 - [Security](https://opsagent.dev/security): Read-only by design.
 - [Privacy](https://opsagent.dev/privacy)

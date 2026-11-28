@@ -6,7 +6,7 @@ import { PROBLEMS } from "@/lib/marketing/problems";
 const PATHS = [
   "", "/pricing", "/how-it-works", "/security", "/contact", "/privacy", "/terms", "/status",
   "/features/checks", "/features/alerts", "/features/agents", "/features/ai-and-review",
-  "/docs/connect-your-agent", "/sample-report", "/tools/security-group-check", "/tools/iam-credential-report-check", ...COMPARE.map((c) => `/compare/${c.slug}`), ...PROBLEMS.map((p) => `/problems/${p.slug}`),
+  "/docs/connect-your-agent", "/sample-report", "/tools/security-group-check", "/tools/iam-credential-report-check", "/tools/iam-trust-policy-check", ...COMPARE.map((c) => `/compare/${c.slug}`), ...PROBLEMS.map((p) => `/problems/${p.slug}`),
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
