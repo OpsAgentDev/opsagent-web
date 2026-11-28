@@ -728,6 +728,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{org}/connections/{id}/costs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stored daily spend per service for the newest 60 days, and the days check 01 flagged. */
+        get: operations["costs_show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{org}/connections/{id}/reconnect": {
         parameters: {
             query?: never;
@@ -1553,6 +1570,33 @@ export interface components {
             /** @description Honeypot: real visitors leave it empty; a filled value is answered 202 and dropped. */
             website?: string | null;
         };
+        /** @description One service's spend on one day. */
+        CostDayOut: {
+            /**
+             * @description Unblended cost in USD, four decimals.
+             * @example 12.3400
+             */
+            amount_usd: string;
+            /** Format: date */
+            day: string;
+            /** @description The provider's service name, as Cost Explorer reports it. */
+            service: string;
+        };
+        CostSeries: {
+            /**
+             * @description Up to 60 days ending on `newest_day`, by day then service; capped at 5000 rows, the
+             *     oldest days dropped first.
+             */
+            days: components["schemas"]["CostDayOut"][];
+            /** @description Days within that window which check 01 flagged, by day. */
+            flagged: components["schemas"]["FlaggedDay"][];
+            /**
+             * Format: date
+             * @description The newest day stored; null when no spend is stored yet (a new account, Cost Explorer
+             *     not enabled, or a failed read).
+             */
+            newest_day?: string | null;
+        };
         CreatedConnection: {
             /** Format: uuid */
             id: string;
@@ -1693,6 +1737,15 @@ export interface components {
             /** @description The finding's page in the dashboard, to hand to a person. */
             url: string;
             variant: string;
+        };
+        /** @description A day check 01 flagged as a cost spike. */
+        FlaggedDay: {
+            /** Format: date */
+            day: string;
+            /** Format: uuid */
+            finding_id: string;
+            /** @description The finding's status: `open`, `resolved`, `accepted`, `snoozed` or `flapping`. */
+            status: string;
         };
         HumanReviewCreated: {
             /** @description The hosted Stripe Checkout page to pay on; null when Stripe is not configured (invoiced). */
@@ -4829,6 +4882,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Problem"];
+                };
+            };
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Problem"];
+                };
+            };
+        };
+    };
+    costs_show: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Organisation slug. */
+                org: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CostSeries"];
                 };
             };
             404: {

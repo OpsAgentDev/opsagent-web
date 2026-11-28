@@ -38,6 +38,7 @@ export function ConnectionActions({ c, canScan, onScan, started }: { c: Connecti
       {!removed && <button type="button" onClick={onScan} disabled={!canScan}>Scan now</button>}
       {started && <span>Scan started. Findings appear as checks finish.</span>}
       {!removed && <OrgLink href={`/connections/${c.id}/briefing`}>Preview briefing</OrgLink>}
+      <OrgLink href={`/connections/${c.id}/costs`}>Spend</OrgLink>
       <OrgLink href="/findings">View findings</OrgLink>
     </div>
   );

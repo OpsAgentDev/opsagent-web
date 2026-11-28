@@ -36,6 +36,7 @@ export default function Privacy() {
           <li>Sign-in identities: the Google or GitHub account you sign in with, and the public keys of your passkeys. A passkey&apos;s private key and any fingerprint or face data never leave your device.</li>
           <li>Your organisation: its name, members and their roles.</li>
           <li>Cloud inventory metadata: what resources exist in the accounts you connect and how they are configured.</li>
+          <li>Daily spend per AWS service: the unblended cost Cost Explorer reports for each day, for the accounts you connect.</li>
           <li>Findings, and the evidence behind them.</li>
           <li>Billing: your plan, trial dates and payment status. Card details stay with Stripe.</li>
           <li>Delivery settings: your Slack workspace and channels, and briefing recipients.</li>
@@ -79,7 +80,7 @@ export default function Privacy() {
           Before anything is stored, strings that look like secrets (keys, tokens, passwords) and email addresses are
           removed from evidence excerpts, resource names and tags. Everything else about a resource, such as its
           identifier, region and configuration, is stored as your cloud reports it.
-          Evidence expires 90 days after it is collected, and inventory snapshots after 90 days. Findings are kept while your organisation exists.
+          Evidence expires 90 days after it is collected, and inventory snapshots and daily spend after 90 days. Findings are kept while your organisation exists.
         </p>
         <p>
           The audit log and delivery records have no time limit: they are kept while your organisation exists and
@@ -91,8 +92,8 @@ export default function Privacy() {
         <p>
           Routine records are deleted on a schedule. A nightly job deletes the records of 15-minute watch scans, alert
           deliveries and skipped runs 14 days after they finish, together with the request counts and inventory
-          snapshots tied to them, unless a finding still points to the run. Inventory snapshots and the raw cloud call
-          records are deleted after 90 days. Expired sessions are deleted 1 day after they expire; sign-in links, agent
+          snapshots tied to them, unless a finding still points to the run. Inventory snapshots, daily spend and the raw cloud
+          call records are deleted after 90 days. Expired sessions are deleted 1 day after they expire; sign-in links, agent
           consent requests and agent access tokens after 7 days; agent refresh tokens and invites after 30 days.
           Dashboard chat sessions are deleted 30 days after the last message, AI usage records after 395 days, and
           expired agent registrations are removed. Findings and delivery records are kept while your organisation exists. The
