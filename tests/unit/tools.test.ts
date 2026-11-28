@@ -129,6 +129,17 @@ describe("credential report tool", () => {
 });
 
 describe("trust policy tool", () => {
+  it("cases_match_the_brain_check_fixture", () => {
+    const cases = JSON.parse(readFileSync("tests/fixtures/trust-policy-cases.json", "utf8")) as { name: string; role_arn: string; trust_policy: object; expect: { variant: string; severity: string }[] }[];
+    expect(cases.length).toBeGreaterThan(20);
+    for (const c of cases) {
+      const r = analyseTrustPolicy(JSON.stringify({ Role: { RoleName: "r", Arn: c.role_arn, AssumeRolePolicyDocument: c.trust_policy } }));
+      const got = (r.ok ? r.findings.map((f) => `${f.variant}:${f.severity}`) : ["error"]).sort();
+      const want = c.expect.map((e) => `${e.variant}:${e.severity}`).sort();
+      expect({ name: c.name, got }).toEqual({ name: c.name, got: want });
+    }
+  });
+
   const stmt = (s: object) => ({ Effect: "Allow", Action: "sts:AssumeRole", ...s });
   const role = (s: object, arn = "arn:aws:iam::123456789012:role/r") => ({ RoleName: "r", Arn: arn, AssumeRolePolicyDocument: { Version: "2012-10-17", Statement: [stmt(s)] } });
   const run = (v: unknown) => analyseTrustPolicy(JSON.stringify(v));

@@ -1,7 +1,7 @@
 export type Severity = "critical" | "high" | "medium" | "low" | "info";
 
 /** One result row, shared by the free tools. Titles and severities mirror the brain check of the same name. */
-export type ToolFinding = { severity: Severity; title: string; detail: string };
+export type ToolFinding = { severity: Severity; title: string; detail: string; /** Set by the trust policy tool, to line up with brain check 14. */ variant?: string };
 
 export type ToolResult =
   | { ok: true; checked: number; findings: ToolFinding[] }
