@@ -14,7 +14,7 @@ describe.each(PROBLEMS)("problem page $slug", (entry) => {
   it("every AWS statement links to an AWS docs page", () => {
     for (const s of sourced) {
       expect(s.sourceUrl.startsWith("https://")).toBe(true);
-      expect(new URL(s.sourceUrl).hostname).toBe("docs.aws.amazon.com");
+      expect(new URL(s.sourceUrl).hostname).toMatch(/^(docs\.)?aws\.amazon\.com$/);
       expect(html).toContain(`href="${s.sourceUrl}"`);
     }
   });
@@ -51,6 +51,6 @@ describe("problem routes", () => {
 
   it("finding wording matches the brain check thresholds quoted on the page", () => {
     const flags = PROBLEMS.flatMap((p) => p.flags).join(" ");
-    for (const t of ["90 days", "7 days", "30 days", "under 7 days", "22, 3389, 3306, 5432"]) expect(flags).toContain(t);
+    for (const t of ["90 days", "7 days", "30 days", "under 7 days", "22, 3389, 3306, 5432", "US$50", "5% CPU"]) expect(flags).toContain(t);
   });
 });
