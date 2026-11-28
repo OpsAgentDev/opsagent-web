@@ -85,8 +85,8 @@ export default function Security() {
             state files today. State files can contain secrets, so name only the prefix you want checked.
           </p>
           <p>
-            Each full scan (the nightly one, or one you start yourself) makes one AWS Cost Explorer request in your
-            account, which AWS bills at about US$0.01. Watch scans make none. Each nightly scan also reads CloudWatch
+            Each full scan (the nightly one, or one you start yourself) makes a small number of AWS Cost Explorer
+            requests in your account, which AWS bills at about US$0.01 each. Watch scans make none. Each nightly scan also reads CloudWatch
             metrics, which AWS bills at about US$0.01 per 1,000 metrics: a fraction of a cent for a typical account.
           </p>
         </div>

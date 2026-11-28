@@ -283,7 +283,7 @@ export const PROBLEMS: ProblemEntry[] = [
     cannot: [
       "It reads daily cost totals by service, not each resource or tag in depth. It names the service and the day, and you open Cost Explorer for the rest.",
       "It does not forecast your bill, and it does not advise on Savings Plans or reserved instances.",
-      "Each full scan makes one Cost Explorer request in your account, which AWS bills at about US$0.01.",
+      "Each full scan makes a small number of Cost Explorer requests in your account, which AWS bills at about US$0.01 each.",
       "It never deletes, stops or resizes anything. It connects read-only; you run the commands above.",
     ],
   },

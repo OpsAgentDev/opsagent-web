@@ -4,9 +4,10 @@ import "./overview.css";
 
 const W = 600;
 const H = 150;
-const compact = (units: number) => {
+/** "$1.2k", "$40"; with `cents` (a whole axis under $1) "$0.40", so the labels are not all "$0". */
+const compact = (units: number, cents: boolean) => {
   const d = Math.abs(units) / 10_000;
-  const s = d >= 1000 ? `${Math.round(d / 100) / 10}k` : String(Math.round(d));
+  const s = cents ? d.toFixed(2) : d >= 1000 ? `${Math.round(d / 100) / 10}k` : String(Math.round(d));
   return `${units < 0 ? "-" : ""}$${s}`;
 };
 /** A round number at or above `x`, so the line never touches the edge. */
@@ -41,7 +42,7 @@ export function SpendChart({ totals }: { totals: Total[] }) {
       <div className="ov-plot" aria-hidden="true">
         <div className="ov-canvas">
           {[hi, lo + span / 2, lo].map((n, i) => (
-            <span key={i} className="ov-y" style={{ top: `${i * 50}%`, left: -44, width: 36 }}>{compact(n)}</span>
+            <span key={i} className="ov-y" style={{ top: `${i * 50}%`, left: -44, width: 36 }}>{compact(n, hi - lo < 10_000)}</span>
           ))}
           <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" focusable="false">
             <line x1="0" x2={W} y1="0" y2="0" />

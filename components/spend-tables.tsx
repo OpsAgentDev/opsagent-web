@@ -8,16 +8,18 @@ export function ServiceTable({ rows }: { rows: ServiceChange[] }) {
   return (
     <section>
       <h2>By service</h2>
+      <div style={{ overflowX: "auto" }}>
       <table data-testid="spend-services">
         <thead>
           <tr><th scope="col">Service</th><th scope="col">Newest 30 days</th><th scope="col">Previous 30 days</th><th scope="col">Change</th></tr>
         </thead>
         <tbody>
           {rows.map((c) => (
-            <tr key={c.service}><th scope="row">{c.service}</th><td>{usd(c.current)}</td><td>{usd(c.previous)}</td><td>{change(c)}</td></tr>
+            <tr key={c.service}><th scope="row" title={c.service} style={{ maxWidth: 240, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.service}</th><td>{usd(c.current)}</td><td>{usd(c.previous)}</td><td>{change(c)}</td></tr>
           ))}
         </tbody>
       </table>
+      </div>
     </section>
   );
 }
@@ -52,7 +54,7 @@ export function FlaggedDays({ days }: { days: FlaggedDay[] }) {
           <li key={d.day}>
             {dayText(d.day)}{d.units === null ? "" : `, ${usd(d.units)} in total`}:{" "}
             {d.findings.map((f, i) => (
-              <span key={f.id}>{i > 0 && ", "}<OrgLink href={`/findings/${f.id}`}>Spike finding</OrgLink> ({f.status})</span>
+              <span key={f.id}>{i > 0 && ", "}<OrgLink href={`/findings/${f.id}`}>Spike finding for {dayText(d.day)} ({f.status})</OrgLink></span>
             ))}
           </li>
         ))}

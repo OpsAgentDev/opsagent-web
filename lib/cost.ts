@@ -17,8 +17,11 @@ export function parseUsd(s: string): number | null {
   const m = /^(-?)(\d{1,10})(?:\.(\d{1,4}))?$/.exec(s.trim());
   if (!m) return null;
   const units = Number(m[2]) * UNITS + Number((m[3] ?? "").padEnd(4, "0"));
-  return m[1] ? -units : units;
+  return m[1] && units ? -units : units; // "-0.0000" is 0, never -0
 }
+
+/** A real calendar day "YYYY-MM-DD"; guards the page against a malformed `newest_day`. */
+export const isDay = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(`${s}T00:00:00Z`));
 
 const dayNumber = (day: string) => Date.parse(`${day}T00:00:00Z`) / 86_400_000;
 

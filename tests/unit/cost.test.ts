@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dailyTotals, dayText, flaggedDays, movers, parseUsd, percentText, periods, serviceChanges, signedUsd, usd } from "@/lib/cost";
+import { dailyTotals, dayText, flaggedDays, isDay, movers, parseUsd, percentText, periods, serviceChanges, signedUsd, usd } from "@/lib/cost";
 
 const row = (day: string, service: string, amount_usd: string) => ({ day, service, amount_usd });
 /** Day `n` back from 2026-11-30 (n = 0 is the newest day). */
@@ -13,6 +13,7 @@ describe("parseUsd", () => {
     expect(parseUsd("7")).toBe(70000);
     expect(parseUsd("-1.5000")).toBe(-15000);
     expect(parseUsd("0.0001")).toBe(1);
+    expect(parseUsd("-0.0000")).toBe(0); // not -0
   });
   it("rejects anything else instead of returning NaN", () => {
     for (const bad of ["", "abc", "1e3", "1.23456", "--1", "$5", "1,000.00"]) expect(parseUsd(bad)).toBeNull();
@@ -44,6 +45,16 @@ describe("periods", () => {
   });
   it("handles empty data", () => {
     expect(periods([], NEWEST)).toMatchObject({ currentTotal: 0, previousTotal: 0, currentDays: 0, previousDays: 0 });
+  });
+});
+
+describe("a malformed newest_day", () => {
+  it("is not a day, and gives empty periods rather than NaN", () => {
+    for (const bad of ["", "soon", "2026-13-45", "2026-11-3"]) expect(isDay(bad)).toBe(false);
+    expect(isDay("2026-11-30")).toBe(true);
+    const p = periods([row("2026-11-01", "A", "1")], "soon");
+    expect([p.currentTotal, p.previousTotal, p.currentDays, p.previousDays]).toEqual([0, 0, 0, 0]);
+    expect(serviceChanges([row("2026-11-01", "A", "1")], "soon")).toEqual([]);
   });
 });
 
@@ -116,6 +127,10 @@ describe("formatting", () => {
     expect(usd(123456)).toBe("$12.35");
     expect(usd(1234567)).toBe("$123.46");
     expect(usd(-15000)).toBe("-$1.50");
+    expect(usd(50)).toBe("$0.01"); // half a cent rounds away from zero
+    expect(usd(-50)).toBe("-$0.01");
+    expect(usd(149)).toBe("$0.01");
+    expect(usd(150)).toBe("$0.02");
     expect(usd(49)).toBe("$0.00");
     expect(usd(-49)).toBe("$0.00");
     expect(usd(12_345_678_900)).toBe("$1,234,567.89");

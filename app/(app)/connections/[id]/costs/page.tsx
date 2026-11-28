@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/skeleton";
 import { SpendChart } from "@/components/spend-chart";
 import { FlaggedDays, Movers, ServiceTable } from "@/components/spend-tables";
 import { api, unwrap, type CostSeries } from "@/lib/api/client";
-import { dailyTotals, dayText, flaggedDays, movers, periods, serviceChanges, usd, WINDOW_DAYS } from "@/lib/cost";
+import { dailyTotals, dayText, isDay, flaggedDays, movers, periods, serviceChanges, usd, WINDOW_DAYS } from "@/lib/cost";
 import { useOrg } from "@/lib/org";
 import { useApi } from "@/lib/use-api";
 
@@ -24,7 +24,7 @@ export default function Spend() {
       <p className="muted"><OrgLink href={`/connections/${id}`}>Back to connection</OrgLink></p>
       <ErrorNote error={error} />
       {!data && !error && <Skeleton count={3} />}
-      {data && (data.newest_day && data.days.length > 0 ? (
+      {data && (data.newest_day && isDay(data.newest_day) && data.days.length > 0 ? (
         <Loaded data={data} newest={data.newest_day} />
       ) : (
         <p data-testid="spend-empty">No spend data yet. It appears after a nightly scan once AWS Cost Explorer has data for the account.</p>
@@ -42,7 +42,7 @@ function Loaded({ data, newest }: { data: CostSeries; newest: string }) {
     <>
       <p className="muted" data-testid="spend-note">Unblended cost per Cost Explorer, through {dayText(newest)}. The newest days can still change.</p>
       <p data-testid="spend-summary">
-        Newest 30 days: <strong>{usd(p.currentTotal)}</strong>. Previous 30 days: <strong>{usd(p.previousTotal)}</strong>.
+        Newest 30 days: <strong>{usd(p.currentTotal)}</strong>. Previous 30 days: {p.previousDays === 0 ? "No earlier data yet" : <strong>{usd(p.previousTotal)}</strong>}.
       </p>
       {short && (
         <p className="muted" data-testid="spend-short">
