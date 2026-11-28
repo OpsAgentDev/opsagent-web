@@ -157,7 +157,7 @@ describe("sourced facts that were checked on 2026-11-24", () => {
     expect(full).toContain("January 1, 2027");
     expect(e.description).toContain("which checks AWS Support plans unlock");
     expect(full).not.toMatch(/paid plan/i);
-    expect(e.rows.find((r) => r.label.startsWith("Trusted Advisor checks with"))!.opsagent).toContain("AWS bills about a cent per scan for the Cost Explorer and CloudWatch reads.");
+    expect(e.rows.find((r) => r.label.startsWith("Trusted Advisor checks with"))!.opsagent).toContain("AWS bills about a cent per Cost Explorer request, and a small number are made per scan, plus the CloudWatch reads.");
   });
 
   it("Security Hub: names the standards and the pricing model AWS publishes", () => {

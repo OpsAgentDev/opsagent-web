@@ -228,7 +228,7 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "Trusted Advisor checks with Business Support+, Enterprise Support or Unified Operations",
         them: "The full set of Trusted Advisor checks, and its API, come with Business Support+, Enterprise Support or Unified Operations. Basic Support has no automatic check updates: you refresh Security checks by hand. AWS lists Business Support+, which adds 24/7 access to AWS experts, at a $29 a month minimum per account. AWS says Developer Support and Business Support will be discontinued on January 1, 2027.",
-        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks. AWS bills about a cent per scan for the Cost Explorer and CloudWatch reads.",
+        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks. AWS bills about a cent per Cost Explorer request, and a small number are made per scan, plus the CloudWatch reads.",
         sourceUrl: TA,
       },
       {
