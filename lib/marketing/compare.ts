@@ -22,7 +22,7 @@ export type CompareEntry = {
 
 // The OpsAgent column, from the PRD and `docs/tech-spec/mvp-marketing.md`. Shared so every page says the same thing.
 const WHAT_IT_DOES =
-  "Runs ten deterministic checks on your AWS account every night and tells you what to fix. Urgent exposures are checked every 15 minutes. Each finding cites its resource, evidence and check; Dashboard AI explains it in plain language once an owner turns it on.";
+  "Runs eleven deterministic checks on your AWS account every night and tells you what to fix. Urgent exposures are checked every 15 minutes. Each finding cites its resource, evidence and check; Dashboard AI explains it in plain language once an owner turns it on.";
 const PRICE =
   "Flat per cloud account per month: Starter US$99, Team US$299, Scale US$599, plus tax where applicable. It does not change with how much the agent finds. AI credit top-ups are optional.";
 const AI_AGENTS =
@@ -216,19 +216,19 @@ export const COMPARE: CompareEntry[] = [
       {
         label: "What Security Hub does",
         them: "Security Hub CSPM runs checks against security standards, including AWS Foundational Security Best Practices, CIS, PCI DSS and NIST, and generates control findings. It also receives findings from services such as GuardDuty, Inspector and Macie, so you see them in one place.",
-        opsagent: "OpsAgent runs its own ten checks. It does not score your account against CIS, PCI DSS or NIST, and it does not take in other tools' findings.",
+        opsagent: "OpsAgent runs its own eleven checks. It does not score your account against CIS, PCI DSS or NIST, and it does not take in other tools' findings.",
         sourceUrl: SH_DOC,
       },
       {
         label: "Trusted Advisor checks on Basic or Developer Support",
         them: "With Basic Support or Developer Support, the console shows all Service limits checks and six more: Amazon EBS public snapshots, Amazon RDS public snapshots, Amazon S3 bucket permissions, MFA on the root account, security groups with specific ports unrestricted, and AWS STS global endpoint usage.",
-        opsagent: "Ten checks run nightly on each connected account. They cover public snapshots and buckets, open admin and database ports, root MFA, access keys, backups, certificates, logging, encryption, instance hardening, idle resources and GPUs.",
+        opsagent: "Eleven checks run nightly on each connected account whose read role is on the current template. They cover public snapshots and buckets, open admin and database ports, root MFA, access keys, backups, certificates, logging, encryption, instance hardening, idle resources, GPUs and IAM role trust policies.",
         sourceUrl: TA_REF,
       },
       {
         label: "Trusted Advisor checks with Business Support+, Enterprise Support or Unified Operations",
         them: "The full set of Trusted Advisor checks, and its API, come with Business Support+, Enterprise Support or Unified Operations. Basic Support has no automatic check updates: you refresh Security checks by hand. AWS lists Business Support+, which adds 24/7 access to AWS experts, at a $29 a month minimum per account. AWS says Developer Support and Business Support will be discontinued on January 1, 2027.",
-        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all ten checks. AWS bills about a cent per Cost Explorer request, and a small number are made per scan, plus the CloudWatch reads.",
+        opsagent: "OpsAgent does not depend on your AWS Support plan. The flat price below covers all eleven checks. AWS bills about a cent per Cost Explorer request, and a small number are made per scan, plus the CloudWatch reads.",
         sourceUrl: TA,
       },
       {

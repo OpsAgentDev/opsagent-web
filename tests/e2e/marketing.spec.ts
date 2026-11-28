@@ -16,7 +16,7 @@ const LINKS: [string, string][] = [
 const NAV = [...FEATURES, ...LINKS];
 const FEATURE_PAGES = [
   { path: "/features/alerts", h1: "Alerts and briefings", section: "Urgent alerts", title: "Cloud alerts in Slack and morning briefings · OpsAgent" },
-  { path: "/features/checks", h1: "What it checks", section: "The ten checks", title: "Cloud checks: IAM, exposure, cost and backups · OpsAgent" },
+  { path: "/features/checks", h1: "What it checks", section: "The eleven checks", title: "Cloud checks: IAM, exposure, cost and backups · OpsAgent" },
   { path: "/features/agents", h1: "Connect your agent", section: "What your agent can do", title: "Cloud MCP server for Claude, Cursor and ChatGPT · OpsAgent" },
   { path: "/features/ai-and-review", h1: "Dashboard AI and human review", section: "Human review", title: "Dashboard AI and human review · OpsAgent" },
 ];
@@ -325,11 +325,11 @@ test("feature pages make no forbidden claims and use no gradients or outbound re
   }
 });
 
-test("checks page lists all ten checks with evidence and when they run", async ({ page }) => {
+test("checks page lists all eleven checks with evidence and when they run", async ({ page }) => {
   await page.goto("/features/checks");
   const cards = page.locator("main .check-cards > li");
-  await expect(cards).toHaveCount(10);
-  for (const i of [0, 9]) {
+  await expect(cards).toHaveCount(11);
+  for (const i of [0, 10]) {
     await expect(cards.nth(i).getByText("Evidence", { exact: true })).toBeVisible();
     await expect(cards.nth(i).getByText("Runs", { exact: true })).toBeVisible();
   }
@@ -416,12 +416,12 @@ test("problem pages render, link to AWS docs and to the free tool, and are in th
   for (const s of ["old-iam-access-keys", "acm-certificate-expiring", "security-group-open-to-the-world", "public-s3-bucket", "missing-aws-backups", "cloudtrail-guardduty-off", "surprise-aws-bill"]) expect(sitemap).toContain(`/problems/${s}`);
 });
 
-test("trust policy tool runs in the page and says OpsAgent does not check it yet", async ({ page, request }) => {
+test("trust policy tool runs in the page and says OpsAgent checks it nightly", async ({ page, request }) => {
   const res = await page.goto("/tools/iam-trust-policy-check");
   expect(res?.status()).toBe(200);
   await page.getByRole("button", { name: "Try an example" }).click();
   await expect(page.getByText("legacy-open can be assumed by anyone in any AWS account")).toBeVisible();
-  await expect(page.getByText("OpsAgent does not read role trust policies yet.")).toBeVisible();
+  await expect(page.getByText("OpsAgent checks role trust policies every night too")).toBeVisible();
   expect(await (await request.get("/sitemap.xml")).text()).toContain("/tools/iam-trust-policy-check");
   expect(await (await request.get("/llms.txt")).text()).toContain("https://opsagent.dev/tools/iam-trust-policy-check");
 });

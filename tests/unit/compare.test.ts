@@ -89,7 +89,7 @@ describe.each(COMPARE)("compare page $slug", (entry) => {
     expect(row(entry, "Use from AI agents").opsagent).not.toMatch(/read-only MCP/i);
     expect(row(entry, "Price").opsagent).toContain("AI credit top-ups are optional.");
     expect(row(entry, "Changes to your cloud").opsagent).toMatch(/^None\./);
-    expect(entry.rows[0]!.opsagent).toContain("ten deterministic checks");
+    expect(entry.rows[0]!.opsagent).toContain("eleven deterministic checks");
   });
 
   it("carries Product JSON-LD with the live prices", () => {

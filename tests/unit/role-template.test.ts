@@ -14,7 +14,7 @@ describe("newerRoleNote", () => {
   it("tells a version 2 connection that a newer role adds the same checks, without calling it narrower", () => {
     const note = newerRoleNote(aws("2"));
     expect(note).toContain("A newer read role is available.");
-    expect(note).toContain("keeps working without it");
+    expect(note).toContain("keeps working without them");
     expect(note).not.toContain("narrower");
     expect(note).toContain("Aurora cluster snapshots");
   });
@@ -22,8 +22,15 @@ describe("newerRoleNote", () => {
     expect(newerRoleNote(aws(null))).toContain("narrower");
     expect(newerRoleNote(aws(undefined))).toContain("narrower");
   });
+  it("tells a version 3 connection that a newer role adds the trust policy check", () => {
+    const note = newerRoleNote(aws("3"));
+    expect(note).toContain("A newer read role is available.");
+    expect(note).toContain("IAM role trust policies");
+    expect(note).toContain("keeps working without it");
+    expect(note).not.toContain("narrower");
+  });
   it("is silent for the current version, a turned-off connection and other providers", () => {
-    expect(newerRoleNote(aws("3"))).toBeNull();
+    expect(newerRoleNote(aws("4"))).toBeNull();
     expect(newerRoleNote(aws("1", "disconnected"))).toBeNull();
     expect(newerRoleNote({ provider: "fake", status: "connected", template_version: "1" })).toBeNull();
   });

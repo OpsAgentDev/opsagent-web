@@ -11,6 +11,7 @@ import { PRICE_NOTE } from "@/lib/plans";
 const CHECKS = [
   "Idle resources and cost anomalies",
   "IAM hygiene",
+  "IAM role trust policies",
   "Public exposure",
   "Backup coverage",
   "Certificate expiry",
@@ -27,7 +28,7 @@ export function Checks() {
       <div className="lp-copy">
         <h2 id="what-it-checks-h">It finds what is wrong, and shows you why.</h2>
         <p>
-          Ten checks run every night. Fixed rules decide what is wrong, with no AI guessing. Each finding names the
+          Eleven checks run every night. Fixed rules decide what is wrong, with no AI guessing. Each finding names the
           resource and shows the evidence, so you can confirm it yourself.
         </p>
         <ul className="lp-checks">
