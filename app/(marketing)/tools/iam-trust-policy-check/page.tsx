@@ -27,7 +27,7 @@ export default function TrustPolicyCheck() {
         another account without an <code>sts:ExternalId</code> condition. AWS says an external ID is optional: it matters when the other
         account belongs to a vendor or another third party, and not when it is your own. You can paste one role from{" "}
         <code>aws iam get-role</code> or a bare trust policy too, but then the page cannot tell which account owns the role.
-        It does not read what a role is allowed to do, only who can assume it. OpsAgent does not check trust policies yet.
+        An ExternalId only counts when a StringEquals, StringEqualsIgnoreCase or StringLike condition (or ForAnyValue: of those) names a fixed value: Null, Not operators, wildcards and ForAllValues do not enforce one. It does not read what a role is allowed to do, only who can assume it. OpsAgent does not check trust policies yet.
       </p>
       <p className="sample-note">
         AWS on the{" "}
