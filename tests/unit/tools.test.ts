@@ -152,7 +152,7 @@ describe("trust policy tool", () => {
   ])("flags %s", (_n, s, sev) => {
     const r = run(role(s));
     expect(titles(r)).toHaveLength(1);
-    expect(r.ok && r.findings[0].severity).toBe(sev);
+    expect(r.ok && r.findings[0]?.severity).toBe(sev);
   });
 
   it.each([
@@ -176,7 +176,7 @@ describe("trust policy tool", () => {
 
   it("a bare policy cannot say which account is foreign, and says so", () => {
     const r = run({ Version: "2012-10-17", Statement: [stmt({ Principal: { AWS: "arn:aws:iam::123456789012:root" } })] });
-    expect(r.ok && r.findings[0].detail).toContain("does not say which account owns the role");
+    expect(r.ok && r.findings[0]?.detail).toContain("does not say which account owns the role");
   });
 
   it("rejects_other_input", () => {
