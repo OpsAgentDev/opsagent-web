@@ -17,8 +17,9 @@ test("the Spend page shows the stored 60 days, the flagged day, and an empty sta
   await page.goto(`/connections/${id}`);
   await page.getByRole("link", { name: "Spend", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Spend", exact: true })).toBeVisible();
+  // en-GB writes September as "Sep" or "Sept" depending on the browser's ICU data.
   await expect(page.getByTestId("spend-note")).toHaveText(
-    "Unblended cost per Cost Explorer, through 30 Sep 2026. The newest days can still change.",
+    /^Unblended cost per Cost Explorer, through 30 Sept? 2026\. The newest days can still change\.$/,
   );
   await expect(page.getByTestId("spend-summary")).toContainText(/Newest 30 days: \$[\d,]+\.\d\d\. Previous 30 days: \$[\d,]+\.\d\d\./);
   await expect(page.getByTestId("spend-short")).toHaveCount(0);
@@ -27,8 +28,8 @@ test("the Spend page shows the stored 60 days, the flagged day, and an empty sta
   await expect(page.getByTestId("spend-movers")).toBeVisible();
 
   const flagged = page.getByTestId("spend-flagged");
-  await expect(flagged).toContainText("20 Sep 2026");
-  await flagged.getByRole("link", { name: "Spike finding" }).click();
+  await expect(flagged).toContainText(/20 Sept? 2026/);
+  await flagged.getByRole("link", { name: "Spike finding" }).first().click();
   await expect(page).toHaveURL(/\/findings\/[0-9a-f-]+$/);
 
   sql(`DELETE FROM cost_daily WHERE connection_id = '${id}'`);
