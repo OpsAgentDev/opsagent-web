@@ -20,7 +20,7 @@ test("landing renders every section in story order", async ({ page }) => {
     "What happens to your data.",
     "Get your ops teammate.",
   ]);
-  await expect(page.locator("#what-it-checks .lp-checks li")).toHaveCount(10);
+  await expect(page.locator("#what-it-checks .lp-checks li")).toHaveCount(11);
   await expect(page.locator("#read-only .lp-steps li")).toHaveCount(3);
   await expect(page.locator(".soon")).toHaveCount(1); // the mobile app only
   await expect(page.getByText("page you at 3am", { exact: false })).toHaveCount(0);

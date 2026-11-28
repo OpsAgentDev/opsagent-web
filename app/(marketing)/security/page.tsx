@@ -40,8 +40,9 @@ export default function Security() {
             </li>
             <li>
               Identity: the credential report (which users have a password, MFA and access keys, and when each was
-              last used; never the passwords or keys themselves), the policies attached to users, and whether the
-              roles your backups use are allowed to restore.
+              last used; never the passwords or keys themselves), the policies attached to users, whether the
+              roles your backups use are allowed to restore, and every role&apos;s trust policy (who can assume it;
+              external IDs are redacted before they are stored).
             </li>
             <li>
               Logging and threat detection: your CloudTrail trails and whether they are logging, whether GuardDuty is

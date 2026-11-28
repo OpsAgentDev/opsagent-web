@@ -4,7 +4,7 @@ import * as I from "@/components/marketing/landing-icons";
 
 export const metadata: Metadata = {
   title: "Cloud checks: IAM, exposure, cost and backups · OpsAgent",
-  description: "Ten deterministic, read-only checks across cost, security, backups, certificates, logging, encryption, hardening and GPUs. Every finding cites its evidence.",
+  description: "Eleven deterministic, read-only checks across cost, security, backups, certificates, logging, encryption, hardening and GPUs. Every finding cites its evidence.",
 };
 
 const NIGHTLY = "Nightly";
@@ -22,6 +22,13 @@ const CHECKS: { title: string; Icon: typeof I.CostIcon; looks: string; evidence:
     Icon: I.UserKeyIcon,
     looks: "Access keys older than 90 days, console users without MFA, the AdministratorAccess policy attached directly to a user, root account use in the last 30 days, and a root account without MFA.",
     evidence: "The credential report, users, access keys and MFA status.",
+    runs: NIGHTLY,
+  },
+  {
+    title: "IAM role trust policies",
+    Icon: I.ShieldIcon,
+    looks: "Roles that anyone in any AWS account can assume, and roles that trust another account with no real ExternalId condition. Runs on connections whose read role is on the current template.",
+    evidence: "Each role's trust policy, with external IDs redacted.",
     runs: NIGHTLY,
   },
   {
@@ -93,7 +100,7 @@ export default function Checks() {
     <FeaturePage
       slug="checks"
       title="What it checks"
-      lead="Ten checks run against your cloud every night, and the most urgent ones every 15 minutes. Each one says what it found and shows you why."
+      lead="Eleven checks run against your cloud every night, and the most urgent ones every 15 minutes. Each one says what it found and shows you why."
     >
       <ul className="feature-facts">
         {FACTS.map(([title, body, Icon]) => (
@@ -105,7 +112,7 @@ export default function Checks() {
         ))}
       </ul>
       <section aria-labelledby="checks-h">
-        <h2 id="checks-h">The ten checks</h2>
+        <h2 id="checks-h">The eleven checks</h2>
         <ol className="check-cards">
           {CHECKS.map((c) => (
             <li key={c.title}>
